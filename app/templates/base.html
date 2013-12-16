@@ -1,0 +1,27 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{title}} - sharing</title>
+    {% else %}
+    <title>sharing</title>
+    {% endif %}
+    <!--link href="/static/css/base.css" rel="stylesheet"/-->
+</head>
+<body>
+    <div id = "container">
+
+        <div id = "header">
+        </div>
+
+        <div id = "main">
+        {% block content %}{% endblock %}
+       </div>
+        
+        <div class = "clear"></div>
+        <div id = "footer">
+        </div>
+
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/base.js"></script>
+</body>
+</html>

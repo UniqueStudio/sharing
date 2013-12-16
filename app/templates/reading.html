@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div >
+{% for share in shares %}
+    {% include 'share.html' %}
+{% endfor %}
+<iframe src="{{ share.link }}" id="share_web" width="900" height="1200">
+</iframe>
+    
+</div>
+{% endblock %}
