@@ -3,7 +3,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 	<Link type="text/css" rel="stylesheet" href="../static/css/login.css"/>
-	<script type="text/javascript" rel="script" src="../static/js/login.js"></script>
 </head>
 <body>
 	<div class="content">
@@ -20,15 +19,15 @@
 					<p class="register">注册</p>
 				</div>
 			</div>
-			{% extends "base.html" %}
-			{% block content %}
+			<!--{% extends "base.html" %}
+			{% block content %}-->
 			<div style="height:3px;width:100%;opacity:0;"></div>
 			<div class="contentRightBody">
 				<div class="loginAndRegisterDiv">
 					<div class="loginDiv">
-						{% if error %}
+						<!--{% if error %}
 						<p>{{ error }}</p>
-						{% endif %}
+						{% endif %}-->
 						<form action="{{ url_for('login') }}" method="post" class="loginForm">
 							<p>帐号</p>
 							<br />
@@ -45,9 +44,9 @@
 						</form>
 					</div>
 					<div class="registerDiv">
-						{% if error %}
+						<!--{% if error %}
 						<p>{{ error }}</p>
-						{% endif %}
+						{% endif %}-->
 						<form action="{{ url_for('register') }}" method="post" class="registerForm">
 							<p></p>
 							<input type="text" class="loginName" />
@@ -58,10 +57,11 @@
 							<div></div>
 						</form>
 					</div>
-					{% endblock %}
+					<!--{% endblock %}-->
 				</div>
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript" rel="script" src="../static/js/login.js"></script>
 </body>
 </html>

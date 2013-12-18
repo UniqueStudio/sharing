@@ -109,6 +109,10 @@ p,a{
 	font-weight: 300;
 }
 
+.loginButton{
+	cursor: default;
+}
+
 .contentRightBody p{
 	display: inline-block;
 	margin: 8px 0px;
