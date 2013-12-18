@@ -1,0 +1,163 @@
+html{
+	display: inline-block;
+	height: 100%;
+}
+
+body{
+	display: inline-block;
+	padding: 0px;
+	margin: 0px;
+	height: 100%;
+	width: 100%;
+	background-color: #f0faf1;
+}
+
+p,a{
+	font-family:SimSun, arial,sans-serif;
+}
+
+.content{
+
+	display: -webkit-inline-box;
+	display: -moz-box;
+	-webkit-box-orient:horizontal;
+	-moz-box-orient:horizontal;
+	
+	width: 100%;
+	height:100%;
+
+	background-color: #f0faf1;
+}
+
+.contentLeft{
+	display: -webkit-box;
+	display: -moz-box;
+	-webkit-box-orient:vertical;
+	-moz-box-orient:vertical;
+
+	-webkit-box-flex:5;
+	-moz-box-flex:5;
+	 box-flex:5;
+
+	height: 100%;
+	min-width: 800px;
+
+	text-align: center;
+
+}
+
+.loginShareImg{
+	width: 85%;
+	min-width: 680px;
+
+	margin: 0 auto;
+}
+
+.spaceDiv{
+	-webkit-box-flex:1;
+	-moz-box-flex:1;
+	 box-flex: 1;
+	 min-height: 88px;
+}
+
+
+.contentRight{
+	display: -webkit-box;
+	display: -moz-box;
+	-webkit-box-orient:vertical;
+	-moz-box-orient:vertical;
+
+	-webkit-box-flex:3;
+	-moz-box-flex:3;
+	 box-flex: 3;
+
+	height: 100%;
+	min-width: 480px;
+}
+
+.contentRight>div{
+	width:100%;
+	background-color: #48b3b9;
+}
+
+.contentRightMenu{
+	position: relative;
+	-webkit-box-flex:3;
+	-moz-box-flex:3;
+	min-height: 105px;
+}
+
+.contentRightBody{
+	-webkit-box-flex:16;
+	-moz-box-flex:16;
+	min-height: 210px;
+	overflow: hidden;
+	padding: 48px 0px;
+}
+
+.contentRightMenu>div{
+	display: inline-block;
+
+	position: absolute;
+	top: 14%;
+}
+
+.contentRightMenu p{
+	display: inline-block;
+	margin-left: 20px;
+	font-size: 30px;
+	font-weight: 300;
+}
+
+.contentRightBody p{
+	display: inline-block;
+	margin: 8px 0px;
+	font-size: 30px;
+}
+
+.loginAndRegisterDiv{
+	width:200%;
+	height:100%;
+	display: -webkit-box;
+	display: -moz-box;
+	-webkit-box-orient:horizontal;
+	-moz-box-orient:horizontal;
+}
+
+.loginAndRegisterDiv form{
+	width:80%;
+	margin:20px auto;
+}
+
+.loginAndRegisterInput{
+	outline-color:rgba(256,256,256,0);
+	border:0px;
+	height: 48px;
+	width: 100%;
+	font-size: 32px;
+	padding: 0px 5px;
+}
+
+.loginDiv{
+	-webkit-box-flex:1;
+	-moz-box-flex:1;
+	width: 50%;
+	height: 100%;
+}
+
+.registerDiv{
+	-webkit-box-flex:1;
+	-moz-box-flex:1;
+	width: 50%;
+	height: 100%;
+}
+
+.loginSubmitButton{
+	width: 100px;
+	height: 50px;
+	margin: 10px auto;
+	outline-color:rgba(256,256,256,0);
+	border:0px;
+	background-color: #f0faf1;
+	font-size: 26px;
+}
