@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+<!--{% extends "base.html" %}
 {% block content %}
 
 
@@ -15,3 +15,34 @@
 
 
 {% endblock %}
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+	<Link type="text/css" rel="stylesheet" href="../static/css/index.css"/>
+</head>
+<body>
+	<div class="header">
+		<img src="../static/img/share-2.png" style="margin-left:50px;" alt="" />
+		<!--{% if session.logged_in %}-->
+		<a href="{{ url_for('logout') }}" class="logout">登出</a>
+		<!--{% endif %}-->
+	</div>
+	<div class="main">
+		<div class="banner">
+			<div class="bannerContent">
+				<div class="bannerMoveLeftButton"></div>
+				<div class="bannerMoveRightButton"></div>
+			</div>
+		</div>
+		<div class="content">
+			
+		</div>
+	</div>
+	
+	<script type="text/javascript" rel="script" src="../static/js/index.js"></script>
+</body>
+</html>

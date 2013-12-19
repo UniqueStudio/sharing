@@ -90,8 +90,8 @@ p,a{
 .contentRightBody{
 	-webkit-box-flex:16;
 	-moz-box-flex:16;
-	min-height: 210px;
-	overflow: hidden;
+	min-height: 464px;
+	
 	padding: 48px 0px;
 }
 
@@ -128,6 +128,16 @@ p,a{
 }
 
 .loginAndRegisterDiv{
+	width:100%;
+	height:100%;
+	display: -webkit-box;
+	display: -moz-box;
+	overflow: hidden;
+	-webkit-box-orient:horizontal;
+	-moz-box-orient:horizontal;
+}
+
+.loginAndRegisterMoveDiv{
 	width:200%;
 	height:100%;
 	display: -webkit-box;
@@ -136,35 +146,43 @@ p,a{
 	-moz-box-orient:horizontal;
 }
 
-.loginAndRegisterDiv form{
+.loginAndRegisterMoveDiv form{
 	width:80%;
 	margin:20px auto;
 }
 
 .loginAndRegisterInput{
 	outline-color:rgba(256,256,256,0);
-	border:0px;
-	height: 48px;
+	border:1px solid rgba(256,256,256,0);
+	height: 46px;
 	width: 100%;
 	font-size: 32px;
 	padding: 0px 5px;
 }
 
+.loginAndRegisterInput:hover{
+	border-color:rgb(63, 236, 167);
+}
+
+.loginAndRegisterInput:focus{
+	border-color:rgb(63, 236, 167);
+}
+
 .loginDiv{
 	-webkit-box-flex:1;
 	-moz-box-flex:1;
-	width: 50%;
+	width: 100%;
 	height: 100%;
 }
 
 .registerDiv{
 	-webkit-box-flex:1;
 	-moz-box-flex:1;
-	width: 50%;
+	width: 100%;
 	height: 100%;
 }
 
-.loginSubmitButton{
+.SubmitButton{
 	width: 100px;
 	height: 50px;
 	margin: 10px auto;
@@ -173,4 +191,8 @@ p,a{
 	background-color: #f0faf1;
 	font-size: 26px;
 	cursor: pointer;
+}
+
+.SubmitButton:hover{
+	background-color: #D0DAD1;
 }
