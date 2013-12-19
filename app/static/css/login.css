@@ -113,6 +113,14 @@ p,a{
 	cursor: default;
 }
 
+.registerButton{
+	cursor: pointer;
+}
+
+.registerForm{
+	opacity: 0;
+}
+
 .contentRightBody p{
 	display: inline-block;
 	margin: 8px 0px;
@@ -164,4 +172,5 @@ p,a{
 	border:0px;
 	background-color: #f0faf1;
 	font-size: 26px;
+	cursor: pointer;
 }

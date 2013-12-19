@@ -16,7 +16,7 @@
 			<div class="contentRightMenu">
 				<div>
 					<p class="loginButton">登录</p>
-					<p class="register">注册</p>
+					<p class="registerButton">注册</p>
 				</div>
 			</div>
 			<!--{% extends "base.html" %}
@@ -48,13 +48,22 @@
 						<p>{{ error }}</p>
 						{% endif %}-->
 						<form action="{{ url_for('register') }}" method="post" class="registerForm">
-							<p></p>
-							<input type="text" class="loginName" />
-							<p></p>
-							<input type="password" class="loginPassword" />
-							<input type="text" />
-							<p></p>
-							<div></div>
+							<p>帐号</p>
+							<br />
+							<input type="text" name="login" class="loginName loginAndRegisterInput" />
+							<br />
+							<p>密码</p>
+							<br />
+							<input type="password"   class="loginPassword loginAndRegisterInput" />
+							<br />
+							<p>确认密码</p>
+							<br />
+							<input type="password"  name="password" class="loginPassword loginAndRegisterInput" />
+							<br />
+							<p>邮箱</p>
+							<input type="text" class="loginAndRegisterInput" style="margin-bottom:15px;" />
+							<br />
+							<input type="submit" class="loginSubmitButton" value="提交" />
 						</form>
 					</div>
 					<!--{% endblock %}-->
