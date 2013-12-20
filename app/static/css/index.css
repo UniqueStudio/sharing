@@ -3,7 +3,13 @@ html,body{
 	margin: 0px;
 	height: 100%;
 	width: 100%;
+	min-width: 900px;
 	background-color: #b4c7b3;
+	
+}
+
+body{
+	overflow:auto; 
 }
 
 .header{
@@ -13,6 +19,7 @@ html,body{
 	width: 100%;
 	min-height:55px;
 	height: 7%;
+	z-index: 100;
 	background-color: #57d2d9; 
 }
 
@@ -28,18 +35,21 @@ html,body{
 
 .main{
 	width: 100%;
+	min-width: 900px;
 	min-height: 100%;
+	height: 1000px;
+	
 }
 
 .banner{
-	position: fixed;
+	position: absolute;
 	left: 0px;
-	top: 7%;
 	top:55px;
 
 	display: inline-block;
 	width: 100%;
-	height: 200px;
+	min-width: 900px;
+	height: 250px;
 
 	background-color: rgba(48, 111, 105,0.8);
 }
@@ -51,12 +61,37 @@ html,body{
 	margin: 0px auto;
 }
 
+.bannerContentShowDiv{
+	position: relative;
+	width:500px;
+	height: 100%;
+	margin: 0px auto;
+	overflow: hidden;
+}
+
+.bannerContentShow{
+	display: -webkit-inline-box;
+	display: -moz-box;
+	-webkit-box-orient:horizontal;
+	-moz-box-orient:horizontal;
+	margin-left: 0%;
+	width:500%;
+	height: 100%;
+}
+
+.bannerContentShow>div{
+	-webkit-box-flex:5;
+	-moz-box-flex:5;
+	 box-flex:5;
+
+	 height: 100%;
+}
+
 .bannerMoveLeftButton{
 	position: absolute;
 	top:0px;
 	bottom: 0px;
-	left: 0px;
-	float: left;
+	left: 5%;
 	margin: auto 0px;
 
 	display: inline-block;
@@ -65,13 +100,18 @@ html,body{
 	
 	border-radius: 300px;
 	background-color: #abc7c3;
+	opacity: 0;
+	cursor: pointer;
+	text-align: center;
+	color: white;
+	font: 75px/80px Arial,sans-serif;
 }
 
 .bannerMoveRightButton{
 	position: absolute;
 	top:0px;
 	bottom: 0px;
-	right: 0px;
+	right: 5%;
 	margin: auto 0px;
 
 	display: inline-block;
@@ -80,11 +120,21 @@ html,body{
 
 	border-radius: 300px;
 	background-color: #abc7c3;
+	opacity: 0;
+	cursor: pointer;
+	text-align: center;
+	color: white;
+	font: 75px/80px Arial,sans-serif; 
+}
+
+.bannerMoveRightButton:hover,.bannerMoveLeftButton:hover{
+	opacity: 0.9!important;
 }
 
 .content{
 	width: 900px;
 	min-height: 100%;
+	height: 100%;
 	
 	margin: 0px auto;
 	
