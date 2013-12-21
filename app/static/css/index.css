@@ -140,3 +140,27 @@ body{
 	
 	background-color: white;
 }
+
+.bannerOrder{
+	position: absolute;
+	bottom: 0px;
+
+	width:100%;
+	text-align: center;	
+}
+
+.bannerOrder>div{
+	display:inline-block;
+	margin: 0px auto ;
+	
+	width: 15px;
+	height: 15px;
+	
+	background-color: rgb(155,155,155);
+	opacity: 1;
+	border-radius: 300px;
+}
+
+.bannerOrder0{
+	
+}
