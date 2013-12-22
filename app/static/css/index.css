@@ -14,18 +14,21 @@ body{
 
 .header{
 	position: fixed;
-	top:0px
+	top:0px;
 	left:0px;
 	width: 100%;
-	min-height:55px;
-	height: 7%;
+	min-width: 370px;
+	height:55px;
 	z-index: 100;
 	background-color: #57d2d9; 
 }
 
 .logout{
-	float: right;
-	margin:15px 50px;
+	position: absolute;
+	top:0px;
+	bottom: 0px;
+	right: 0px;
+	margin:auto 50px;
 	height: 25px;
 
 	text-decoration: none;
@@ -104,7 +107,7 @@ body{
 	cursor: pointer;
 	text-align: center;
 	color: white;
-	font: 75px/80px Arial,sans-serif;
+	font: 75px/83px Arial,sans-serif;
 }
 
 .bannerMoveRightButton{
@@ -159,8 +162,4 @@ body{
 	background-color: rgb(155,155,155);
 	opacity: 1;
 	border-radius: 300px;
-}
-
-.bannerOrder0{
-	
 }
