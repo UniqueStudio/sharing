@@ -13,9 +13,9 @@
 {% endif %}
 </p>
 <div>
-    <a href="{{ url_for('index') }}">new</a>
-    <a href="{{ url_for('index_hot') }}">hot</a>
-    <a href="{{ url_for('profile') }}">profile</a>
+    <a href="{{ url_for('index', index_desc='desc') }}">new</a>
+    <a href="{{ url_for('index_hot', index_hot_desc='desc') }}">hot</a>
+    <a href="{{ url_for('profile', profile_desc=profile_desc) }}">profile</a>
 </div>
 
 {% for share in shares %}

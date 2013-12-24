@@ -58,8 +58,9 @@ def register():
             error = error)
 
 @app.route('/')
-@app.route('/index')
-def index():
+@app.route('/index/')
+@app.route('/index/<index_desc>')
+def index(index_desc=''):
     
     if 'logged_in' in  session:
         pass
@@ -73,14 +74,24 @@ def index():
             user = User.query.get(user_id)
 
     shares = Share.query.order_by(Share.timestamp).all()
+    if index_desc == 'desc':
+        shares.reverse()
+        index_desc = ''
+    elif index_desc == '': 
+        index_desc = 'desc'
+    # else:
+        #error
 
     return render_template("index.html",
             shares = shares,
             current_user = user,
+            index_desc = index_desc, 
+            index_hot_desc = 'desc',
             title = 'home')
 
-@app.route('/index_hot')
-def index_hot():
+@app.route('/index_hot/')
+@app.route('/index_hot/<index_hot_desc>')
+def index_hot(index_hot_desc=''):
     
     if 'logged_in' in  session:
         pass
@@ -94,24 +105,47 @@ def index_hot():
             user = User.query.get(user_id)
 
     shares = Share.query.order_by(Share.likes).all()
+    if index_hot_desc == 'desc':
+        shares.reverse()
+        index_hot_desc = ''
+    elif index_hot_desc == '':
+        index_hot_desc = 'desc'
+    # TODO
+    # else:
+        #error
 
     return render_template("index.html",
             shares = shares,
             current_user = user,
+            index_desc='desc',
+            index_hot_desc = index_hot_desc, 
             title = 'home')
 
-@app.route('/profile')
-def profile():
+@app.route('/profile/')
+@app.route('/profile/<profile_desc>')
+def profile(profile_desc=''):
     if 'user_id' in session:
         user_id = session['user_id']
         user = User.query.get(user_id)
-        shares = Share.query.filter_by(user_id = user_id).order_by(Share.timestamp)
+        # 这儿的order_by有问题
+        # profile 是干嘛的?
+        shares = Share.query.filter_by(user_id = user_id).order_by(Share.timestamp).all()
     else:
         return redirect(url_for('login'))
+    
+    if profile_desc == 'desc':
+        shares.reverse()
+        profile_desc = ''
+    elif profile_desc == '':
+        profile_desc = 'desc'
+    # TODO
+    #else:
+        #error
 
     return render_template("profile.html",
             shares = shares,
             current_user = user,
+            profile_desc = profile_desc, 
             title = 'profile')
 
 @app.route('/likes', methods = ['GET', 'POST'])
