@@ -88,6 +88,7 @@ body{
 	 box-flex:5;
 
 	 height: 100%;
+	 background-size: 500px 250px !important;
 }
 
 .bannerMoveLeftButton{
@@ -179,7 +180,7 @@ body{
 	height:160px;
 	margin: 15px 10px 0px 10px;
 	background-repeat: no-repeat;
-	-webkit-background-size: cover !important;;
+	-webkit-background-size: cover !important;
 	background-size: cover !important;
 
 	overflow: hidden;

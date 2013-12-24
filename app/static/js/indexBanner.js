@@ -8,11 +8,12 @@ document.getElementsByClassName("bannerOrder0")[0].onclick = function(){
 		var bannerOrderNow = (parseInt(document.getElementsByClassName("bannerContentShow")[0].style.marginLeft)||0)/-100;		
 		if((0 - bannerOrderNow)>0){
 			moveLeft(75,0 - bannerOrderNow);
+			clearInterval(bannerMoveAutoTime);
 		}
 		else if((0 - bannerOrderNow)<0){
 				moveRight(75,bannerOrderNow - 0);
+				clearInterval(bannerMoveAutoTime);
 			};
-		clearInterval(bannerMoveAutoTime);
 		bannerMoveAuto();
 	};
 };
@@ -22,11 +23,12 @@ document.getElementsByClassName("bannerOrder1")[0].onclick = function(){
 		var bannerOrderNow = (parseInt(document.getElementsByClassName("bannerContentShow")[0].style.marginLeft)||0)/-100;		
 		if((1 - bannerOrderNow)>0){
 			moveLeft(75,1 - bannerOrderNow);
+			clearInterval(bannerMoveAutoTime);
 		}
 		else if((1 - bannerOrderNow)<0){
 				moveRight(75,bannerOrderNow - 1);
+				clearInterval(bannerMoveAutoTime);
 			};
-		clearInterval(bannerMoveAutoTime);
 		bannerMoveAuto();
 	};
 };
@@ -36,11 +38,12 @@ document.getElementsByClassName("bannerOrder2")[0].onclick = function(){
 		var bannerOrderNow = (parseInt(document.getElementsByClassName("bannerContentShow")[0].style.marginLeft)||0)/-100;		
 		if((2 - bannerOrderNow)>0){
 			moveLeft(75,2 - bannerOrderNow);
+			clearInterval(bannerMoveAutoTime);
 		}
 		else if((2 - bannerOrderNow)<0){
 				moveRight(75,bannerOrderNow - 2);
+				clearInterval(bannerMoveAutoTime);
 			};
-		clearInterval(bannerMoveAutoTime);
 		bannerMoveAuto();
 	};
 };
@@ -50,11 +53,12 @@ document.getElementsByClassName("bannerOrder3")[0].onclick = function(){
 		var bannerOrderNow = (parseInt(document.getElementsByClassName("bannerContentShow")[0].style.marginLeft)||0)/-100;		
 		if((3 - bannerOrderNow)>0){
 			moveLeft(75,3 - bannerOrderNow);
+			clearInterval(bannerMoveAutoTime);
 		}
 		else if((3 - bannerOrderNow)<0){
 				moveRight(75,bannerOrderNow - 3);
+				clearInterval(bannerMoveAutoTime);
 			};
-		clearInterval(bannerMoveAutoTime);
 		bannerMoveAuto();
 	};
 };
@@ -64,11 +68,12 @@ document.getElementsByClassName("bannerOrder4")[0].onclick = function(){
 		var bannerOrderNow = (parseInt(document.getElementsByClassName("bannerContentShow")[0].style.marginLeft)||0)/-100;		
 		if((4 - bannerOrderNow)>0){
 			moveLeft(75,4 - bannerOrderNow);
+			clearInterval(bannerMoveAutoTime);
 		}
 		else if((4 - bannerOrderNow)<0){
 				moveRight(75,bannerOrderNow - 4);
+				clearInterval(bannerMoveAutoTime);
 			};
-		clearInterval(bannerMoveAutoTime);
 		bannerMoveAuto();
 	};
 };
@@ -78,11 +83,12 @@ document.getElementsByClassName("bannerMoveLeftButton")[0].onclick = function(){
 		var whereBeforeMove = parseInt(document.getElementsByClassName("bannerContentShow")[0].style.marginLeft)||0;
 		if( whereBeforeMove<0){
 			moveRight(75);
+			clearInterval(bannerMoveAutoTime);
 		}
 		else{
 			moveLeft(75,4);
-		}
-		clearInterval(bannerMoveAutoTime);
+			clearInterval(bannerMoveAutoTime);
+		};
 		bannerMoveAuto();
 	};
 };
@@ -93,11 +99,12 @@ document.getElementsByClassName("bannerMoveRightButton")[0].onclick = function()
 		var whereBeforeMove = parseInt(document.getElementsByClassName("bannerContentShow")[0].style.marginLeft)||0;
 		if( whereBeforeMove>-400){
 			moveLeft(75);
+			clearInterval(bannerMoveAutoTime);
 		}
 		else{
-			moveRight(75,4)
-		}
-		clearInterval(bannerMoveAutoTime);
+			moveRight(75,4);
+			clearInterval(bannerMoveAutoTime);
+		};
 		bannerMoveAuto();
 	};
 };
@@ -127,7 +134,7 @@ var bannerMoveAuto = function(){
 				moveRight(50,4)
 			}
 		};
-	},3000);
+	},5000);
 };
 
 var moveLeft = function(T){
@@ -151,7 +158,7 @@ var moveLeft = function(T){
 	var bannerOrderNum = whereBeforeMove/(-100);
 	console.log(bannerOrderNum);
 	document.getElementsByClassName("bannerOrder")[0].children[bannerOrderNum].style.cssText = "";
-	document.getElementsByClassName("bannerOrder")[0].children[bannerOrderNum+moveLength].style.cssText = "background-color:white !important";
+	document.getElementsByClassName("bannerOrder")[0].children[bannerOrderNum+moveLength].style.cssText = "background-color:rgb(213,213,213) !important";
 	var t = setInterval(function(){
 		
 		if(countTime <= t1){

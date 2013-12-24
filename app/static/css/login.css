@@ -4,29 +4,43 @@ html{
 }
 
 body{
-	display: inline-block;
+	display: -webkit-box;
+	display: -moz-box;
 	padding: 0px;
 	margin: 0px;
-	height: 100%;
 	width: 100%;
-	background-color: #f0faf1;
+	height: 100%;
+	background-color:  #E7F7ED;
+	-webkit-box-orient:vertical;
+	-moz-box-orient:vertical;
 }
 
 p,a{
 	font-family:SimSun, arial,sans-serif;
 }
 
-.content{
+.header{
+	background-color: #0F47BE;
+	width: 100%;
+	height: 30px;
 
-	display: -webkit-inline-box;
+	-webkit-box-flex:0;
+	-moz-box-flex:0;
+	 box-flex:0;
+
+	 text-align: center;
+}
+
+.content{
+	display: -webkit-box;
 	display: -moz-box;
 	-webkit-box-orient:horizontal;
 	-moz-box-orient:horizontal;
-	
-	width: 100%;
-	height:100%;
 
-	background-color: #f0faf1;
+	-webkit-box-flex:5;
+	-moz-box-flex:5;
+	 box-flex:5;
+	 min-height: 575px;
 }
 
 .contentLeft{
@@ -34,32 +48,29 @@ p,a{
 	display: -moz-box;
 	-webkit-box-orient:vertical;
 	-moz-box-orient:vertical;
-
-	-webkit-box-flex:5;
-	-moz-box-flex:5;
-	 box-flex:5;
-
-	height: 100%;
-	min-width: 800px;
-
+	
+	width: 60%;
+	min-width: 810px;
+	min-height: 575px;
 	text-align: center;
 
 }
 
-.loginShareImg{
-	width: 85%;
-	min-width: 680px;
 
-	margin: 0 auto;
-}
-
-.spaceDiv{
+.verticalSpace{
 	-webkit-box-flex:1;
 	-moz-box-flex:1;
-	 box-flex: 1;
-	 min-height: 88px;
+	 box-flex:1;
 }
 
+.contentLeftMain{
+	margin: 0px auto;
+	background: url("../img/loginShare.png");
+	background-size: 100% 100%;
+	height: 575px;
+	width: 810px;
+
+}
 
 .contentRight{
 	display: -webkit-box;
@@ -67,32 +78,42 @@ p,a{
 	-webkit-box-orient:vertical;
 	-moz-box-orient:vertical;
 
-	-webkit-box-flex:3;
-	-moz-box-flex:3;
-	 box-flex: 3;
-
-	height: 100%;
-	min-width: 480px;
+	-webkit-box-flex:1;
+	-moz-box-flex:1;
+	 box-flex: 1;
 }
 
-.contentRight>div{
+.contentRightMain{
+	display: -webkit-box;
+	display: -moz-box;
+	-webkit-box-orient:vertical;
+	-moz-box-orient:vertical;
+	width: 60%;
+	min-width: 300px;
+	min-height: 400px;
+}
+
+.contentRightMain>div{
 	width:100%;
-	background-color: #48b3b9;
+	background-color: #1445B1;
 }
 
 .contentRightMenu{
 	position: relative;
 	-webkit-box-flex:3;
 	-moz-box-flex:3;
-	min-height: 105px;
+	min-height: 90px;
+
+	-webkit-box-flex:2;
+	-moz-box-flex:2;
+	 box-flex: 2;
 }
 
 .contentRightBody{
-	-webkit-box-flex:16;
-	-moz-box-flex:16;
-	min-height: 464px;
+	-webkit-box-flex:8;
+	-moz-box-flex:8;
 	
-	padding: 48px 0px;
+	min-height: 360px;
 }
 
 .contentRightMenu>div{
@@ -105,8 +126,9 @@ p,a{
 .contentRightMenu p{
 	display: inline-block;
 	margin-left: 20px;
-	font-size: 30px;
+	font-size: 25px;
 	font-weight: 300;
+	color: white;
 }
 
 .loginButton{
@@ -124,7 +146,8 @@ p,a{
 .contentRightBody p{
 	display: inline-block;
 	margin: 8px 0px;
-	font-size: 30px;
+	font-size: 20px;
+	color: white;
 }
 
 .loginAndRegisterDiv{
@@ -154,9 +177,9 @@ p,a{
 .loginAndRegisterInput{
 	outline-color:rgba(256,256,256,0);
 	border:1px solid rgba(256,256,256,0);
-	height: 46px;
-	width: 100%;
-	font-size: 32px;
+	height: 30px;
+	width: 95%;
+	font-size: 20px;
 	padding: 0px 5px;
 }
 
@@ -183,13 +206,13 @@ p,a{
 }
 
 .SubmitButton{
-	width: 100px;
-	height: 50px;
+	width: 80px;
+	height: 35px;
 	margin: 10px auto;
 	outline-color:rgba(256,256,256,0);
 	border:0px;
 	background-color: #f0faf1;
-	font-size: 26px;
+	font-size: 25px;
 	cursor: pointer;
 }
 
