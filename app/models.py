@@ -15,8 +15,8 @@ user_likes = db.Table('user_likes',
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(40), unique=True)
-    # def __init__(self, name):
-        # self.title = name
+    def __init__(self, name):
+        self.title = name
 
     def __repr__(self):
         return '<Group %r>' % (self.title)
@@ -44,12 +44,10 @@ class User(db.Model):
     def like(self, share):
         if not self.is_like(share):
             self.like_shares.append(share)
-            return self
     
     def dislike(self, share):
         if self.is_like(share):
             self.like_shares.remove(share)
-            return self
 
     def is_like(self, share):
         return share in self.like_shares.all()
@@ -62,10 +60,10 @@ class Share(db.Model):
     url = db.Column(db.String(200))
     title = db.Column(db.String(180))
     explain = db.Column(db.String(350))
+    likes = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comments = db.relationship('Comment', lazy='dynamic')
-    likes= db.relationship('User', lazy='dynamic', secondary=user_likes)
 
     def __repr__(self):
         return '<Share id=%d url=%s>' % (self.id, self.url)

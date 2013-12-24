@@ -5,7 +5,7 @@
     {% include 'share.html' %}
 {% endfor %}
 
-<h4>有{{share.likes.count()}}人觉得很赞</h4>
+<h4>有{{share.likes}}人觉得很赞</h4>
 
 {% if not user.is_like(share) %}
 <button class="likes" value="{{ share.id }}">likes</button>

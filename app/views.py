@@ -121,8 +121,10 @@ def likes():
     if 'user_id' in session:
         user_id = session['user_id']
         user = User.query.get(user_id)
-        like = user.like(share)
-        db.session.add(like)
+        user.like(share)
+        share.likes += 1
+        # db.session.add(like)
+        db.session.add(share)
         db.session.commit()
         return "success"
     else:
@@ -135,8 +137,10 @@ def dislikes():
     if 'user_id' in session:
         user_id = session['user_id']
         user = User.query.get(user_id)
-        dislike = user.dislike(share)
-        db.session.add(dislike)
+        user.dislike(share)
+        share.likes -= 1
+        # db.session.add(dislike)
+        db.session.add(share)
         db.session.commit()
         return "success"
     else:
