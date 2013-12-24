@@ -1,10 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-	<Link type="text/css" rel="stylesheet" href="../static/css/login.css"/>
-</head>
-<body>
+{% extends "base.html" %}
+{% block style %}
+	<link type="text/css" rel="stylesheet" href="../static/css/login.css"/>
+{% endblock %}
+{% block content %}
 	<div class="content">
 		<div class="contentLeft">
 			<div class="spaceDiv"></div>
@@ -19,61 +17,34 @@
 					<p class="registerButton">注册</p>
 				</div>
 			</div>
-			<!--{% extends "base.html" %}
-			{% block content %}-->
 			<div style="height:3px;width:100%;opacity:0;"></div>
 			<div class="contentRightBody">
 				<div class="loginAndRegisterDiv">
-					<div class="loginAndRegisterMoveDiv">
-						<div class="loginDiv">
-							<!--{% if error %}
-							<p>{{ error }}</p>
-							{% endif %}-->
-							<form action="{{ url_for('login') }}" method="post" class="loginForm">
-								<p>帐号</p>
-								<br />
-								<input type="text" name="login" class="loginName loginAndRegisterInput" />
-								<br />
-								<p>密码</p>
-								<br />
-								<input type="password"  name="password" class="loginPassword loginAndRegisterInput" />
-								<br />
-								<input type="checkbox" style="height:26px;width:26px;margin-top:20px;" />
-								<p>一周内记住我</p>
-								<br />
-								<input type="submit" class="SubmitButton" value="登录" />
-							</form>
-						</div>
-						<div class="registerDiv">
-							<!--{% if error %}
-							<p>{{ error }}</p>
-							{% endif %}-->
-							<form action="{{ url_for('register') }}" method="post" class="registerForm">
-								<p>帐号</p>
-								<br />
-								<input type="text" name="login" class="registerName loginAndRegisterInput" />
-								<br />
-								<p>密码</p>
-								<br />
-								<input type="password"   class="registerPassword loginAndRegisterInput" />
-								<br />
-								<p>确认密码</p>
-								<br />
-								<input type="password"  name="password" class="registerPassword loginAndRegisterInput" />
-								<br />
-								<p>邮箱</p>
-								<input type="text" class="loginAndRegisterInput" style="margin-bottom:15px;" />
-								<br />
-								<input type="submit" class="SubmitButton" value="提交" />
-							</form>
-						</div>
+					<div class="loginDiv">
+    {% from "_formhelpers.html" import render_field %}
+    <form action="{{ url_for('login') }}" method="post" class="loginForm">
+        {{ login_form.hidden_tag() }}
+        {{ render_field(login_form.email, class="loginName loginAndRegisterInput") }}
+        {{ render_field(login_form.password, class="loginPassword loginAndRegisterInput") }}
+        <input type="submit" value="login" class="loginSubmitButton" />
+    </form>
 					</div>
-					
-					<!--{% endblock %}-->
+					<div class="registerDiv">
+    {% from "_formhelpers.html" import render_field %}
+    <form action="{{ url_for('register') }}" method="post" class="registerForm">
+        {{ register_form.hidden_tag() }}
+        {{ render_field(register_form.name, class="loginName loginAndRegisterInput") }}
+        {{ render_field(register_form.email, class="loginName loginAndRegisterInput") }}
+        {{ render_field(register_form.password, class="loginPassword loginAndRegisterInput" ) }}
+        {{ render_field(register_form.confirm, class="loginPassword loginAndRegisterInput") }}
+        <input type="submit" value="register" class="loginSubmitButton" />
+    </form>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+    {% endblock %}
+    {% block script %}
 	<script type="text/javascript" rel="script" src="../static/js/login.js"></script>
-</body>
-</html>
+    {% endblock %}

@@ -1,6 +1,6 @@
 var loginButton         = document.getElementsByClassName("loginButton")[0];
 var registerButton      = document.getElementsByClassName("registerButton")[0];
-var loginAndRegisterMoveDiv = document.getElementsByClassName("loginAndRegisterMoveDiv")[0];
+var loginAndRegisterDiv = document.getElementsByClassName("loginAndRegisterDiv")[0];
 var loginForm           = document.getElementsByClassName("loginForm")[0];
 var registerForm        = document.getElementsByClassName("registerForm")[0];
 
@@ -17,11 +17,11 @@ loginButton.onclick = function () {
 		var t = setInterval(function(){
 			if(countTime <= 40){
 				moveDistance = 0.5*a1*countTime*countTime;
-				loginAndRegisterMoveDiv.style.marginLeft = (-100 + moveDistance)+"%";
+				loginAndRegisterDiv.style.marginLeft = (-100 + moveDistance)+"%";
 			}
 			else{
 				moveDistance = 0.5*a2*(100-countTime)*(100-countTime);
-				loginAndRegisterMoveDiv.style.marginLeft = (0-moveDistance)+"%";
+				loginAndRegisterDiv.style.marginLeft = (0-moveDistance)+"%";
 			};
 			registerForm.style.opacity = 1 - 0.01*countTime;
 			loginForm.style.opacity = 0.01*countTime;
@@ -49,11 +49,11 @@ registerButton.onclick = function () {
 		var t = setInterval(function(){
 			if(countTime <= 40){
 				moveDistance = 0.5*a1*countTime*countTime;
-				loginAndRegisterMoveDiv.style.marginLeft = (0 - moveDistance)+"%";;
+				loginAndRegisterDiv.style.marginLeft = (0 - moveDistance)+"%";;
 			}
 			else{
 				moveDistance = 0.5*a2*(100-countTime)*(100-countTime);
-				loginAndRegisterMoveDiv.style.marginLeft = (-100+moveDistance)+"%";
+				loginAndRegisterDiv.style.marginLeft = (-100+moveDistance)+"%";
 			};
 
 			registerForm.style.opacity = 0.01*countTime;

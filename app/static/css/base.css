@@ -10,12 +10,7 @@ body{
 #header{
     height: 150px;
     border: 1px;
-    background: url(/static/img/circle.png);
     padding: 20px;
-}
-#main{
-    min-height: 450px;
-
 }
 #category{
     width: 200px;
@@ -36,94 +31,6 @@ body{
 }
 #footer{
     height: 90px;
-    background-color: #220e10;
     padding: 20px;
 }
 
-/* login */
-.login_form_admin{
-    padding-left: 20px;
-}
-
-/* catgory, tag */
-.add_category{
-    width: 120px;
-}
-.edit_input input{
-    width: 62px;
-}
-.edit_input .edit_send{
-    position: relative;
-    left: 80px;
-    top: -20px;
-}
-.c_ctrl .edit_category{
-    position: relative;
-    left: 80px;
-    top: -10px;
-}
-.c_ctrl .del_category{
-    position: relative;
-    left: 95px;
-    top: -27px;
-}
-.c_ctrl .edit_tag{
-    position: relative;
-    left: 80px;
-    top: -10px;
-}
-.c_ctrl .del_tag{
-    position: relative;
-    left: 95px;
-    top: -27px;
-}
-
-/* post */
-.add_post_head{
-    width: 630px;
-}
-.post{
-    width: 600px;
-    height: 123px;
-    margin: 10px auto;
-    border: 1px solid #333;
-    overflow: hidden;
-}
-.read_post{
-    width:700px;
-    min-height: 270px;
-    border: 1px solid #333;
-}
-
-/* comment */
-.hiden{
-    display: none;
-}
-
-/*  icons control */
-.icon_tick{
-    background:url(/static/img/icons.png);
-    display: block;
-    width: 16px;
-    height: 16px;
-    background-position: 182px 0;
-    cursor: pointer;
-}
-
-.icon_del{
-    background:url(/static/img/icons.png);
-    display: block;
-    width: 16px;
-    height: 16px;
-    background-position: 16px 0;
-    cursor: pointer;
-}
-
-.icon_edit{
-    background:url(/static/img/icons.png);
-    display: block;
-    width: 16px;
-    height: 16px;
-    background-position: 0 110px;
-    cursor: pointer;
-}

@@ -4,8 +4,28 @@
 {% for share in shares %}
     {% include 'share.html' %}
 {% endfor %}
-<iframe src="{{ share.link }}" id="share_web" width="900" height="1200">
+<iframe src="{{ share.url }}" id="share_web" width="900" height="1200">
 </iframe>
+{% if not user.is_like(share) %}
+<button class="likes" value="{{ share.id }}">likes</button>
+{% else %}
+<button class="dislikes" value="{{ share.id }}">dislikes</button>
+{% endif %}
+
+{% for comment in comments %}
+    {% include 'comment.html' %}
+{% endfor %}
+
+<div class="comment">
+    <input type="text" class="body"/>
+    <button class="add_comment" value="{{ share.id }}">send</button>
+</div>
+
     
 </div>
 {% endblock %}
+{% block script %}
+	<script type="text/javascript" rel="script" src="../static/js/jquery.js"></script>
+	<script type="text/javascript" rel="script" src="../static/js/reading.js"></script>
+{% endblock %}
+

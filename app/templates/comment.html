@@ -1,13 +1,4 @@
-<div id="c-{{comment.id}}" class="comment" value="{{comment.depth}}">
+<div id="c-{{comment.id}}" class="comment" >
     <p>{{comment.name}} says: {{comment.body}}</p>
-<button class="agree_comment" value="{{comment.id}}">agree</button>
-<span class="agrees">{{comment.agree}}</span>
-<button class="disagree_comment" value="{{comment.id}}">disagree</button>
-<span class="disagrees">{{comment.disagree}}</span>
 <button class="reply" value="{{comment.id}}">reply</button>
-
-{% if session.logged_in %}
-<button class="del_comment" value="{{comment.id}}">del</button>
-{% endif %}
-
 </div>
