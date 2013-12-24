@@ -62,10 +62,10 @@ class Share(db.Model):
     url = db.Column(db.String(200))
     title = db.Column(db.String(180))
     explain = db.Column(db.String(350))
-    likes = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     comments = db.relationship('Comment', lazy='dynamic')
+    likes= db.relationship('User', lazy='dynamic', secondary=user_likes)
 
     def __repr__(self):
         return '<Share id=%d url=%s>' % (self.id, self.url)
