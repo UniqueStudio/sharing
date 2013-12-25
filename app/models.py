@@ -31,7 +31,7 @@ class User(db.Model):
     shares = db.relationship('Share', lazy='dynamic')
     comments = db.relationship('Comment', lazy='dynamic', backref='publisher')
     like_shares = db.relationship('Share', lazy='dynamic', secondary=user_likes)
-    groups = db.relationship('Group', lazy='dynamic', backref=db.backref('users', lazy='dynamic'),  sencondary=group_users)
+    groups = db.relationship('Group', lazy='dynamic', backref=db.backref('users', lazy='dynamic'),  secondary=group_users)
 
     def __init__(self, username, email, password):
         self.username = username
