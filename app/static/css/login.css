@@ -1,221 +1,224 @@
 html{
-	display: inline-block;
-	height: 100%;
+        display: inline-block;
+        height: 100%;
 }
 
 body{
-	display: -webkit-box;
-	display: -moz-box;
-	padding: 0px;
-	margin: 0px;
-	width: 100%;
-	height: 100%;
-	background-color:  #E7F7ED;
-	-webkit-box-orient:vertical;
-	-moz-box-orient:vertical;
+        display: -webkit-box;
+        display: -moz-box;
+        padding: 0px;
+        margin: 0px;
+        width: 100%;
+        height: 100%;
+        background-color:  #E7F7ED;
+        -webkit-box-orient:vertical;
+        -moz-box-orient:vertical;
 }
 
 p,a{
-	font-family:SimSun, arial,sans-serif;
+        font-family:SimSun, arial,sans-serif;
 }
 
 .header{
-	background-color: #0F47BE;
-	width: 100%;
-	height: 30px;
+        background-color: #0F47BE;
+        width: 100%;
+        min-height: 30px;
+        height: 5%;
 
-	-webkit-box-flex:0;
-	-moz-box-flex:0;
-	 box-flex:0;
+        -webkit-box-flex:0;
+        -moz-box-flex:0;
+         box-flex:0;
 
-	 text-align: center;
+         text-align: center;
 }
 
 .content{
-	display: -webkit-box;
-	display: -moz-box;
-	-webkit-box-orient:horizontal;
-	-moz-box-orient:horizontal;
+        display: -webkit-box;
+        display: -moz-box;
+        -webkit-box-orient:horizontal;
+        -moz-box-orient:horizontal;
 
-	-webkit-box-flex:5;
-	-moz-box-flex:5;
-	 box-flex:5;
-	 min-height: 575px;
+        -webkit-box-flex:5;
+        -moz-box-flex:5;
+         box-flex:5;
+         min-height: 575px;
+         max-width: 1500px;
+         margin: 0px auto;
 }
 
 .contentLeft{
-	display: -webkit-box;
-	display: -moz-box;
-	-webkit-box-orient:vertical;
-	-moz-box-orient:vertical;
-	
-	width: 60%;
-	min-width: 810px;
-	min-height: 575px;
-	text-align: center;
+        display: -webkit-box;
+        display: -moz-box;
+        -webkit-box-orient:vertical;
+        -moz-box-orient:vertical;
+        
+        width: 60%;
+        min-width: 810px;
+        min-height: 575px;
+        text-align: center;
 
 }
 
 
 .verticalSpace{
-	-webkit-box-flex:1;
-	-moz-box-flex:1;
-	 box-flex:1;
+        -webkit-box-flex:1;
+        -moz-box-flex:1;
+         box-flex:1;
 }
 
 .contentLeftMain{
-	margin: 0px auto;
-	background: url("../img/loginShare.png");
-	background-size: 100% 100%;
-	height: 575px;
-	width: 810px;
+        margin: 0px auto;
+        background: url("../img/loginShare.png");
+        background-size: 100% 100%;
+        height: 575px;
+        width: 810px;
 
 }
 
 .contentRight{
-	display: -webkit-box;
-	display: -moz-box;
-	-webkit-box-orient:vertical;
-	-moz-box-orient:vertical;
+        display: -webkit-box;
+        display: -moz-box;
+        -webkit-box-orient:vertical;
+        -moz-box-orient:vertical;
 
-	-webkit-box-flex:1;
-	-moz-box-flex:1;
-	 box-flex: 1;
+        -webkit-box-flex:1;
+        -moz-box-flex:1;
+         box-flex: 1;
 }
 
 .contentRightMain{
-	display: -webkit-box;
-	display: -moz-box;
-	-webkit-box-orient:vertical;
-	-moz-box-orient:vertical;
-	width: 60%;
-	min-width: 300px;
-	min-height: 400px;
+        display: -webkit-box;
+        display: -moz-box;
+        -webkit-box-orient:vertical;
+        -moz-box-orient:vertical;
+        width: 60%;
+        min-width: 300px;
+        min-height: 400px;
 }
 
 .contentRightMain>div{
-	width:100%;
-	background-color: #1445B1;
+        width:100%;
+        background-color: #1445B1;
 }
 
 .contentRightMenu{
-	position: relative;
-	-webkit-box-flex:3;
-	-moz-box-flex:3;
-	min-height: 90px;
+        position: relative;
+        -webkit-box-flex:3;
+        -moz-box-flex:3;
+        min-height: 90px;
 
-	-webkit-box-flex:2;
-	-moz-box-flex:2;
-	 box-flex: 2;
+        -webkit-box-flex:2;
+        -moz-box-flex:2;
+         box-flex: 2;
 }
 
 .contentRightBody{
-	-webkit-box-flex:8;
-	-moz-box-flex:8;
-	
-	min-height: 360px;
+        -webkit-box-flex:8;
+        -moz-box-flex:8;
+        
+        min-height: 360px;
 }
 
 .contentRightMenu>div{
-	display: inline-block;
+        display: inline-block;
 
-	position: absolute;
-	top: 14%;
+        position: absolute;
+        top: 14%;
 }
 
 .contentRightMenu p{
-	display: inline-block;
-	margin-left: 20px;
-	font-size: 25px;
-	font-weight: 300;
-	color: white;
+        display: inline-block;
+        margin-left: 20px;
+        font-size: 25px;
+        font-weight: 300;
+        color: white;
 }
 
 .loginButton{
-	cursor: default;
+        cursor: default;
 }
 
 .registerButton{
-	cursor: pointer;
+        cursor: pointer;
 }
 
 .registerForm{
-	opacity: 0;
+        opacity: 0;
 }
 
 .contentRightBody p{
-	display: inline-block;
-	margin: 8px 0px;
-	font-size: 20px;
-	color: white;
+        display: inline-block;
+        margin: 8px 0px;
+        font-size: 20px;
+        color: white;
 }
 
 .loginAndRegisterDiv{
-	width:100%;
-	height:100%;
-	display: -webkit-box;
-	display: -moz-box;
-	overflow: hidden;
-	-webkit-box-orient:horizontal;
-	-moz-box-orient:horizontal;
+        width:100%;
+        height:100%;
+        display: -webkit-box;
+        display: -moz-box;
+        overflow: hidden;
+        -webkit-box-orient:horizontal;
+        -moz-box-orient:horizontal;
 }
 
 .loginAndRegisterMoveDiv{
-	width:200%;
-	height:100%;
-	display: -webkit-box;
-	display: -moz-box;
-	-webkit-box-orient:horizontal;
-	-moz-box-orient:horizontal;
+        width:200%;
+        height:100%;
+        display: -webkit-box;
+        display: -moz-box;
+        -webkit-box-orient:horizontal;
+        -moz-box-orient:horizontal;
 }
 
 .loginAndRegisterMoveDiv form{
-	width:80%;
-	margin:20px auto;
+        width:80%;
+        margin:20px auto;
 }
 
 .loginAndRegisterInput{
-	outline-color:rgba(256,256,256,0);
-	border:1px solid rgba(256,256,256,0);
-	height: 30px;
-	width: 95%;
-	font-size: 20px;
-	padding: 0px 5px;
+        outline-color:rgba(256,256,256,0);
+        border:1px solid rgba(256,256,256,0);
+        height: 30px;
+        width: 95%;
+        font-size: 20px;
+        padding: 0px 5px;
 }
 
 .loginAndRegisterInput:hover{
-	border-color:rgb(63, 236, 167);
+        border-color:rgb(63, 236, 167);
 }
 
 .loginAndRegisterInput:focus{
-	border-color:rgb(63, 236, 167);
+        border-color:rgb(63, 236, 167);
 }
 
 .loginDiv{
-	-webkit-box-flex:1;
-	-moz-box-flex:1;
-	width: 100%;
-	height: 100%;
+        -webkit-box-flex:1;
+        -moz-box-flex:1;
+        width: 100%;
+        height: 100%;
 }
 
 .registerDiv{
-	-webkit-box-flex:1;
-	-moz-box-flex:1;
-	width: 100%;
-	height: 100%;
+        -webkit-box-flex:1;
+        -moz-box-flex:1;
+        width: 100%;
+        height: 100%;
 }
 
 .SubmitButton{
-	width: 80px;
-	height: 35px;
-	margin: 10px auto;
-	outline-color:rgba(256,256,256,0);
-	border:0px;
-	background-color: #f0faf1;
-	font-size: 25px;
-	cursor: pointer;
+        width: 80px;
+        height: 35px;
+        margin: 10px auto;
+        outline-color:rgba(256,256,256,0);
+        border:0px;
+        background-color: #f0faf1;
+        font-size: 25px;
+        cursor: pointer;
 }
 
 .SubmitButton:hover{
-	background-color: #D0DAD1;
+        background-color: #D0DAD1;
 }
