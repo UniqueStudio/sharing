@@ -87,8 +87,6 @@ def index(index_desc=''):
         index_desc = ''
     elif index_desc == '': 
         index_desc = 'desc'
-    # else:
-        #error
 
     return render_template("index.html",
             shares = shares,
@@ -120,9 +118,6 @@ def index_hot(index_hot_desc=''):
         index_hot_desc = ''
     elif index_hot_desc == '':
         index_hot_desc = 'desc'
-    # TODO
-    # else:
-        #error
 
     return render_template("index.html",
             shares = shares,
