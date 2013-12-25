@@ -1,203 +1,243 @@
 html,body{
-	padding: 0px;
-	margin: 0px;
-	height: 100%;
-	width: 100%;
-	min-width: 900px;
-	background-color: #b4c7b3;
-	
+        padding: 0px;
+        margin: 0px;
+        height: 1080px;
+        width: 100%;
+        min-width: 900px;
+        background-color: #b4c7b3;
+        
 }
 
 body{
-	overflow:auto; 
+        overflow:auto; 
 }
 
 .header{
-	position: fixed;
-	top:0px
-	left:0px;
-	width: 100%;
-	min-height:55px;
-	height: 7%;
-	z-index: 100;
-	background-color: #57d2d9; 
+        position: fixed;
+        top:0px;
+        left:0px;
+        width: 100%;
+        min-width: 370px;
+        height:30px;
+        z-index: 100;
+        background-color: #57d2d9; 
 }
 
 .logout{
-	float: right;
-	margin:15px 50px;
-	height: 25px;
+        position: absolute;
+        top:0px;
+        bottom: 0px;
+        right: 0px;
+        margin:auto 50px;
+        height: 25px;
 
-	text-decoration: none;
-	color: #edfaef;
-	font-size: 25px;
+        text-decoration: none;
+        color: #edfaef;
+        font-size: 25px;
 }
 
 .main{
-	width: 100%;
-	min-width: 900px;
-	min-height: 100%;
-	height: 1000px;
-	
+        width: 100%;
+        min-width: 900px;
+        min-height: 1080px;
+        height: auto;
+        
 }
 
 .banner{
-	position: absolute;
-	left: 0px;
-	top:55px;
+        position: absolute;
+        left: 0px;
+        top:55px;
 
-	display: inline-block;
-	width: 100%;
-	min-width: 900px;
-	height: 250px;
+        display: inline-block;
+        width: 100%;
+        min-width: 900px;
+        height: 250px;
 
-	background-color: rgba(48, 111, 105,0.8);
+        background-color: rgba(48, 111, 105,0.8);
 }
 
 .bannerContent{
-	position: relative;
-	width: 900px;
-	height: 100%;
-	margin: 0px auto;
+        position: relative;
+        width: 900px;
+        height: 100%;
+        margin: 0px auto;
 }
 
 .bannerContentShowDiv{
-	position: relative;
-	width:500px;
-	height: 100%;
-	margin: 0px auto;
-	overflow: hidden;
+        position: relative;
+        width:500px;
+        height: 100%;
+        margin: 0px auto;
+        overflow: hidden;
 }
 
 .bannerContentShow{
-	display: -webkit-inline-box;
-	display: -moz-box;
-	-webkit-box-orient:horizontal;
-	-moz-box-orient:horizontal;
-	margin-left: 0%;
-	width:500%;
-	height: 100%;
+        display: -webkit-inline-box;
+        display: -moz-box;
+        -webkit-box-orient:horizontal;
+        -moz-box-orient:horizontal;
+        margin-left: 0%;
+        width:500%;
+        height: 100%;
 }
 
 .bannerContentShow>div{
-	-webkit-box-flex:5;
-	-moz-box-flex:5;
-	 box-flex:5;
+        -webkit-box-flex:5;
+        -moz-box-flex:5;
+         box-flex:5;
 
-	 height: 100%;
-	 background-size: 500px 250px !important;
+         height: 100%;
+         background-size: 500px 250px !important;
 }
 
 .bannerMoveLeftButton{
-	position: absolute;
-	top:0px;
-	bottom: 0px;
-	left: 5%;
-	margin: auto 0px;
+        position: absolute;
+        top:0px;
+        bottom: 0px;
+        left: 5%;
+        margin: auto 0px;
 
-	display: inline-block;
-	width: 80px;
-	height: 80px;
-	
-	border-radius: 300px;
-	background-color: #abc7c3;
-	opacity: 0;
-	cursor: pointer;
-	text-align: center;
-	color: white;
-	font: 75px/80px Arial,sans-serif;
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+        
+        border-radius: 300px;
+        background-color: #abc7c3;
+        opacity: 0;
+        cursor: pointer;
+        text-align: center;
+        color: white;
+        font: 75px/83px Arial,sans-serif;
 }
 
 .bannerMoveRightButton{
-	position: absolute;
-	top:0px;
-	bottom: 0px;
-	right: 5%;
-	margin: auto 0px;
+        position: absolute;
+        top:0px;
+        bottom: 0px;
+        right: 5%;
+        margin: auto 0px;
 
-	display: inline-block;
-	width: 80px;
-	height: 80px;
+        display: inline-block;
+        width: 80px;
+        height: 80px;
 
-	border-radius: 300px;
-	background-color: #abc7c3;
-	opacity: 0;
-	cursor: pointer;
-	text-align: center;
-	color: white;
-	font: 75px/80px Arial,sans-serif; 
+        border-radius: 300px;
+        background-color: #abc7c3;
+        opacity: 0;
+        cursor: pointer;
+        text-align: center;
+        color: white;
+        font: 75px/80px Arial,sans-serif; 
 }
 
 .bannerMoveRightButton:hover,.bannerMoveLeftButton:hover{
-	opacity: 0.9!important;
+        opacity: 0.9!important;
 }
 
-.content{
-	width: 900px;
-	min-height: 100%;
-	height: 100%;
-	
-	margin: 0px auto;
-	
-	background-color: white;
+.contentDiv{
+        width: 900px;
+        min-height: 1080px;
+        height: auto;
+        
+        margin: 0px auto;
+        
+        background-color: white;
 }
 
 .bannerOrder{
-	position: absolute;
-	bottom: 0px;
+        position: absolute;
+        bottom: 0px;
 
-	width:100%;
-	text-align: center;	
+        width:100%;
+        text-align: center;        
 }
 
 .bannerOrder>div{
-	display:inline-block;
-	margin: 0px auto ;
-	
-	width: 15px;
-	height: 15px;
-	
-	background-color: rgb(155,155,155);
-	opacity: 1;
-	border-radius: 300px;
+        display:inline-block;
+        margin: 0px auto ;
+        
+        width: 15px;
+        height: 15px;
+        
+        background-color: #abc7c3;
+        opacity: 1;
+        border-radius: 300px;
 }
-<<<<<<< HEAD
 .content{
-	display: inline-block;
-	margin-top: 305px;
-	padding-bottom: 30px;
-	width:900px;
-	text-align: center;
+        display: inline-block;
+        margin-top: 305px;
+        padding-bottom: 30px;
+        width:900px;
+        text-align: center;
 
 }
 
 .content>div{
-	position: relative;
-	display: inline-block;
-	width: 200px;
-	height:160px;
-	margin: 15px 10px 0px 10px;
-	background-repeat: no-repeat;
-	-webkit-background-size: cover !important;
-	background-size: cover !important;
+        position: relative;
+        display: inline-block;
+        width: 200px;
+        height:160px;
+        margin: 15px 10px 0px 10px;
+        background-repeat: no-repeat;
+        -webkit-background-size: cover !important;
+        background-size: cover !important;
 
-	overflow: hidden;
-	text-align: left;
+        overflow: hidden;
+        text-align: left;
 }
 
 .contentDetail{
-	position: absolute;
-	margin-top: 0px;
+        position: absolute;
+        margin-top: 0px;
 
-	width: 200px;
-	height: 125%;
-	background: -webkit-linear-gradient(top,rgba(256,256,256,0) 60%,rgba(0,0,0,0.7) 60%,rgba(0,0,0,1) 100%);
-	background: -moz-linear-gradient(top,rgba(256,256,256,0) 60%,rgba(0,0,0,0.7) 60%,rgba(0,0,0,1) 100%);
-	background: linear-gradient(top,rgba(256,256,256,0) 60%,rgba(0,0,0,0.7) 60%,rgba(0,0,0,1) 100%);
+        width: 200px;
+        height: 125%;
+        background: -webkit-linear-gradient(top,rgba(256,256,256,0) 60%,rgba(0,0,0,0.7) 60%,rgba(0,0,0,1) 100%);
+        background: -moz-linear-gradient(top,rgba(256,256,256,0) 60%,rgba(0,0,0,0.7) 60%,rgba(0,0,0,1) 100%);
+        background: linear-gradient(top,rgba(256,256,256,0) 60%,rgba(0,0,0,0.7) 60%,rgba(0,0,0,1) 100%);
 }
-=======
->>>>>>> 27d47d342d827f735e5b167778805773968c33ac
 
-.bannerOrder0{
-	
+.contentDetail:hover{
+        margin-top: -20%;
+}
+
+.contentDetail:hover>.contentDetailTitle{
+        white-space:normal;
+        overflow-x: visible;
+        overflow-y: hidden; 
+}
+
+.contentDetailTitle{
+        position: absolute;
+        top: 130px;
+        margin: 0px 5px;
+
+        width: 190px;
+        height: 40px;
+        font-size: 16px;
+        color: white;
+        overflow:hidden;
+        text-overflow : ellipsis ; 
+        white-space:nowrap;
+}
+
+.contentDetailTime{
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+
+        font-size: 10px;
+        color: white;
+        margin: 0px 0px 5px 5px;
+}
+
+.contentDetailCommentNum{
+        position: absolute;
+        bottom: 0px;
+        right: 0px;
+
+        font-size: 10px;
+        color: white;
+        margin: 0px 5px 5px 0px;
 }
