@@ -1,7 +1,7 @@
 html,body{
 	padding: 0px;
 	margin: 0px;
-	height: 1080px;
+	height: 100%;
 	width: 100%;
 	min-width: 900px;
 	background-color: #b4c7b3;
@@ -14,21 +14,18 @@ body{
 
 .header{
 	position: fixed;
-	top:0px;
+	top:0px
 	left:0px;
 	width: 100%;
-	min-width: 370px;
-	height:55px;
+	min-height:55px;
+	height: 7%;
 	z-index: 100;
 	background-color: #57d2d9; 
 }
 
 .logout{
-	position: absolute;
-	top:0px;
-	bottom: 0px;
-	right: 0px;
-	margin:auto 50px;
+	float: right;
+	margin:15px 50px;
 	height: 25px;
 
 	text-decoration: none;
@@ -39,8 +36,8 @@ body{
 .main{
 	width: 100%;
 	min-width: 900px;
-	min-height: 1080px;
-	height: auto;
+	min-height: 100%;
+	height: 1000px;
 	
 }
 
@@ -108,7 +105,7 @@ body{
 	cursor: pointer;
 	text-align: center;
 	color: white;
-	font: 75px/83px Arial,sans-serif;
+	font: 75px/80px Arial,sans-serif;
 }
 
 .bannerMoveRightButton{
@@ -135,9 +132,9 @@ body{
 	opacity: 0.9!important;
 }
 
-.contentDiv{
+.content{
 	width: 900px;
-	min-height: 1080px;
+	min-height: 100%;
 	height: 100%;
 	
 	margin: 0px auto;
@@ -160,10 +157,11 @@ body{
 	width: 15px;
 	height: 15px;
 	
-	background-color: #abc7c3;
+	background-color: rgb(155,155,155);
 	opacity: 1;
 	border-radius: 300px;
 }
+<<<<<<< HEAD
 .content{
 	display: inline-block;
 	margin-top: 305px;
@@ -197,47 +195,9 @@ body{
 	background: -moz-linear-gradient(top,rgba(256,256,256,0) 60%,rgba(0,0,0,0.7) 60%,rgba(0,0,0,1) 100%);
 	background: linear-gradient(top,rgba(256,256,256,0) 60%,rgba(0,0,0,0.7) 60%,rgba(0,0,0,1) 100%);
 }
+=======
+>>>>>>> 27d47d342d827f735e5b167778805773968c33ac
 
-.contentDetail:hover{
-	margin-top: -20%;
-}
-
-.contentDetail:hover>.contentDetailTitle{
-	white-space:normal;
-	overflow-x: visible;
-	overflow-y: hidden; 
-}
-
-.contentDetailTitle{
-	position: absolute;
-	top: 130px;
-	margin: 0px 5px;
-
-	width: 190px;
-	height: 40px;
-	font-size: 16px;
-	color: white;
-	overflow:hidden;
-	text-overflow : ellipsis ; 
-	white-space:nowrap;
-}
-
-.contentDetailTime{
-	position: absolute;
-	bottom: 0px;
-	left: 0px;
-
-	font-size: 10px;
-	color: white;
-	margin: 0px 0px 5px 5px;
-}
-
-.contentDetailCommentNum{
-	position: absolute;
-	bottom: 0px;
-	right: 0px;
-
-	font-size: 10px;
-	color: white;
-	margin: 0px 5px 5px 0px;
+.bannerOrder0{
+	
 }

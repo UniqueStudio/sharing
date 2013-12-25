@@ -1,23 +1,33 @@
-<!--{% extends "base.html" %}
+{% extends "base.html" %}
 {% block content %}
 
 
 <div id="content">
 <h1> sharing change the world </h1>
+{% if current_user %}
+{{ current_user.username }}
+{% endif %}
+<p>
 {% if session.logged_in %}
 <a href="{{ url_for('logout') }}">logout</a>
 {% endif %}
+</p>
+<div>
+    <a href="{{ url_for('index', index_desc=index_desc) }}">new</a>
+    <a href="{{ url_for('index_hot', index_hot_desc=index_hot_desc) }}">hot</a>
+    <a href="{{ url_for('profile', profile_desc='desc') }}">profile</a>
+</div>
 
 {% for share in shares %}
-<a href="{{ url_for('reading', id=1) }}">{{ share.link }}</a>
+<div>
+    <p> {{ share.title }} </p>
+    <a href="{{ url_for('reading', id=share.id) }}">{{ share.url }}</a>
+</div>
 {% endfor %}
 
 
 
 {% endblock %}
-
--->
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
