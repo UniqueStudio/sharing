@@ -16,9 +16,10 @@ user_likes = db.Table('user_likes',
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(40), unique=True)
-    user_id = db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     def __init__(self, name, user_id):
         self.title = name
+        self.user_id = user_id
 
     def __repr__(self):
         return '<Group %r>' % (self.title)
