@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 <html>
     {% block head %}
-    {{ super() }}
     {% block style %}
     <link type="text/css" rel="stylesheet" href="../static/css/login.css"/>
     {% endblock %}
@@ -20,6 +19,7 @@
                 <div class="verticalSpace"></div>
             </div>
             <div class="contentRight">
+                <div class="verticalSpace"></div>
                 <div class="contentRightMain">
                     <div class="contentRightMenu">
                         <div>
@@ -41,7 +41,8 @@
                                         {{ login_form.hidden_tag() }}
                                         {{ render_field(login_form.email, class="loginName loginAndRegisterInput") }}
                                         {{ render_field(login_form.password, class="loginPassword loginAndRegisterInput") }}
-                                        {{ render_field(login_form.remember_me, style="height:26px;width:26px;margin-top:20px;") }}
+                                        {{ render_field(login_form.remember_me, style="height:20px;width:20px;margin-top:20px;font-size:10px;") }}
+                                        <br>
                                         <input type="submit" class="SubmitButton" value="登录" />
                                     </form>
                                 </div>
@@ -63,10 +64,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="verticalSpace"></div>
                 </div>
+                <div class="verticalSpace"></div>
             </div>
         </div>
+        <div class="verticalSpace"></div>
         {% endblock %}
         {% block script %}
         <script type="text/javascript" rel="script" src="../static/js/login.js"></script>
