@@ -5,28 +5,15 @@
 {% block content %}
 
 <div id="content">
-<h1> sharing change the world </h1>
 {% if current_user %}
 {{ current_user.username }}
 {% endif %}
-<p>
-{% if session.logged_in %}
-<a href="{{ url_for('logout') }}">logout</a>
-{% endif %}
-</p>
 <div>
     <a href="{{ url_for('index', index_desc=index_desc) }}">new</a>
     <a href="{{ url_for('index_hot', index_hot_desc=index_hot_desc) }}">hot</a>
     <a href="{{ url_for('profile', profile_desc='desc') }}">profile</a>
 </div>
 
-<!-- Share -->
-{% for share in shares %}
-<div>
-    <p>{{share.title}}</p>
-    <a href="{{ url_for('reading', id=share.id) }}">{{ share.url }}</a>
-</div>
-{% endfor %}
 
 <!-- Group -->
 <div class='groups'>
@@ -47,9 +34,9 @@
 
 	<div class="header">
 		<img src="../static/img/share-2.png" style="margin-left:50px;min-height:100%" alt="" />
-		<!--{% if session.logged_in %}-->
+		{% if session.logged_in %}
 		<a href="{{ url_for('logout') }}" class="logout">登出</a>
-		<!--{% endif %}-->
+		{% endif %}
 	</div>
 	<div class="main">
 		<div class="banner">
@@ -76,61 +63,26 @@
 		</div>
 		<div class="contentDiv">
 			<class class="content">
-            {% for share in shares %}
+            {% for share in shares.items %}
             <div
                 style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{share.url}}');">
                 <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail"
                     title="{{share.title}}">
-                    <p class="contentDetailTitle">hahahas米饭我想吃糯米饭</p>
+                    <p class="contentDetailTitle">{{share.title}}</p>
                     <p class="contentDetailTime">{{share.timestamp}}</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
+                    <p class="contentDetailCommentNum">{{share.likes}}</p>
 					</a>
 				</div>
-                <a href="{{ url_for('reading', id=share.id) }}">{{ share.url }}</a>
             {% endfor %}
-				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://www.google.com');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://www.baidu.com')">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://weibo.com');">
-					<a href="http://www.baidu.com" class="contentDetail" title="我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://www.sina.com');">
-					<a href="http://www.baidu.com" class="contentDetail" title="我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://www.feedly.com');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://www.qq.com');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				
+
+            {% if shares.has_prev %}
+            <a href="{{ url_for('index', page = shares.prev_num) }}">prev</a>
+            {% else %}prev
+            {% endif %} | 
+            {% if shares.has_next %}
+            <a href="{{ url_for('index', page = shares.next_num) }}">next</a>
+            {% else %}next
+            {% endif %}
 			</class>
 		</div>
 	</div>

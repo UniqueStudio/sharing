@@ -59,27 +59,29 @@ def register():
             error = error)
 
 @app.route('/')
-@app.route('/index/')
-@app.route('/index/<index_desc>')
-def index(index_desc=''):
+@app.route('/index/<int:page>')
+@app.route('/index/<index_desc>/<int:page>')
+def index(index_desc='', page=1):
     if 'logged_in' in  session:
         pass
     else:
         return redirect(url_for('login'))
 
+    PER_PAGE = 3
     user = None
     if 'user_id' in session:
         user_id = session['user_id']
         if user_id:
             user = User.query.get(user_id)
 
-    shares = Share.query.order_by(Share.timestamp).all()
+    shares = Share.query.order_by(Share.timestamp).paginate(page, PER_PAGE,
+            False)
 
     # @ by guoqi
     # add groups 
-    all_groups = Group.query.all() or []
-    user_groups = user.groups.all() or []
-    diff_groups = list(set(all_groups).difference(set(user_groups))) 
+    #all_groups = Group.query.all() or []
+    #user_groups = user.groups.all() or []
+    #diff_groups = list(set(all_groups).difference(set(user_groups))) 
 
     # if desc
     if index_desc == 'desc':
@@ -91,8 +93,8 @@ def index(index_desc=''):
     return render_template("index.html",
             shares = shares,
             current_user = user,
-            user_groups = user_groups, 
-            diff_groups = diff_groups, 
+            #user_groups = user_groups, 
+            #diff_groups = diff_groups, 
             index_desc = index_desc, 
             index_hot_desc = 'desc',
             title = 'home')
@@ -153,7 +155,7 @@ def profile(profile_desc=''):
             profile_desc = profile_desc, 
             title = 'profile')
 
-@app.route('/likes', methods = ['GET', 'POST'])
+@app.route('/likes', methods = ['POST'])
 def likes():
     share_id = request.form['share_id']
     share = Share.query.get(share_id)
@@ -169,7 +171,7 @@ def likes():
     else:
         return redirect(url_for('login'))
 
-@app.route('/dislikes', methods = ['GET', 'POST'])
+@app.route('/dislikes', methods = ['POST'])
 def dislikes():
     share_id = request.form['share_id']
     share = Share.query.get(share_id)
