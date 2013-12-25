@@ -1,7 +1,10 @@
 {% extends "base.html" %}
+{% block style %}
+	<link type="text/css" rel="stylesheet" href="../static/css/index.css"/>
+{% endblock %}
 {% block content %}
 
-
+<!--
 <div id="content">
 <h1> sharing change the world </h1>
 {% if current_user %}
@@ -24,17 +27,10 @@
     <a href="{{ url_for('reading', id=share.id) }}">{{ share.url }}</a>
 </div>
 {% endfor %}
+-->
 
 
 
-{% endblock %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-	<Link type="text/css" rel="stylesheet" href="../static/css/index.css"/>
-</head>
-<body>
 	<div class="header">
 		<img src="../static/img/share-2.png" style="margin-left:50px;min-height:100%" alt="" />
 		<!--{% if session.logged_in %}-->
@@ -266,7 +262,8 @@
 			</class>
 		</div>
 	</div>
+{% endblock %}
+{% block script %}
 	<script type="text/javascript" rel="script" src="../static/js/indexBanner.js"></script>
 	<script type="text/javascript" rel="script" src="../static/js/index.js"></script>
-</body>
-</html>
+{% endblock %}
