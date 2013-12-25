@@ -30,7 +30,6 @@
 -->
 
 
-
 	<div class="header">
 		<img src="../static/img/share-2.png" style="margin-left:50px;min-height:100%" alt="" />
 		<!--{% if session.logged_in %}-->
@@ -62,13 +61,18 @@
 		</div>
 		<div class="contentDiv">
 			<class class="content">
-				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://www.zhihu.com');">
-					<a href="http://www.baidu.com" class="contentDetail" title="我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
+            {% for share in shares %}
+            <div
+                style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{share.url}}');">
+                <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail"
+                    title="{{share.title}}">
+                    <p class="contentDetailTitle">hahahas米饭我想吃糯米饭</p>
+                    <p class="contentDetailTime">{{share.timestamp}}</p>
 						<p class="contentDetailCommentNum">看20赞20评20</p>
 					</a>
 				</div>
+                <a href="{{ url_for('reading', id=share.id) }}">{{ share.url }}</a>
+            {% endfor %}
 				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://www.google.com');">
 					<a href="" class="contentDetail" title="我想吃糯米饭">
 						<p class="contentDetailTitle">我想吃糯米饭</p>
@@ -105,153 +109,6 @@
 					</a>
 				</div>
 				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://www.qq.com');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://www.renren.com');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=http://www.gmail.com');">
-					<a href="http://www.baidu.com" class="contentDetail" title="我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l2.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l3.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l4.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l1.jpg');">
-					<a href="http://www.baidu.com" class="contentDetail" title="我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l2.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l3.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l4.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l1.jpg');">
-					<a href="http://www.baidu.com" class="contentDetail" title="我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l2.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l3.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l4.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l1.jpg');">
-					<a href="http://www.baidu.com" class="contentDetail" title="我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l2.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l3.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l4.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l1.jpg');">
-					<a href="http://www.baidu.com" class="contentDetail" title="我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l2.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l3.jpg');">
-					<a href="" class="contentDetail" title="我想吃糯米饭">
-						<p class="contentDetailTitle">我想吃糯米饭</p>
-						<p class="contentDetailTime">2013/12/7</p>
-						<p class="contentDetailCommentNum">看20赞20评20</p>
-					</a>
-				</div>
-				<div style="background:url('../static/img/l4.jpg');">
 					<a href="" class="contentDetail" title="我想吃糯米饭">
 						<p class="contentDetailTitle">我想吃糯米饭</p>
 						<p class="contentDetailTime">2013/12/7</p>

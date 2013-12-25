@@ -221,6 +221,15 @@ def ext_login():
             resp['success'] = True
     return json.dumps(resp)
 
+@app.route('/extension/logout')
+def ext_logout():
+    resp = {}
+    resp['success'] = True 
+    session.pop('logged_in',None)
+    session.pop('user_id',None)
+    print 'logout ext'
+    return json.dumps(resp)
+
 @app.route('/extension/share', methods = ['GET', 'POST'])
 def ext_share():
     resp = {}
