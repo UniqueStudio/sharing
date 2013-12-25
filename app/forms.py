@@ -5,22 +5,24 @@ from wtforms.validators import DataRequired
 from models import Group, User, Share, Comment
 
 class RegisterForm(Form):
-    name = TextField('name', validators=[DataRequired()])
-    email = TextField('email', validators=[DataRequired()])
-    password = PasswordField('new password', [
+    name = TextField('Name', validators=[DataRequired()])
+    email = TextField('E-mail', validators=[DataRequired()])
+    password = PasswordField('New Password', [
         validators.Required(),
         validators.EqualTo('confirm', message = 'Passwords must match')
         ])
-    confirm = PasswordField('repeat password')
+    confirm = PasswordField('Repeat Password')
 
 class LoginForm(Form):
-    email = TextField('email', validators=[DataRequired()])
-    password = PasswordField('password', validators=[DataRequired()])
+    email = TextField('E-mail', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Rememeber Me', default=False)
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
 
     def validate(self):
+        # 检测表单是否被提交
         if not Form.validate(self):
             return False
 
@@ -35,6 +37,6 @@ class LoginForm(Form):
         return user.id
         
 class CommentForm(Form):
-    body = TextField('comment', validators=[DataRequired()])
+    body = TextField('Comment', validators=[DataRequired()])
 
 

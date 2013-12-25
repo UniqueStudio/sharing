@@ -4,8 +4,9 @@
 {% for share in shares %}
     {% include 'share.html' %}
 {% endfor %}
+</div>
 
-<h4>有{{share.likes}}人觉得很赞</h4>
+<strong>有{{share.likes}}人觉得很赞</strong>
 
 {% if not user.is_like(share) %}
 <button class="likes" value="{{ share.id }}">likes</button>
@@ -14,8 +15,7 @@
 {% endif %}
 
 <hr>
-<br>
-<iframe src="{{ share.url }}" id="share_web" width="900" height="1200">
+<iframe src="{{ share.url }}" id="share_web" height="300" width="1200">
 </iframe>
 
 {% for comment in comments %}
@@ -23,7 +23,8 @@
 {% endfor %}
 
 <div class="comment">
-    <input type="text" class="body"/>
+    <textarea class="body" rows='5' cols='80'></textarea>
+    <br>
     <button class="add_comment" value="{{ share.id }}">send</button>
 </div>
 

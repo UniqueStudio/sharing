@@ -12,10 +12,12 @@ user_likes = db.Table('user_likes',
         db.Column('share_id', db.Integer, db.ForeignKey('share.id')),
         )
 
+
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(40), unique=True)
-    def __init__(self, name):
+    user_id = db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+    def __init__(self, name, user_id):
         self.title = name
 
     def __repr__(self):
@@ -27,13 +29,16 @@ class User(db.Model):
     email = db.Column(db.String(150), unique = True)
     pwdhash = db.Column(db.String(32))
     shares = db.relationship('Share', lazy='dynamic')
-    comments = db.relationship('Comment', lazy='dynamic')
+    comments = db.relationship('Comment', lazy='dynamic', backref='publisher')
     like_shares = db.relationship('Share', lazy='dynamic', secondary=user_likes)
+    groups = db.relationship('Group', lazy='dynamic', backref=db.backref('users', lazy='dynamic'),  sencondary=group_users)
 
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
         self.set_password(password)
+    def __repr__(self):
+        return '<User %r>' % (self.username)
 
     def set_password(self, password):
         self.pwdhash = md5.new(password).hexdigest()
@@ -41,6 +46,7 @@ class User(db.Model):
     def check_password(self, password):
         return self.pwdhash == md5.new(password).hexdigest()
     
+    # likes
     def like(self, share):
         if not self.is_like(share):
             self.like_shares.append(share)
@@ -52,8 +58,18 @@ class User(db.Model):
     def is_like(self, share):
         return share in self.like_shares.all()
 
-    def __repr__(self):
-        return '<User %r>' % (self.username)
+    # group
+    def is_in_the_group(self, group):
+        return group in self.groups.all()
+    
+    def add_to_group(self, group):
+        if not self.is_in_the_group(group):
+            self.groups.append(group)
+
+    def remove_from_group(self, group):
+        if self.is_in_the_group(group):
+            self.groups.remove(group)
+
 
 class Share(db.Model):
     id = db.Column(db.Integer, primary_key = True)

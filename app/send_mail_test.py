@@ -1,17 +1,25 @@
 #encoding: utf-8
 from flask import Flask
-import share_mail
+from mail import GetURLFromURLQueue, SendMail
 import time
+import Queue
+
 app = Flask(__name__)
-AddressList = [
-		'qiguo@hustunqiue.com'
-		# 'shengzhang@hustunique.com',
-		# '767813944@qq.com',
-		# 'pkpk3201654@163.com'
-]
+queue = Queue.Queue(maxsize=-1)
+
+queue.put('qiguo@hustunique.com')
+queue.put('shengzhang@hustunique.com')
+queue.put('767813944@qq.com')
 
 with app.app_context():
-	start = time.time()
-	share_mail.SendMail(app, AddressList, mail_subject='abc', mail_body='<b>Hello Worls</b>')
-
+    t1 = GetURLFromURLQueue(queue)
+    t2 = SendMail(app)
+    t3 = SendMail(app)
+    t4 = SendMail(app)
+    start = time.time()
+    t1.start()
+    t2.start()
+    t3.start()
+    t4.start()
+        
 print time.time() - start
