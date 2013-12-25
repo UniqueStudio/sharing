@@ -67,5 +67,4 @@ registerButton.onclick = function () {
 			}
 		},1);
 	}
-	
-}
+};

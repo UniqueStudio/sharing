@@ -4,7 +4,6 @@
 {% endblock %}
 {% block content %}
 
-<!--
 <div id="content">
 <h1> sharing change the world </h1>
 {% if current_user %}
@@ -21,13 +20,29 @@
     <a href="{{ url_for('profile', profile_desc='desc') }}">profile</a>
 </div>
 
+<!-- Share -->
 {% for share in shares %}
 <div>
-    <p> {{ share.title }} </p>
+    <p>{{share.title}}</p>
     <a href="{{ url_for('reading', id=share.id) }}">{{ share.url }}</a>
 </div>
 {% endfor %}
--->
+
+<!-- Group -->
+<div class='groups'>
+{% for group in user_groups  %}
+    <div class='user_groups'>
+        <span>{{ group.title }}</span>
+        <input type='button' value='取消关注'>
+    </div>
+{% endfor %}
+{% for group in diff_groups %}
+    <div class='diff_groups'>
+        <span>{{ group.title }}</span>
+        <input type='button' value='关注'>
+    </div>
+{% endfor %}
+</div>
 
 
 

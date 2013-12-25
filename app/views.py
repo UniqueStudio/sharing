@@ -39,6 +39,7 @@ def logout():
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
+    error = None
     login_form = LoginForm()
     register_form = RegisterForm()
     if register_form.validate_on_submit():
@@ -61,7 +62,6 @@ def register():
 @app.route('/index/')
 @app.route('/index/<index_desc>')
 def index(index_desc=''):
-    
     if 'logged_in' in  session:
         pass
     else:
@@ -74,6 +74,14 @@ def index(index_desc=''):
             user = User.query.get(user_id)
 
     shares = Share.query.order_by(Share.timestamp).all()
+
+    # @ by guoqi
+    # add groups 
+    all_groups = Group.query.all() or []
+    user_groups = user.groups.all() or []
+    diff_groups = list(set(all_groups).difference(set(user_groups))) 
+
+    # if desc
     if index_desc == 'desc':
         shares.reverse()
         index_desc = ''
@@ -83,6 +91,8 @@ def index(index_desc=''):
     return render_template("index.html",
             shares = shares,
             current_user = user,
+            user_groups = user_groups, 
+            diff_groups = diff_groups, 
             index_desc = index_desc, 
             index_hot_desc = 'desc',
             title = 'home')
@@ -192,14 +202,59 @@ def reading(id):
             user = user,
             title = 'home')
 
-@app.route('/add_comment', methods = ['GET', 'POST'])
+@app.route('/add_comment', methods = ['POST'])
 def add_comment():
     c = Comment(body = request.form['comment_body'],
             share_id = request.form['share_id'],
             user_id = session['user_id'])
     db.session.add(c)
     db.session.commit()
-    return 'succ'
+    return 'success'
+
+# 对群组加关注
+@app.route('/add_attention_to_group/', methods = ['POST'])
+def add_attention_to_group():
+    group_id = request.form['group_id']
+    group = Group.query.get(group_id)
+    if 'logged_in' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        user.add_to_group(group)
+        return 'success'
+    else:
+        return 'not logged'
+
+# 取消群组关注
+@app.route('/remove_attention_from_group', methods = ['POST'])
+def remove_attention_from_group():
+    group_id = request.form['group_id']
+    group = Group.query.get(group_id)
+    if 'logged_in' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        user.remove_from_group(group)
+        return 'success'
+    else:
+        return 'not logged'
+
+# 创建群组
+@app.route('/create_group', methods = ['POST'])
+def create_group():
+    group_name = request.form['group_name']
+    if 'logged_in' in session:
+        user_id = session['user_id']
+        group = Group(group_name, user_id)
+        db.session.add(group)
+        db.session.commit()
+        return 'success'
+    else:
+        return 'not logged'
+
+
+
+###################################################################
+######### Extension
+###################################################################
 
 # chrome extension 
 @app.route('/extension/login', methods = ['GET', 'POST'])

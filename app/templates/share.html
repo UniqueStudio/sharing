@@ -1,3 +1,3 @@
 <div class="share">
-    <p class="share_link">{{share.url}}</p>
+    <a class="share_link" href={{ url_for('reading', id=share.id) }}>{{ share.title }}</a>
 </div>
