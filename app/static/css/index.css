@@ -302,3 +302,23 @@ p,a{
     color: rgb(78, 78, 78)!important;
     background:  #9BE7FE!important;
 }
+
+
+/* @author guoqi */
+/* about index's page_num */
+.page_num {
+    margin: auto;
+    height: 20px;
+    width: 500px;
+    text-align:center;
+}
+
+.not_current_page_num {
+    text-decoration: underline;
+    color: black;
+}
+
+.current_page_num {
+    text-decoration: none;
+    color: red;
+}

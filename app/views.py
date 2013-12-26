@@ -21,7 +21,7 @@ def login():
         if login_form.validate():
             session['logged_in'] = True
             session['user_id'] = login_form.current_user()
-            return redirect(url_for('index'))
+            return redirect(url_for('index', index_desc='desc'))
         else:
             return redirect(url_for('login'))
 
@@ -51,7 +51,7 @@ def register():
         db.session.commit()
         session['logged_in'] = True
         session['user_id'] = user.id
-        return redirect(url_for('index'))
+        return redirect(url_for('index', index_desc='desc'))
 
     return render_template(constance['login'],
             title = 'login',
@@ -60,22 +60,26 @@ def register():
             error = error)
 
 @app.route('/')
+def redirect_to_index():
+    return redirect(url_for('index', index_desc='desc'))
+
+
+@app.route('/index')
 @app.route('/index/<int:page>')
-@app.route('/index/<index_desc>/<int:page>')
-def index(index_desc='', page=1):
+def index(page=1):
     if 'logged_in' in  session:
         pass
     else:
         return redirect(url_for('login'))
 
-    PER_PAGE = 3
     user = None
     if 'user_id' in session:
         user_id = session['user_id']
         if user_id:
             user = User.query.get(user_id)
 
-    shares = Share.query.order_by(Share.timestamp).paginate(page, PER_PAGE,
+    # 这里BaseQuery.paginate方法返回的是一个Paginate对象，不是一个list
+    shares = Share.query.order_by(Share.timestamp).paginate(page, constance['per_page'],
             False)
 
     # @ by guoqi
@@ -88,25 +92,35 @@ def index(index_desc='', page=1):
     elif all_groups:
         diff_groups = all_groups
 
+
     # if desc
-    if index_desc == 'desc':
-        shares.reverse()
-        index_desc = ''
-    elif index_desc == '': 
-        index_desc = 'desc'
+    desc = request.args.get('desc', '')
+    if desc== 'desc':
+        shares.items.reverse()
+        desc = ''
+    elif desc == '': 
+        desc = 'desc'
+    else:
+        # invalid param
+        pass
+    
+    
+    current_url = 'index'
+    # if current_url.find('/') == 0:
+        # current_url = current_url[1:]
 
     return render_template(constance['index'],
+            current_url = current_url, 
             shares = shares,
             current_user = user,
-            #user_groups = user_groups, 
-            #diff_groups = diff_groups, 
-            index_desc = index_desc, 
-            index_hot_desc = 'desc',
+            user_groups = user_groups, 
+            diff_groups = diff_groups, 
+            desc = desc, 
             title = 'home')
 
-@app.route('/index_hot/')
-@app.route('/index_hot/<index_hot_desc>')
-def index_hot(index_hot_desc=''):
+@app.route('/index_hot')
+@app.route('/index_hot/<int:page>')
+def index_hot(page=1):
     
     if 'logged_in' in  session:
         pass
@@ -119,18 +133,28 @@ def index_hot(index_hot_desc=''):
         if user_id:
             user = User.query.get(user_id)
 
-    shares = Share.query.order_by(Share.likes).all()
-    if index_hot_desc == 'desc':
-        shares.reverse()
-        index_hot_desc = ''
-    elif index_hot_desc == '':
-        index_hot_desc = 'desc'
+    shares = Share.query.order_by(Share.likes).paginate(page, constance['per_page'], False)
+
+    desc = request.args.get('desc', '')
+
+    if desc == 'desc':
+        shares.items.reverse()
+        desc = '' 
+    elif desc == '':
+        desc = 'desc'
+    else:
+        # invalid param
+        pass
+
+    current_url = 'index_hot'
+    # if current_url.find('/') == 0:
+        # current_url = current_url[1:]
 
     return render_template(constance['index'],
+            current_url = current_url, 
             shares = shares,
             current_user = user,
-            index_desc='desc',
-            index_hot_desc = index_hot_desc, 
+            desc = desc, 
             title = 'home')
 
 @app.route('/profile/')
