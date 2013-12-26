@@ -112,6 +112,19 @@
             {% endif %}
 			</class>
 		</div>
+		<div class="groupDiv">
+			<a href="" class="homeChoice">首页</a>
+			<a href="">Web</a>
+			<a href="">Design</a>
+			<a href="">IT</a>
+			<a href="">安卓</a>
+			<a href="">嵌入式</a>
+			<a href="">算法</a>
+		</div>
+		<script >
+			var contentDivMarginWidth = parseFloat(window.getComputedStyle(document.getElementsByClassName("contentDiv")[0],false).marginLeft);
+			document.getElementsByClassName("groupDiv")[0].style.left = (contentDivMarginWidth -110)+"px";
+		</script>
 	</div>
 {% endblock %}
 {% block script %}
