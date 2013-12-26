@@ -78,15 +78,37 @@
             {% endif %}
             </div>
 		</div>
+
+        <!-- 分组 -->
 		<div class="groupDiv">
-			<a href="" class="homeChoice">首页</a>
-			<a href="">Web</a>
-			<a href="">Design</a>
-			<a href="">IT</a>
-			<a href="">安卓</a>
-			<a href="">嵌入式</a>
-			<a href="">算法</a>
+			<!-- <a href="" class="homeChoice">首页</a> -->
+			<!-- <a href="">Web</a> -->
+			<!-- <a href="">Design</a> -->
+			<!-- <a href="">IT</a> -->
+			<!-- <a href="">安卓</a> -->
+			<!-- <a href="">嵌入式</a> -->
+			<!-- <a href="">算法</a> -->
+            <div class="user_groups">
+                <h4 style="margin-top: 5px; margin-bottom: 5px;">已关注</h4>
+                {% if user_groups %}
+                {% for group in user_groups %}
+                    <a href="" class="group">{{group.title}}</a>
+                    <button data='{{group.id}}'>取消</button>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="diff_groups">
+                <h4 style="margin-top: 5px; margin-bottom: 5px;">未关注</h4>
+                {% if diff_groups %}
+                {% for group in diff_groups %}
+                    <a href="" class="group">{{ group.title }}</a>
+                    <button data="{{group.id}}">关注</button>
+                {% endfor %}
+                {% endif %}
+            </div>
 		</div>
+
 		<script >
 			var contentDivMarginWidth = parseFloat(window.getComputedStyle(document.getElementsByClassName("contentDiv")[0],false).marginLeft);
 			document.getElementsByClassName("groupDiv")[0].style.left = (contentDivMarginWidth -110)+"px";

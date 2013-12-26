@@ -61,7 +61,7 @@ def register():
 
 @app.route('/')
 def redirect_to_index():
-    return redirect(url_for('index', index_desc='desc'))
+    return redirect(url_for('index', index_desc='desc', group_id='3'))
 
 
 @app.route('/index')
@@ -72,14 +72,25 @@ def index(page=1):
     else:
         return redirect(url_for('login'))
 
+    desc = request.args.get('desc', '')
+    group_id = request.args.get('group_id', '') or None
+
     user = None
     if 'user_id' in session:
         user_id = session['user_id']
         if user_id:
             user = User.query.get(user_id)
 
+    if group_id is not None:
+        group = Group.query.get(group_id)
+    else:
+        group = Group.query.all()
+
+    user_id_list = [user.id for user in group.users]
+    print user_id_list
+
     # 这里BaseQuery.paginate方法返回的是一个Paginate对象，不是一个list
-    shares = Share.query.order_by(Share.timestamp).paginate(page, constance['per_page'],
+    shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp).paginate(page, constance['per_page'],
             False)
 
     # @ by guoqi
@@ -94,7 +105,6 @@ def index(page=1):
 
 
     # if desc
-    desc = request.args.get('desc', '')
     if desc== 'desc':
         shares.items.reverse()
         desc = ''
