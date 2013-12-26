@@ -8,3 +8,11 @@ mail_config = {
 		'MAIL_DEBUG': True
 		#'MAIL_DEFAULT_SENDER': 'uniqueguoqi@gmail.com'
 }
+
+constance = {
+        'login': 'login.html', 
+        'register': 'register.html', 
+        'index': 'index_test.html', 
+        'profile': 'profile.html', 
+        'reading': 'reading.html', 
+        }

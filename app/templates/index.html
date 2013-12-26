@@ -15,20 +15,43 @@
 </div>
 
 
+
+
+<!-- 创建新群组 -->
+<div class='create_group'>
+    <form action="{{ url_for('create_group') }}" method='post'>
+        <input type='text' name='group_name' placeholder='请输入群组名字'>
+        <input type='submit' value='创建新群组'>
+    </form>
+</div>
+
 <!-- Group -->
 <div class='groups'>
-{% for group in user_groups  %}
+    <h4>已关注的群组</h4>
     <div class='user_groups'>
-        <span>{{ group.title }}</span>
-        <input type='button' value='取消关注'>
+        {% if user_groups %}
+        {% for group in user_groups  %}
+           <span>{{ group.title }}</span>
+           <form action="{{url_for('remove_attention_from_group')}}" method='post'>
+               <input type='hidden' name='group_id' value='{{ group.id }}'>
+               <input type='submit' value='取消关注'>
+           </form>
+       {% endfor %}
+       {% endif %}
     </div>
-{% endfor %}
-{% for group in diff_groups %}
+
+    <h4>未关注的群组</h4>
     <div class='diff_groups'>
-        <span>{{ group.title }}</span>
-        <input type='button' value='关注'>
+        {% if diff_groups %}
+        {% for group in diff_groups %}
+            <span>{{ group.title }}</span>
+            <form action="{{ url_for('add_attention_to_group') }}" method='post'>
+                <input type='hidden' name='group_id' value='{{ group.id }}'>
+                <input type='submit' value='关注'>
+            </form>
+        {% endfor %}
+        {% endif %}
     </div>
-{% endfor %}
 </div>
 
 

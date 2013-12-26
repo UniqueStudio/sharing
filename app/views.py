@@ -6,6 +6,7 @@ from models import Group, User, Share, Comment
 from forms import RegisterForm, LoginForm, CommentForm
 from datetime import datetime
 import json
+from config import constance
 
 
 
@@ -24,7 +25,7 @@ def login():
         else:
             return redirect(url_for('login'))
 
-    return render_template("login.html",
+    return render_template(constance['login'],
             title = 'login',
             login_form = login_form,
             register_form = register_form,
@@ -52,7 +53,7 @@ def register():
         session['user_id'] = user.id
         return redirect(url_for('index'))
 
-    return render_template("login.html",
+    return render_template(constance['login'],
             title = 'login',
             login_form = login_form,
             register_form = register_form,
@@ -79,9 +80,13 @@ def index(index_desc='', page=1):
 
     # @ by guoqi
     # add groups 
-    #all_groups = Group.query.all() or []
-    #user_groups = user.groups.all() or []
-    #diff_groups = list(set(all_groups).difference(set(user_groups))) 
+    all_groups = list(Group.query.all()) or None
+    user_groups = list(user.groups.all()) or None
+    diff_groups = None
+    if all_groups and user_groups:
+        diff_groups = list(set(all_groups).difference(set(user_groups))) 
+    elif all_groups:
+        diff_groups = all_groups
 
     # if desc
     if index_desc == 'desc':
@@ -90,7 +95,7 @@ def index(index_desc='', page=1):
     elif index_desc == '': 
         index_desc = 'desc'
 
-    return render_template("index.html",
+    return render_template(constance['index'],
             shares = shares,
             current_user = user,
             #user_groups = user_groups, 
@@ -121,7 +126,7 @@ def index_hot(index_hot_desc=''):
     elif index_hot_desc == '':
         index_hot_desc = 'desc'
 
-    return render_template("index.html",
+    return render_template(constance['index'],
             shares = shares,
             current_user = user,
             index_desc='desc',
@@ -149,7 +154,7 @@ def profile(profile_desc=''):
     #else:
         #error
 
-    return render_template("profile.html",
+    return render_template(constance['profile'],
             shares = shares,
             current_user = user,
             profile_desc = profile_desc, 
@@ -222,12 +227,13 @@ def add_attention_to_group():
         user_id = session['user_id']
         user = User.query.get(user_id)
         user.add_to_group(group)
+        db.session.commit()
         return 'success'
     else:
         return 'not logged'
 
 # 取消群组关注
-@app.route('/remove_attention_from_group', methods = ['POST'])
+@app.route('/remove_attention_from_group/', methods = ['POST'])
 def remove_attention_from_group():
     group_id = request.form['group_id']
     group = Group.query.get(group_id)
@@ -235,12 +241,13 @@ def remove_attention_from_group():
         user_id = session['user_id']
         user = User.query.get(user_id)
         user.remove_from_group(group)
+        db.session.commit()
         return 'success'
     else:
         return 'not logged'
 
 # 创建群组
-@app.route('/create_group', methods = ['POST'])
+@app.route('/create_group/', methods = ['POST'])
 def create_group():
     group_name = request.form['group_name']
     if 'logged_in' in session:
