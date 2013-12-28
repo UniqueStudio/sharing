@@ -98,8 +98,8 @@ def index(index_desc='', page=1):
     return render_template(constance['index'],
             shares = shares,
             current_user = user,
-            #user_groups = user_groups, 
-            #diff_groups = diff_groups, 
+            user_groups = user_groups, 
+            diff_groups = diff_groups, 
             index_desc = index_desc, 
             index_hot_desc = 'desc',
             title = 'home')

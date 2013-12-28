@@ -21,7 +21,7 @@
 </div>
 
 <!-- Share -->
-{% for share in shares %}
+{% for share in shares.items %}
 <div>
     <p>{{share.title}}</p>
     <a href="{{ url_for('reading', id=share.id) }}">{{ share.url }}</a>
