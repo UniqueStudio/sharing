@@ -8,8 +8,16 @@ var loginDiv = document.getElementById('login');
 var loginError = document.getElementById('loginError');
 var shareDiv = document.getElementById('share');
 
-function initUI(){
+function init(){
     loginDiv.style.display = "none";
+    var email = getCookie("email");
+    var pwd = getCookie("pwd");
+    if(email && pwd){
+        login(email, pwd);
+    }else{
+        shareDiv.style.display = "none";
+        loginDiv.style.display = "block";
+    }
 }
 
 function showInfo(content){
@@ -20,18 +28,38 @@ function showInfo(content){
 
     showArea.appendChild(node);
     node.appendChild(text);
-
-    // show result then close the window
+// show result then close the window
     setTimeout(function(){
         window.close();
-    }, 2000);
+    }, 1500);
+}
+
+function setCookie(c_name, value, expiredays){
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + expiredays);
+    console.log(exdate.toGMTString());
+    document.cookie = c_name + "=" + escape(value) +
+        ((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
+}
+function getCookie(c_name){
+    if (document.cookie.length > 0){
+        c_start = document.cookie.indexOf(c_name + "=");
+        if (c_start != -1){
+            c_start = c_start + c_name.length + 1;
+            c_end = document.cookie.indexOf(";", c_start);
+            if (c_end == -1) c_end = document.cookie.length;
+            return unescape(document.cookie.substring(c_start, c_end));
+        }
+    }
+    return ""
 }
 
 function login(email, password){
+    var pwdhash = hex_md5(password);
     var xhr = new XMLHttpRequest();
     xhr.open("POST", urlPrefix + "/login", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send("email="+email+"&pwd="+password);
+    xhr.send("email="+email+"&pwd="+pwdhash);
     xhr.onreadystatechange = function() {
         if(xhr.readyState == 4) {
             var resp = JSON.parse(xhr.responseText);
@@ -39,14 +67,14 @@ function login(email, password){
             if(resp.success){
                 loginDiv.style.display = "none";
                 shareDiv.style.display = "block";
+                setCookie("email", email, 30);
+                setCookie("pwd", pwdhash, 30);
             }else if(resp.errorCode == 1){
                 error = "no email found"
-                var text = document.createTextNode(error);
-                loginError.appendChild(text);
+                loginError.innerHTML = error
             }else if(resp.errorCode == 2){
                 error = "wrong password"
-                var text = document.createTextNode(error);
-                loginError.appendChild(text);
+                loginError.innerHTML = error
             }
         }
     }
@@ -78,7 +106,7 @@ function share(parameters){
 
 }
 
-initUI();
+init();
 
 //event listen
 loginButton.onclick = function() {
@@ -109,6 +137,8 @@ logoutButton.onclick = function() {
             var resp = JSON.parse(xhr.responseText);
             if(resp.success){
                 showInfo("logout ");
+                setCookie("email", email, 0);
+                setCookie("pwd", pwdhash, 0);
             }
         }
     }

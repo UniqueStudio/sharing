@@ -313,7 +313,7 @@ def ext_login():
         if not user:
             resp['success'] = False
             resp['errorCode'] = 1
-        elif not user.check_password(pwd):
+        elif  user.pwdhash != pwd:
             resp['success'] = False
             resp['errorCode'] = 2
         else:

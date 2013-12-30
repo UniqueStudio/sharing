@@ -1,12 +1,29 @@
-      body {
-        min-width: 357px;
-        overflow-x: hidden;
-      }
+html, body, div{
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+body{
+    height: 200px;
+    width: 200px;
+    background: #1f7ac9;
+}
+#login{
+    position: absolute;
+    padding: 20px;
+}
+#login input{
+    margin: 9px;
+    width: 150px;
+}
+#share{
+    position: absolute;
+}
+#share textarea{
+    margin: 9px;
+}
+#result{
+    position: absolute;
+    padding: 20px;
+}
 
-      img {
-        margin: 5px;
-        border: 2px solid black;
-        vertical-align: middle;
-        width: 75px;
-        height: 75px;
-      }
