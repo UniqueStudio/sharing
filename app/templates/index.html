@@ -92,7 +92,7 @@
                 <h4 style="margin-top: 5px; margin-bottom: 5px;">已关注</h4>
                 {% if user_groups %}
                 {% for group in user_groups %}
-                    <a href="" class="group">{{group.title}}</a>
+                    <a href="{{ url_for(current_url, desc=desc, group_id=group.id ) }}" class="group">{{group.title}}</a>
                     <button data='{{group.id}}'>取消</button>
                 {% endfor %}
                 {% endif %}

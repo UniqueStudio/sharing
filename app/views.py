@@ -82,12 +82,13 @@ def index(page=1):
             user = User.query.get(user_id)
 
     if group_id is not None:
-        group = Group.query.get(group_id)
+        groups = list(Group.query.get(group_id))
     else:
-        group = Group.query.all()
+        groups = Group.query.all()
 
-    user_id_list = [user.id for user in group.users]
-    print user_id_list
+    user_id_list = []
+    for group in groups:
+        user_id_list.extend([user.id for user in group.users])
 
     # 这里BaseQuery.paginate方法返回的是一个Paginate对象，不是一个list
     shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp).paginate(page, constance['per_page'],
@@ -143,9 +144,19 @@ def index_hot(page=1):
         if user_id:
             user = User.query.get(user_id)
 
-    shares = Share.query.order_by(Share.likes).paginate(page, constance['per_page'], False)
-
     desc = request.args.get('desc', '')
+    group_id = request.args.get('group_id', '') or None
+
+    if group_id is not None:
+        groups = list(Group.query.get(group_id))
+    else:
+        groups = Group.query.all()
+
+    user_id_list = []
+    for group in groups:
+        user_id_list.extend([user.id for user in group.users])
+
+    shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.likes).paginate(page, constance['per_page'], False)
 
     if desc == 'desc':
         shares.items.reverse()
@@ -156,6 +167,17 @@ def index_hot(page=1):
         # invalid param
         pass
 
+    # @ by guoqi
+    # add groups 
+    all_groups = list(Group.query.all()) or None
+    user_groups = list(user.groups.all()) or None
+    diff_groups = None
+    if all_groups and user_groups:
+        diff_groups = list(set(all_groups).difference(set(user_groups))) 
+    elif all_groups:
+        diff_groups = all_groups
+
+
     current_url = 'index_hot'
     # if current_url.find('/') == 0:
         # current_url = current_url[1:]
@@ -164,6 +186,8 @@ def index_hot(page=1):
             current_url = current_url, 
             shares = shares,
             current_user = user,
+            user_groups = user_groups, 
+            diff_groups = diff_groups, 
             desc = desc, 
             title = 'home')
 
