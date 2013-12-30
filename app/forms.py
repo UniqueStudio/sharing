@@ -16,7 +16,7 @@ class RegisterForm(Form):
 class LoginForm(Form):
     email = TextField('E-mail', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    remember_me = BooleanField('Rememeber Me', default=False)
+    remember_me = BooleanField('Rememeber Me', default=True)
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)

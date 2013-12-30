@@ -1,0 +1,119 @@
+<html>
+<head>
+	<link type="text/css" rel="stylesheet" href="../static/css/index2.css"/>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/> 
+</head>
+<body>
+
+	<div class="header">
+		<div class="headerRightDiv">
+            <a href="{{url_for('logout')}}" class="loginOut">登出</a>
+			<a  href="" class="setImg"></a>
+		</div>
+		
+		<div class="headerLeftDiv">
+			<a href="" class="catalog">首页</a>
+			<p class="toTag">></p>
+			<a href="" class="catalog">web</a>
+		</div>
+		
+		<p class="catalogNowShow">首页</p>
+	</div>
+	<div class="catalogSwitchShowDivBg">
+		<div class="catalogSwitchShowDiv">
+			<div class="verticalSpace"></div>
+			<div class="catalogSwitchShow">
+				<a href="" class="catalogChoice">首页</a>
+				<a href="">web</a>
+				<a href="">IT</a>
+				<div class="catalogSwitchArrowDiv">
+					<div class="catalogSwitchArrow"></div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<div class="content">
+		<div class="contentTop"></div>
+		<div class="contentMain">
+            <iframe src="{{share.url}}" class="contentShow"></iframe>
+			<script>
+				var contentMainHeight = parseFloat(window.getComputedStyle(document.getElementsByClassName("contentMain")[0],false).height);
+				document.getElementsByClassName("contentShow")[0].style.height = (15+contentMainHeight) + "px"; 
+			</script>
+		</div>
+	</div>
+	
+	<div class="commentDiv">
+		<div class="commentButton">
+			<div class="bubbleButton">
+				<img class="bubbleImg" src="../static/img/bubble.png" alt="">
+			</div>
+			<div class="loveButton">
+				<img class="loveImg" src="../static/img/heart.png" alt="">
+			</div>
+		</div>
+		<div class="commentBlock">
+			<div class="commentMain">
+				<div class="commentLeft">
+					<div class="shareManDiv">
+						<img src="../static/img/shareMan.jpg" alt="" class="shareManPic">
+						<div class="shareManDetailDiv">
+                            <p class="shareManName">{{share.author.username}}</p>
+                            <p
+                            class="shareTime">{{share.timestamp.isocalendar()}}</p>
+							<div class="shareManLoveButton">
+								<img src="../static/img/heart.png" alt="">
+							</div>
+						</div>
+					</div>
+                    <textarea class="shareReasonDiv" readonly="readonly">{{share.explain}}</textarea>
+				</div>
+				<div class="commentRight">
+					<div class="sendCommentDiv">
+						<img src="../static/img/shareMan.jpg" alt="" class="sendCommentManPic">
+						<form class="sendCommentTextDiv">
+							<textarea class="sendCommentText"></textarea>
+							<br>
+							<input type="submit" class="sendCommentTextButton" value="发送">
+						</form>
+					</div>
+					<div class="commentShowDiv">
+						<div class="comtentShow">
+							<div class="contentEach">
+								<img src="../static/img/commentEach.jpg" alt="" >
+								<textarea rows=4 readonly="readonly">俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
+								<div>
+									<img src="../static/img/bubble.png" alt="">
+								</div>
+							</div>
+							<div class="contentEach">
+								<img src="../static/img/commentEach.jpg" alt="">
+								<textarea rows="4" readonly="readonly">俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
+								<div>
+									<img src="../static/img/bubble.png" alt="">
+								</div>
+							</div>
+							<div class="contentEach">
+								<img src="../static/img/commentEach.jpg" alt="">
+								<textarea rows="4" readonly="readonly">俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
+								<div>
+									<img src="../static/img/bubble.png" alt="">
+								</div>
+							</div>
+							<div class="contentEach">
+								<img src="../static/img/commentEach.jpg" alt="">
+								<textarea rows="4" readonly="readonly">俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
+								<div>
+									<img src="../static/img/bubble.png" alt="">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" rel="script" src="../static/js/index2.js"></script>
+</body>
+</html>

@@ -4,8 +4,8 @@ from flask import render_template, redirect, url_for, session,\
 from app import app, db
 from models import Group, User, Share, Comment
 from forms import RegisterForm, LoginForm, CommentForm
-from datetime import datetime
-import json
+from datetime import datetime, timedelta
+import json, md5
 from config import constance
 
 
@@ -21,7 +21,17 @@ def login():
         if login_form.validate():
             session['logged_in'] = True
             session['user_id'] = login_form.current_user()
-            return redirect(url_for('index'))
+            redirect_to_index = redirect(url_for('index', index_desc='desc'))
+            resp = make_response(redirect_to_index)
+            if login_form.remember_me.data:
+                resp.set_cookie('email',login_form.email.data, expires =
+                        datetime.now() + timedelta(days=7), httponly=True)
+                resp.set_cookie('pwd',
+                        md5.new(login_form.password.data).hexdigest(),
+                        expires = datetime.now() + timedelta(days=7),
+                        httponly=True)
+                return resp
+            return resp 
         else:
             return redirect(url_for('login'))
 
@@ -35,8 +45,11 @@ def login():
 def logout():
     session.pop('logged_in',None)
     session.pop('user_id',None)
-    flash("you were logged out")
-    return redirect(url_for('login'))
+    redirect_to_login = redirect(url_for('login'))
+    resp = make_response(redirect_to_login)
+    resp.set_cookie('email', expires=0)
+    resp.set_cookie('pwd', expires=0)
+    return resp
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
@@ -51,7 +64,7 @@ def register():
         db.session.commit()
         session['logged_in'] = True
         session['user_id'] = user.id
-        return redirect(url_for('index'))
+        return redirect(url_for('index', index_desc='desc'))
 
     return render_template(constance['login'],
             title = 'login',
@@ -60,53 +73,67 @@ def register():
             error = error)
 
 @app.route('/')
-@app.route('/index/<int:page>')
-@app.route('/index/<index_desc>/<int:page>')
-def index(index_desc='', page=1):
-    if 'logged_in' in  session:
-        pass
-    else:
-        return redirect(url_for('login'))
+def redirect_to_index():
+    return redirect(url_for('index', index_desc='desc'))
 
-    PER_PAGE = 3
-    user = None
+
+@app.route('/index')
+@app.route('/index/<int:page>')
+def index(page=1):
+
+    current_user = None
     if 'user_id' in session:
         user_id = session['user_id']
         if user_id:
-            user = User.query.get(user_id)
+            current_user = User.query.get(user_id)
+    else:
+        email = request.cookies.get('email')
+        pwd = request.cookies.get('pwd')
+        user = User.query.filter_by(email = email).first()
+        if user.pwdhash == pwd:
+            session['logged_in'] = True
+            session['user_id'] = user.id
+            current_user = user
 
-    shares = Share.query.order_by(Share.timestamp).paginate(page, PER_PAGE,
-            False)
+    if 'logged_in' not in  session:
+        return redirect(url_for('login'))
 
-    # @ by guoqi
-    # add groups 
-    all_groups = list(Group.query.all()) or None
-    user_groups = list(user.groups.all()) or None
-    diff_groups = None
-    if all_groups and user_groups:
-        diff_groups = list(set(all_groups).difference(set(user_groups))) 
-    elif all_groups:
-        diff_groups = all_groups
+    desc = request.args.get('desc', '')
+
+
+    #user_id_list = [user.id for user in group.users]
+
+    # 这里BaseQuery.paginate方法返回的是一个Paginate对象，不是一个list
+    #shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp).paginate(page, constance['per_page'],
+    #        False)
+    shares = Share.query.order_by(Share.timestamp).paginate(page,
+            constance['per_page'],False)
 
     # if desc
-    if index_desc == 'desc':
-        shares.reverse()
-        index_desc = ''
-    elif index_desc == '': 
-        index_desc = 'desc'
+    if desc== 'desc':
+        shares.items.reverse()
+        desc = ''
+    elif desc == '': 
+        desc = 'desc'
+    else:
+        # invalid param
+        pass
+    
+    
+    current_url = 'index'
+    # if current_url.find('/') == 0:
+        # current_url = current_url[1:]
 
     return render_template(constance['index'],
+            current_url = current_url, 
             shares = shares,
-            current_user = user,
-            user_groups = user_groups, 
-            diff_groups = diff_groups, 
-            index_desc = index_desc, 
+            current_user = current_user,
             index_hot_desc = 'desc',
             title = 'home')
 
-@app.route('/index_hot/')
-@app.route('/index_hot/<index_hot_desc>')
-def index_hot(index_hot_desc=''):
+@app.route('/index_hot')
+@app.route('/index_hot/<int:page>')
+def index_hot(page=1):
     
     if 'logged_in' in  session:
         pass
@@ -119,18 +146,28 @@ def index_hot(index_hot_desc=''):
         if user_id:
             user = User.query.get(user_id)
 
-    shares = Share.query.order_by(Share.likes).all()
-    if index_hot_desc == 'desc':
-        shares.reverse()
-        index_hot_desc = ''
-    elif index_hot_desc == '':
-        index_hot_desc = 'desc'
+    shares = Share.query.order_by(Share.likes).paginate(page, constance['per_page'], False)
+
+    desc = request.args.get('desc', '')
+
+    if desc == 'desc':
+        shares.items.reverse()
+        desc = '' 
+    elif desc == '':
+        desc = 'desc'
+    else:
+        # invalid param
+        pass
+
+    current_url = 'index_hot'
+    # if current_url.find('/') == 0:
+        # current_url = current_url[1:]
 
     return render_template(constance['index'],
+            current_url = current_url, 
             shares = shares,
             current_user = user,
-            index_desc='desc',
-            index_hot_desc = index_hot_desc, 
+            desc = desc, 
             title = 'home')
 
 @app.route('/profile/')
@@ -202,7 +239,7 @@ def reading(id):
     shares = Share.query.all()
     share = Share.query.get(id)
     comments = share.comments
-    return render_template("reading.html",
+    return render_template(constance['reading'],
             share = share,
             shares = shares,
             comments = comments,

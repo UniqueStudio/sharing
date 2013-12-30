@@ -9,7 +9,12 @@ html,body{
 }
 
 body{
-        overflow:auto; 
+    min-width:1120px; 
+    overflow:auto; 
+}
+
+p,a{
+        font-family:SimSun, arial,sans-serif;
 }
 
 .header{
@@ -18,7 +23,7 @@ body{
         left:0px;
         width: 100%;
         min-width: 370px;
-        height:30px;
+        height:45px;
         z-index: 100;
         background-color: #57d2d9; 
 }
@@ -37,17 +42,19 @@ body{
 }
 
 .main{
-        width: 100%;
-        min-width: 900px;
-        min-height: 1080px;
-        height: auto;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    min-width: 900px;
+    min-height: 1080px;
+    height: auto;
         
 }
 
 .banner{
         position: absolute;
         left: 0px;
-        top:55px;
+        top:45px;
 
         display: inline-block;
         width: 100%;
@@ -66,7 +73,7 @@ body{
 
 .bannerContentShowDiv{
         position: relative;
-        width:500px;
+        width:400px;
         height: 100%;
         margin: 0px auto;
         overflow: hidden;
@@ -88,7 +95,7 @@ body{
          box-flex:5;
 
          height: 100%;
-         background-size: 500px 250px !important;
+         background-size: 400px 250px !important;
 }
 
 .bannerMoveLeftButton{
@@ -240,4 +247,94 @@ body{
         font-size: 10px;
         color: white;
         margin: 0px 5px 5px 0px;
+}
+
+.groupDiv{
+    display: inline-block;
+    position: absolute;
+    top: 295px;
+    margin-top: 10px;
+
+    width: 100px;
+    height: auto;
+    min-height: 200px;
+
+    background-color:#669091;
+}
+
+.groupDiv>a{
+    margin-top:5px;
+
+    display: inline-block;
+    width: 100%;
+    height: 25px;
+    text-decoration: none;
+    color: white;
+    text-align: center;
+}
+
+.homeChoice{
+    margin-top: 0px !important;
+    font: 30px/40px SimSun,arial,sans-serif;
+    height: 40px!important;
+    background-color: #85A7A5;
+}
+
+.switchContentButtonDiv{
+    width: auto;
+    height: 40px;
+    text-align: left;
+    margin:0px 0px 5px 10px;
+}
+
+.switchContentButtonDiv>a{
+    display: inline-block;
+    width: 105px;
+    height: 40px;
+    font:25px/40px SimSun,arial,sans-serif;
+    text-decoration: none;
+    background-color: #56D1D9;
+    color: white;
+    text-align: center;
+}
+
+.switchContentChoice{
+    color: rgb(78, 78, 78)!important;
+    background:  #9BE7FE!important;
+}
+
+
+/* @author guoqi */
+/* about index's page_num */
+.page_num {
+    margin: auto;
+    height: 20px;
+    width: 500px;
+    text-align:center;
+}
+
+.not_current_page_num {
+    text-decoration: underline;
+    color: black;
+}
+
+.current_page_num {
+    text-decoration: none;
+    color: red;
+}
+
+.group {
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+}
+
+.group:hover{
+    background: #57d2d9;
+    font-size: 24px;
+}
+
+.group:visited{
+    background: #57d2d9;
+    font-size: 22px;
 }

@@ -29,7 +29,7 @@ class User(db.Model):
     username = db.Column(db.String(40))
     email = db.Column(db.String(150), unique = True)
     pwdhash = db.Column(db.String(32))
-    shares = db.relationship('Share', lazy='dynamic')
+    shares = db.relationship('Share', lazy='dynamic', backref='author')
     comments = db.relationship('Comment', lazy='dynamic', backref='publisher')
     like_shares = db.relationship('Share', lazy='dynamic', secondary=user_likes)
     groups = db.relationship('Group', lazy='dynamic', backref=db.backref('users', lazy='dynamic'),  secondary=group_users)
@@ -70,6 +70,9 @@ class User(db.Model):
     def remove_from_group(self, group):
         if self.is_in_the_group(group):
             self.groups.remove(group)
+
+    def avatar(self, size):
+        return 'http://www.gravatar.com/avatar/' + md5.new(self.email).hexdigest() + '?d=mm&s=' + str(size)
 
 
 class Share(db.Model):

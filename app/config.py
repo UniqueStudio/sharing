@@ -12,7 +12,8 @@ mail_config = {
 constance = {
         'login': 'login.html', 
         'register': 'register.html', 
-        'index': 'index_test.html', 
+        'index': 'index.html', 
         'profile': 'profile.html', 
-        'reading': 'reading.html', 
+        'reading': 'reading2.html', 
+        'per_page': 3
         }

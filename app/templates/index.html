@@ -4,57 +4,6 @@
 {% endblock %}
 {% block content %}
 
-<div id="content">
-{% if current_user %}
-{{ current_user.username }}
-{% endif %}
-<div>
-    <a href="{{ url_for('index', index_desc=index_desc) }}">new</a>
-    <a href="{{ url_for('index_hot', index_hot_desc=index_hot_desc) }}">hot</a>
-    <a href="{{ url_for('profile', profile_desc='desc') }}">profile</a>
-</div>
-
-
-
-
-<!-- 创建新群组 -->
-<div class='create_group'>
-    <form action="{{ url_for('create_group') }}" method='post'>
-        <input type='text' name='group_name' placeholder='请输入群组名字'>
-        <input type='submit' value='创建新群组'>
-    </form>
-</div>
-
-<!-- Group -->
-<div class='groups'>
-    <h4>已关注的群组</h4>
-    <div class='user_groups'>
-        {% if user_groups %}
-        {% for group in user_groups  %}
-           <span>{{ group.title }}</span>
-           <form action="{{url_for('remove_attention_from_group')}}" method='post'>
-               <input type='hidden' name='group_id' value='{{ group.id }}'>
-               <input type='submit' value='取消关注'>
-           </form>
-       {% endfor %}
-       {% endif %}
-    </div>
-
-    <h4>未关注的群组</h4>
-    <div class='diff_groups'>
-        {% if diff_groups %}
-        {% for group in diff_groups %}
-            <span>{{ group.title }}</span>
-            <form action="{{ url_for('add_attention_to_group') }}" method='post'>
-                <input type='hidden' name='group_id' value='{{ group.id }}'>
-                <input type='submit' value='关注'>
-            </form>
-        {% endfor %}
-        {% endif %}
-    </div>
-</div>
-
-
 	<div class="header">
 		<img src="../static/img/share-2.png" style="margin-left:50px;min-height:100%" alt="" />
 		{% if session.logged_in %}
@@ -62,10 +11,11 @@
 		{% endif %}
 	</div>
 	<div class="main">
+        <!-- banner -->
 		<div class="banner">
 			<div class="bannerContent">
-				<div class="bannerMoveLeftButton"><</div>
-				<div class="bannerMoveRightButton">></div>
+				<div class="bannerMoveLeftButton"></div>
+				<div class="bannerMoveRightButton"></div>
 				<div class="bannerContentShowDiv">
 					<div class="bannerContentShow">
 						<div style="background:url('http://thumbshots.absolutethumbshots.com/index.php?url=http://www.zhihu.com&s=400x300&code=499944589');"></div>
@@ -84,31 +34,52 @@
 				</div>
 			</div>
 		</div>
+
+        <!-- content -->
 		<div class="contentDiv">
+            <!-- @ author guoqi -->
+            <!-- 这儿的class是干嘛的? -->
 			<class class="content">
+			<p class="switchContentButtonDiv">
+                <a href="{{ url_for('index_hot', desc=desc) }}" class="hotest switchContentChoice">最热</a>
+                <a href="{{ url_for('index', desc=desc) }}" class="latest">最新</a>
+			</p>
+
+            <!-- 显示条目 -->
             {% for share in shares.items %}
-            <div
-                style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{share.url}}');">
-                <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail"
-                    title="{{share.title}}">
-                    <p class="contentDetailTitle">{{share.title}}</p>
-                    <p class="contentDetailTime">{{share.timestamp}}</p>
-                    <p class="contentDetailCommentNum">{{share.likes}}</p>
-					</a>
-				</div>
+                <div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{share.url}}');">
+                    <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail" title="{{share.title}}">
+                        <p class="contentDetailTitle">{{share.title}}</p>
+                        <p
+                        class="contentDetailTime">{{share.timestamp.isocalendar()}}</p>
+                        <p class="contentDetailCommentNum">likes {{share.likes}}</p>
+                    </a>
+                </div>
+            {% endfor %}
+			</class>
+
+            <!-- 页码及翻页 -->
+            <div class="page_num">
+            {% if shares.has_prev %}
+                <a href="{{ url_for(current_url, page = shares.prev_num) }}" class="not_current_page_num">&lt;&lt;</a>
+            {% endif %}
+
+            {% for page_num in shares.iter_pages() %}
+                <span class="pagination">
+                    {% if page_num != shares.page %}
+                        <a href="{{ url_for(current_url, page = page_num) }}" class="not_current_page_num">{{ page_num }}</a>
+                    {% else %}
+                        <a href="{{ url_for(current_url, page = page_num) }}" class="current_page_num">{{ page_num }}</a>
+                    {% endif %}
+                </span>
             {% endfor %}
 
-            {% if shares.has_prev %}
-            <a href="{{ url_for('index', page = shares.prev_num) }}">prev</a>
-            {% else %}prev
-            {% endif %} | 
             {% if shares.has_next %}
-            <a href="{{ url_for('index', page = shares.next_num) }}">next</a>
-            {% else %}next
+                <a href="{{ url_for(current_url, page = shares.next_num) }}" class="not_current_page_num">&gt;&gt;</a>
             {% endif %}
-			</class>
+            </div>
 		</div>
-	</div>
+
 {% endblock %}
 {% block script %}
 	<script type="text/javascript" rel="script" src="../static/js/indexBanner.js"></script>
