@@ -57,14 +57,15 @@ def register():
     login_form = LoginForm()
     register_form = RegisterForm()
     if register_form.validate_on_submit():
-        user = User(username = register_form.name.data,
-                email = register_form.email.data,
-                password = register_form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        session['logged_in'] = True
-        session['user_id'] = user.id
-        return redirect(url_for('index', index_desc='desc'))
+        if register_form.validate():
+            user = User(username = register_form.name.data,
+                    email = register_form.email.data,
+                    password = register_form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            session['logged_in'] = True
+            session['user_id'] = user.id
+            return redirect(url_for('index', index_desc='desc'))
 
     return render_template(constance['login'],
             title = 'login',
@@ -90,7 +91,7 @@ def index(page=1):
         email = request.cookies.get('email')
         pwd = request.cookies.get('pwd')
         user = User.query.filter_by(email = email).first()
-        if user.pwdhash == pwd:
+        if user and user.pwdhash == pwd:
             session['logged_in'] = True
             session['user_id'] = user.id
             current_user = user
