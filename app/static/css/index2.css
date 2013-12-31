@@ -225,10 +225,6 @@ p,a{
 	height: auto;
 }
 
-.commentDiv textarea{
-	font-size: 13px;
-}
-
 .commentButton{
 	display: inline-block;
 	height: 42px;
@@ -271,8 +267,6 @@ p,a{
 	height: 68%;
 	margin-top: 10%;
 }
-
-
 
 .commentBlock{
 	display:inline-block;
@@ -327,6 +321,7 @@ p,a{
 	word-wrap: break-word;
 	resize: none;
 	overflow: hidden;
+	font-size: 15px;
 }
 
 .shareManPic{
@@ -403,15 +398,38 @@ p,a{
 	background-color: #fafafa;
 	border: 1px #c9c9c9 solid;
 	border-radius: 7px;
-	padding: 5px;
+	padding: 3px 5px;
 	outline: 0px;
+	line-height: 19px;
 	word-wrap: break-word;
 	resize: none;
 	color: #5F5F5F;
+	font-size: 14px;
+}
+
+.commentInputNum{
+	display: inline-block;
+	width: 30px;
+	height: 0px;
+	color:red;
+	margin:0px;
+	margin-left: 455px;
+}
+
+.sendCommentText::-webkit-scrollbar {
+	background-color: rgb(206, 206, 206);
+	width: 8px;
+	border-radius: 8px;
+	border: 1px solid rgb(165, 165, 165);
+}
+
+.sendCommentText::-webkit-scrollbar-thumb  {
+	background-color: rgb(170, 170, 170);
+	border: 1px solid rgb(156, 156, 156);
+	border-radius: 8px;
 }
 
 .sendCommentTextButton{
-	margin-left: 490px;
 	background-color: #fafafa;
 	border: 1px #c9c9c9 solid;
 	border-radius: 6px;
@@ -420,6 +438,7 @@ p,a{
 	height: 30px;
 	color: #5F5F5F;
 	font-size: 20px;
+	cursor: pointer;
 }
 
 .commentShowDiv{
@@ -431,7 +450,19 @@ p,a{
 	margin-bottom: 4px;
 }
 
-.contentEach{
+.commentShowDiv::-webkit-scrollbar {
+	background-color: rgb(206, 206, 206);
+	width: 8px;
+	border-radius: 8px;
+	border: 1px solid rgb(177, 177, 177);
+}
+
+.commentShowDiv::-webkit-scrollbar-thumb  {
+	background-color: rgb(177, 177, 177);
+	border-radius: 8px;
+}
+
+.commentEach{
 	position: relative;
 	display: inline-block;
 	width: 643px;
@@ -440,7 +471,7 @@ p,a{
 	overflow: hidden;
 }
 
-.contentEach>textarea{
+.commentEach>textarea{
 	display: inline-block;
 	width: 578px;
 	height: 65px;
@@ -448,13 +479,15 @@ p,a{
 	border: 1px #c9c9c9 solid;
 	color: #5F5F5F;
 	border-radius: 7px;
-	padding: 5px;
+	padding: 3px 5px;
 	outline: 0px;
 	word-wrap: break-word;
 	resize: none;
+	font-size: 14px;
+	line-height: 19px;
 }
 
-.contentEach>img{
+.commentEach>img{
 	width: 50px;
 	height: 50px;
 	margin-right: 10px;
@@ -462,20 +495,20 @@ p,a{
 	margin-bottom: 15px;
 }
 
-.contentEach>div{
+.commentEach>div{
 	position: absolute;
 	bottom: 0px;
 	right: 1px;
 	display: inline-block;
-	width: 50px;
+	width: 30px;
 	height: 30px;
 	border-radius: 30px 0px 7px 0px;
 	background-color: #1F7AC9;
 	cursor: pointer;
 }
 
-.contentEach>div>img{
+.commentEach>div>img{
 	width: 15px;
 	height: 15px;
-	margin: 11px 0px 0px 18px;
+	margin: 11px 0px 0px 10px;
 }

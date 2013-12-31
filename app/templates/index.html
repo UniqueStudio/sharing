@@ -14,15 +14,16 @@
         <!-- banner -->
 		<div class="banner">
 			<div class="bannerContent">
-				<div class="bannerMoveLeftButton"></div>
-				<div class="bannerMoveRightButton"></div>
+				<div class="bannerMoveLeftButton"><</div>
+				<div class="bannerMoveRightButton">></div>
 				<div class="bannerContentShowDiv">
 					<div class="bannerContentShow">
-						<div style="background:url('http://thumbshots.absolutethumbshots.com/index.php?url=http://www.zhihu.com&s=400x300&code=499944589');"></div>
-						<div style="background:url('http://thumbshots.absolutethumbshots.com/index.php?url=http://www.163.com&s=400x300&code=499944589');"></div>
-						<div style="background:url('http://thumbshots.absolutethumbshots.com/index.php?url=http://www.gmail.com&s=400x300&code=499944589');"></div>
-						<div style="background:url('http://thumbshots.absolutethumbshots.com/index.php?url=http://www.qq.com&s=400x300&code=499944589');"></div>
-						<div style="background:url('http://thumbshots.absolutethumbshots.com/index.php?url=http://www.taobao.com&s=400x300&code=499944589');"></div>
+                        {% for recommend in recommends %}
+
+                        <div
+                            style="background:url('http://thumbshots.absolutethumbshots.com/index.php?url={{recommend.url}}&s=400x300&code=499944589');">
+                        </div>
+                        {% endfor %}
 					</div>
 					<div class="bannerOrder">
 						<div class="bannerOrder0" style="background-color: rgb(213,213,213)"></div>
@@ -52,7 +53,7 @@
                         <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail" title="{{share.title}}">
                             <p class="contentDetailTitle">{{share.title}}</p>
                             <p
-                            class="contentDetailTime">{{share.timestamp.isocalendar()}}</p>
+                            class="contentDetailTime">{{share.timestamp.strftime("%Y-%m-%d")}}</p>
                             <p class="contentDetailCommentNum">likes {{share.likes}}</p>
                         </a>
                     </div>

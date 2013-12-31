@@ -100,6 +100,9 @@ function share(parameters){
                 error = "you need login"
                 var text = document.createTextNode(error);
                 loginError.appendChild(text);
+            }else if (resp.errorCode == 2){
+                error = "this web has been shared";
+                showInfo(error);
             }
         }
     }

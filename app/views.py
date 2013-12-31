@@ -111,6 +111,7 @@ def index(page=1):
     if group_id is not None:
         groups.append(Group.query.get(group_id))
 
+
     # @ by guoqi
     # add groups 
     all_groups = list(Group.query.all()) or None
@@ -129,7 +130,13 @@ def index(page=1):
 
     # user_id_list = [user.id for user in group.users]
 
-    # 这里BaseQuery.paginate方法返回的是一个Paginate对象，不是一个list
+    #shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp).paginate(page, constance['per_page'],
+    #        False)
+
+
+    # recommended shares order_by likes
+    recommends = Share.query.order_by(Share.likes.desc())[0:5]
+
     if user_id_list  != []:
         shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp.desc()).paginate(page, constance['per_page'],
                 False)
@@ -150,6 +157,7 @@ def index(page=1):
             user_groups = user_groups, 
             diff_groups = diff_groups, 
             current_user = current_user,
+            recommends = recommends,
             title = 'home')
 
 @app.route('/index_hot')
@@ -179,7 +187,8 @@ def index_hot(page=1):
         user_id_list.extend([user.id for user in group.users])
 
     if user_id_list != []:
-        shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.likes.desc()).paginate(page, constance['per_page'], False)
+        shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.likes.desc(), 
+                Share.timestamp.desc()).paginate(page, constance['per_page'], False)
     else:
         shares = None
 
@@ -198,11 +207,15 @@ def index_hot(page=1):
     # if current_url.find('/') == 0:
         # current_url = current_url[1:]
 
+    # recommended shares order_by likes
+    recommends = Share.query.order_by(Share.likes.desc())[0:4]
+
     return render_template(constance['index'],
             current_url = current_url, 
             shares = shares,
             current_group_id = group_id, 
             current_user = user,
+            recommends = recommends,
             user_groups = user_groups, 
             diff_groups = diff_groups, 
             title = 'home')
@@ -215,7 +228,8 @@ def profile(profile_desc=''):
         user = User.query.get(user_id)
         # 这儿的order_by有问题
         # profile 是干嘛的?
-        shares = Share.query.filter_by(user_id = user_id).order_by(Share.timestamp).all()
+        shares = Share.query.filter_by(user_id =
+                user_id).order_by(Share.timestamp.desc()).all()
     else:
         return redirect(url_for('login'))
     
@@ -228,10 +242,14 @@ def profile(profile_desc=''):
     #else:
         #error
 
+    # recommended shares order_by likes
+    recommends = Share.query.order_by(Share.likes.desc())[0:4]
+
     return render_template(constance['profile'],
             shares = shares,
             current_user = user,
             profile_desc = profile_desc, 
+            recommends = recommends,
             title = 'profile')
 
 @app.route('/likes', methods = ['POST'])
@@ -373,16 +391,19 @@ def ext_share():
     resp = {}
     if request.method == 'POST':
         if 'logged_in' in session: 
-            print request.form['title']
-            share = Share(url = request.form['url'],
-                    title = request.form['title'],
-                    explain = request.form['explain'],
-                    timestamp = datetime.now())
-            share.user_id = session['user_id']
-            db.session.add(share)
-            db.session.commit()
-            print share.title
-            resp['success'] = True 
+            s = Share.query.filter_by(url = request.form['url']).first()
+            if not s:
+                share = Share(url = request.form['url'],
+                        title = request.form['title'],
+                        explain = request.form['explain'],
+                        timestamp = datetime.now())
+                share.user_id = session['user_id']
+                db.session.add(share)
+                db.session.commit()
+                resp['success'] = True 
+            else:
+                resp['success'] = False
+                resp['errorCode'] = 2
         else:
             resp['success'] = False
             resp['errorCode'] = 1

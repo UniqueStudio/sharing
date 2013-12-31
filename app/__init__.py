@@ -10,4 +10,4 @@ app.config.from_object('config')
 app.config.update(mail_config)
 db = SQLAlchemy(app)
 
-from app import views, models, forms
+from app import views, models, forms, mail

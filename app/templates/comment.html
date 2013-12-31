@@ -1,5 +1,7 @@
-<div id="c-{{comment.id}}" class="comment" >
-    <img src="{{comment.publisher.avatar(128)}}">
-    <p>{{comment.publisher.username}} says: {{comment.body}}</p>
-<!-- <button class="reply" value="{{comment.id}}">reply</button> -->
+<div class="commentEach">
+    <img src="{{comment.publisher.avatar(50)}}" alt="" >
+    <textarea rows=4 readonly="readonly">{{comment.body}}</textarea>
+    <div onclick="sendComment(this)">
+        <img src="../static/img/bubble.png" alt="">
+    </div>
 </div>
