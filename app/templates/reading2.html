@@ -12,9 +12,7 @@
 		</div>
 		
 		<div class="headerLeftDiv">
-			<a href="" class="catalog">首页</a>
-			<p class="toTag">></p>
-			<a href="" class="catalog">web</a>
+			<a href="{{url_for('index')}}" class="catalog">首页</a>
 		</div>
 		
 		<p class="catalogNowShow">首页</p>
@@ -23,9 +21,7 @@
 		<div class="catalogSwitchShowDiv">
 			<div class="verticalSpace"></div>
 			<div class="catalogSwitchShow">
-				<a href="" class="catalogChoice">首页</a>
-				<a href="">web</a>
-				<a href="">IT</a>
+				<a href="{{url_for('index')}}" class="catalogChoice">首页</a>
 				<div class="catalogSwitchArrowDiv">
 					<div class="catalogSwitchArrow"></div>
 				</div>
@@ -50,7 +46,10 @@
 				<img class="bubbleImg" src="../static/img/bubble.png" alt="">
 			</div>
 			<div class="loveButton">
-				<img class="loveImg" src="../static/img/heart.png" alt="">
+                <div class="ajax_heart {% if user.is_like(share) %}share_favoured {% else %}share_favour{% endif %}" value="{{share.id}}">
+                </div>
+				<!--img class="loveImg" src="../static/img/heart.png"
+                alt=""-->
 			</div>
 		</div>
 		<div class="commentBlock">
@@ -62,8 +61,10 @@
                             <p class="shareManName">{{share.author.username}}</p>
                             <p
                             class="shareTime">{{share.timestamp.strftime("%Y-%m-%d")}}</p>
-							<div class="shareManLoveButton">
-								<img src="../static/img/heart.png" alt="">
+                            <div class="shareManLoveButton">
+                                <div class="ajax_heart" value="{{share.id}}"></div>
+                                <!--img class="ajax_heart"
+                                src="../static/img/heart.jpg" alt=""-->
 							</div>
 						</div>
 					</div>
@@ -72,8 +73,8 @@
 				<div class="commentRight">
 					<div class="sendCommentDiv">
 						<img src="../static/img/shareMan.jpg" alt="" class="sendCommentManPic">
-						<form class="sendCommentTextDiv">
-							<textarea class="sendCommentText"></textarea>
+						<form action="url_for('add_comment')" class="sendCommentTextDiv">
+							<textarea  class="sendCommentText"></textarea>
 							<br>
 							<input type="submit" class="sendCommentTextButton" value="发送">
 						</form>
@@ -97,5 +98,7 @@
 		</div>
 	</div>
 	<script type="text/javascript" rel="script" src="../static/js/index2.js"></script>
+	<script type="text/javascript" rel="script" src="../static/js/jquery.js"></script>
+	<script type="text/javascript" rel="script" src="../static/js/ajax-reading.js"></script>
 </body>
 </html>

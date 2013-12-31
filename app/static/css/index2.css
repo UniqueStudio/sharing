@@ -479,3 +479,17 @@ p,a{
 	height: 15px;
 	margin: 11px 0px 0px 18px;
 }
+
+
+/*  ajax heart  -- by zs */
+.share_favour{
+    width: 10px;
+    height: 10px;
+    background: #ff0;
+}
+.share_favoured{
+    width: 10px;
+    height: 10px;
+    background: #f00;
+}
+

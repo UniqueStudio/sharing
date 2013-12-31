@@ -250,37 +250,27 @@ def profile(profile_desc=''):
             recommends = recommends,
             title = 'profile')
 
-@app.route('/likes', methods = ['POST'])
-def likes():
-    share_id = request.form['share_id']
+    #  ajax toggle likes   --zs
+@app.route('/toggleLikes', methods = ['POST'])
+def toggleLikes():
+    share_id = request.form['shareID']
     share = Share.query.get(share_id)
     if 'user_id' in session:
         user_id = session['user_id']
         user = User.query.get(user_id)
-        user.like(share)
-        share.likes += 1
-        # db.session.add(like)
+        if user.is_like(share):
+            user.dislike(share)
+        else:
+            user.like(share)
         db.session.add(share)
         db.session.commit()
-        return "success"
+        resp = {}
+        resp['userLike'] = user.is_like(share)
+        resp['likeNum'] = share.likes
+        return json.dumps(resp)
     else:
         return redirect(url_for('login'))
 
-@app.route('/dislikes', methods = ['POST'])
-def dislikes():
-    share_id = request.form['share_id']
-    share = Share.query.get(share_id)
-    if 'user_id' in session:
-        user_id = session['user_id']
-        user = User.query.get(user_id)
-        user.dislike(share)
-        share.likes -= 1
-        # db.session.add(dislike)
-        db.session.add(share)
-        db.session.commit()
-        return "success"
-    else:
-        return redirect(url_for('login'))
 
 @app.route('/reading/<int:id>')
 def reading(id):
@@ -301,6 +291,9 @@ def reading(id):
 
 @app.route('/add_comment', methods = ['POST'])
 def add_comment():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
     c = Comment(body = request.form['comment_body'],
             share_id = request.form['share_id'],
             user_id = session['user_id'])

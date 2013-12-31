@@ -51,10 +51,12 @@ class User(db.Model):
     def like(self, share):
         if not self.is_like(share):
             self.like_shares.append(share)
+            share.likes += 1
     
     def dislike(self, share):
         if self.is_like(share):
             self.like_shares.remove(share)
+            share.likes -= 1
 
     def is_like(self, share):
         return share in self.like_shares.all()

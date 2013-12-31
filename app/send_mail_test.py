@@ -1,5 +1,6 @@
 #encoding: utf-8
 from flask import Flask
+from app import app
 from mail import GetURLFromURLQueue, SendMail
 import time
 import Queue
