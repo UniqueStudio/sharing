@@ -74,6 +74,11 @@ class User(db.Model):
     def avatar(self, size):
         return 'http://www.gravatar.com/avatar/' + md5.new(self.email).hexdigest() + '?d=mm&s=' + str(size)
 
+    def get_group_first_id(self):
+        group = self.groups.first()
+        if group is None:
+            return None
+        return group.id
 
 class Share(db.Model):
     id = db.Column(db.Integer, primary_key = True)
