@@ -46,10 +46,11 @@
 				<img class="bubbleImg" src="../static/img/bubble.png" alt="">
 			</div>
 			<div class="loveButton">
-                <div class="ajax_heart {% if user.is_like(share) %}share_favoured {% else %}share_favour{% endif %}" value="{{share.id}}">
-                </div>
-				<!--img class="loveImg" src="../static/img/heart.png"
-                alt=""-->
+                {% if user.is_like(share) %}
+                	<img class="loveImg" style="display:none;" src="../static/img/heart.png" alt="">
+                {% else %}
+                	<img class="loveImg" style="display:inline-block;" src="../static/img/heart.png" alt="">
+                {% endif %}
 			</div>
 		</div>
 		<div class="commentBlock">
