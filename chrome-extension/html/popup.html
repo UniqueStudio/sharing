@@ -7,13 +7,13 @@
 
   <body>
       <div id="login">
-        <input type="text" id="email"/>
-        <input type="text" id="password"/>
-        <p id="loginError"></p>
-        <button id="loginButton">login</button>
+          <input type="email" id="email" required/></br>
+          <input type="password" id="password"/>
+          <p id="loginError"></p>
+          <button id="loginButton">login</button>
       </div>
       <div id="share">
-          <textarea id="explain">explain</textarea>
+          <textarea rows="5" cols="20" id="explain">sharing reason</textarea>
           <button id="shareButton">share</button>
           <button id="logout">logout</button>
       </div>
@@ -21,6 +21,7 @@
       </div>
     
 
+     <script src="../js/md5.js"></script>
      <script src="../js/popup.js"></script>
   </body>
 </html>

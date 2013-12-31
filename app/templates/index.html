@@ -50,8 +50,9 @@
                 <div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{share.url}}');">
                     <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail" title="{{share.title}}">
                         <p class="contentDetailTitle">{{share.title}}</p>
-                        <p class="contentDetailTime">{{share.timestamp}}</p>
-                        <p class="contentDetailCommentNum">{{share.likes}}</p>
+                        <p
+                        class="contentDetailTime">{{share.timestamp.isocalendar()}}</p>
+                        <p class="contentDetailCommentNum">likes {{share.likes}}</p>
                     </a>
                 </div>
             {% endfor %}
