@@ -5,8 +5,8 @@ mail_config = {
 		'MAIL_USE_SSL': True, 
 		'MAIL_USER_NAME': 'uniqueguoqi@gmail.com',
 		'MAIL_PASSWORD': '!#%&(_618753294g', 
-		'MAIL_DEBUG': True
-		#'MAIL_DEFAULT_SENDER': 'uniqueguoqi@gmail.com'
+		'MAIL_DEBUG': True, 
+		'MAIL_DEFAULT_SENDER': 'uniqueguoqi@gmail.com'
 }
 
 constance = {

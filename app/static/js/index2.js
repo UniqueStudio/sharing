@@ -267,4 +267,9 @@ var commentSubmit = function(){
 	xmlhttp.open("POST","/add_comment",true);
 	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	xmlhttp.send("comment_body="+comment_body+"&share_id=" + share_id);
+    xmlhttp.onreadystatechange = function() {
+
+        var resp = JSON.parse(xmlhttp.responseText);
+        console.log(resp);
+    }
 };
