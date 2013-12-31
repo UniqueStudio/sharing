@@ -257,6 +257,13 @@ var commentSubmit = function(){
 	  {// code for IE6, IE5
 	  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 	  }
+	 xmlhttp.onreadystatechange=function()
+	   {
+	   if (xmlhttp.readyState==4 && xmlhttp.status==200)
+	     {
+	     	console.log(xmlhttp.responseText);
+	     }
+	   }
 	xmlhttp.open("POST","/add_comment",true);
 	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	xmlhttp.send("comment_body="+comment_body+"&share_id=" + share_id);
