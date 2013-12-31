@@ -21,7 +21,8 @@ def login():
         if login_form.validate():
             session['logged_in'] = True
             session['user_id'] = login_form.current_user()
-            redirect_to_index = redirect(url_for('index', index_desc='desc'))
+            user = User.query.get(session['user_id'])
+            redirect_to_index = redirect(url_for('index', group_id=user.get_group_first_id()))
             resp = make_response(redirect_to_index)
             if login_form.remember_me.data:
                 resp.set_cookie('email',login_form.email.data, expires =
@@ -65,7 +66,7 @@ def register():
             db.session.commit()
             session['logged_in'] = True
             session['user_id'] = user.id
-            return redirect(url_for('index', index_desc='desc'))
+            return redirect(url_for('index', group_id=user.get_group_first_id()))
 
     return render_template(constance['login'],
             title = 'login',
@@ -75,7 +76,11 @@ def register():
 
 @app.route('/')
 def redirect_to_index():
-    return redirect(url_for('index', index_desc='desc'))
+    if 'logged_in' not in  session:
+        return redirect(url_for('login'))
+    else:
+        user = User.query.get(session['user_id'])
+    return redirect(url_for('index', group_id=user.get_group_first_id()))
 
 
 @app.route('/index')
@@ -101,16 +106,15 @@ def index(page=1):
 
     group_id = request.args.get('group_id', '') or None
 
+    groups = []
     if group_id is not None:
-        groups = list(Group.query.get(group_id))
-    else:
-        groups = Group.query.all()
+        groups.append(Group.query.get(group_id))
 
 
     # @ by guoqi
     # add groups 
     all_groups = list(Group.query.all()) or None
-    user_groups = list(user.groups.all()) or None
+    user_groups = list(current_user.groups.all()) or None
     diff_groups = None
     if all_groups and user_groups:
         diff_groups = list(set(all_groups).difference(set(user_groups))) 
@@ -122,25 +126,24 @@ def index(page=1):
     for group in groups:
         user_id_list.extend([user.id for user in group.users])
 
-    user_id_list = [user.id for user in group.users]
 
-    # 这里BaseQuery.paginate方法返回的是一个Paginate对象，不是一个list
-    shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp).paginate(page, constance['per_page'],
-            False)
+    # user_id_list = [user.id for user in group.users]
+
+    #shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp).paginate(page, constance['per_page'],
+    #        False)
+
+
+    # recommended shares order_by likes
+    recommends = Share.query.order_by(Share.likes.desc())[0:5]
+
+    if user_id_list  != []:
+        shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp.desc()).paginate(page, constance['per_page'],
+                False)
+    else:
+        shares = None
+
     # shares = Share.query.order_by(Share.timestamp).paginate(page,
             # constance['per_page'],False)
-
-    desc = request.args.get('desc', '')
-    # if desc
-    if desc== 'desc':
-        shares.items.reverse()
-        desc = ''
-    elif desc == '': 
-        desc = 'desc'
-    else:
-        # invalid param
-        pass
-    
     
     current_url = 'index'
     # if current_url.find('/') == 0:
@@ -149,10 +152,11 @@ def index(page=1):
     return render_template(constance['index'],
             current_url = current_url, 
             shares = shares,
+            current_group_id = group_id, 
             user_groups = user_groups, 
             diff_groups = diff_groups, 
             current_user = current_user,
-            index_hot_desc = 'desc',
+            recommends = recommends,
             title = 'home')
 
 @app.route('/index_hot')
@@ -170,28 +174,22 @@ def index_hot(page=1):
         if user_id:
             user = User.query.get(user_id)
 
-    desc = request.args.get('desc', '')
     group_id = request.args.get('group_id', '') or None
 
+    # pick shares by group
+    groups = []
     if group_id is not None:
-        groups = list(Group.query.get(group_id))
-    else:
-        groups = Group.query.all()
+        groups.append(Group.query.get(group_id))
 
     user_id_list = []
     for group in groups:
         user_id_list.extend([user.id for user in group.users])
 
-    shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.likes).paginate(page, constance['per_page'], False)
-
-    if desc == 'desc':
-        shares.items.reverse()
-        desc = '' 
-    elif desc == '':
-        desc = 'desc'
+    if user_id_list != []:
+        shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.likes.desc(), 
+                Share.timestamp.desc()).paginate(page, constance['per_page'], False)
     else:
-        # invalid param
-        pass
+        shares = None
 
     # @ by guoqi
     # add groups 
@@ -208,13 +206,17 @@ def index_hot(page=1):
     # if current_url.find('/') == 0:
         # current_url = current_url[1:]
 
+    # recommended shares order_by likes
+    recommends = Share.query.order_by(Share.likes.desc())[0:4]
+
     return render_template(constance['index'],
             current_url = current_url, 
             shares = shares,
+            current_group_id = group_id, 
             current_user = user,
+            recommends = recommends,
             user_groups = user_groups, 
             diff_groups = diff_groups, 
-            desc = desc, 
             title = 'home')
 
 @app.route('/profile/')
@@ -225,7 +227,8 @@ def profile(profile_desc=''):
         user = User.query.get(user_id)
         # 这儿的order_by有问题
         # profile 是干嘛的?
-        shares = Share.query.filter_by(user_id = user_id).order_by(Share.timestamp).all()
+        shares = Share.query.filter_by(user_id =
+                user_id).order_by(Share.timestamp.desc()).all()
     else:
         return redirect(url_for('login'))
     
@@ -238,10 +241,14 @@ def profile(profile_desc=''):
     #else:
         #error
 
+    # recommended shares order_by likes
+    recommends = Share.query.order_by(Share.likes.desc())[0:4]
+
     return render_template(constance['profile'],
             shares = shares,
             current_user = user,
             profile_desc = profile_desc, 
+            recommends = recommends,
             title = 'profile')
 
 @app.route('/likes', methods = ['POST'])
@@ -383,16 +390,19 @@ def ext_share():
     resp = {}
     if request.method == 'POST':
         if 'logged_in' in session: 
-            print request.form['title']
-            share = Share(url = request.form['url'],
-                    title = request.form['title'],
-                    explain = request.form['explain'],
-                    timestamp = datetime.now())
-            share.user_id = session['user_id']
-            db.session.add(share)
-            db.session.commit()
-            print share.title
-            resp['success'] = True 
+            s = Share.query.filter_by(url = request.form['url']).first()
+            if not s:
+                share = Share(url = request.form['url'],
+                        title = request.form['title'],
+                        explain = request.form['explain'],
+                        timestamp = datetime.now())
+                share.user_id = session['user_id']
+                db.session.add(share)
+                db.session.commit()
+                resp['success'] = True 
+            else:
+                resp['success'] = False
+                resp['errorCode'] = 2
         else:
             resp['success'] = False
             resp['errorCode'] = 1

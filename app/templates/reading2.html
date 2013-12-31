@@ -60,7 +60,7 @@
                         <img src="{{share.author.avatar(60)}}" alt="" class="shareManPic">
 						<div class="shareManDetailDiv">
                             <p class="shareManName">{{share.author.username}}</p>
-                            <p class="shareTime">{{share.timestamp.isocalendar()}}</p>
+                            <p class="shareTime">{{share.timestamp.strftime("%Y-%m-%d")}}</p>
 							<div class="shareManLoveButton">
 								<img src="../static/img/heart.png" alt="">
 							</div>
@@ -80,28 +80,10 @@
 					</div>
 					<div class="commentShowDiv">
 						<div class="comtentShow">
-							<div class="commentEach">
-								<img src="../static/img/commentEach.jpg" alt="" >
-								<textarea rows=4 readonly="readonly">呵呵1:俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！</textarea>
-								<div onclick="sendComment(this)">
-									<img src="../static/img/bubble.png" alt="">
-								</div>
-							</div>
-							<div class="commentEach">
-								<img src="../static/img/commentEach.jpg" alt="">
-								<textarea rows="4" readonly="readonly">呵呵2:俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
-								<div onclick="sendComment(this)">
-									<img src="../static/img/bubble.png" alt="">
-								</div>
-							</div>
-							<div class="commentEach">
-								<img src="../static/img/commentEach.jpg" alt="">
-								<textarea rows="4" readonly="readonly">呵呵3对@呵呵2说：俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
-								<div onclick="sendComment(this)">
-									<img src="../static/img/bubble.png" alt="">
-								</div>
-							</div>
-							<div class="commentEach">
+                            {% for comment in comments %}
+                            {% include 'comment.html' %}
+                            {% endfor %}
+							<div class="contentEach">
 								<img src="../static/img/commentEach.jpg" alt="">
 								<textarea rows="4" readonly="readonly">呵呵4:俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
 								<div onclick="sendComment(this)">
