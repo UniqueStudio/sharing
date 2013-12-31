@@ -7,6 +7,7 @@ from forms import RegisterForm, LoginForm, CommentForm
 from datetime import datetime, timedelta
 import json, md5
 from config import constance
+import emails
 
 
 
@@ -386,4 +387,5 @@ def ext_share():
             resp['success'] = False
             resp['errorCode'] = 1
     return json.dumps(resp)
+
 

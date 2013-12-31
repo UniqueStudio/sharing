@@ -1,12 +1,11 @@
 #encoding: utf-8
 import threading
-from flask import copy_current_request_context, Flask
+from flask import copy_current_request_context
 from flask_mail import Mail, Message
 from config import mail_config
+from app import app
 
-app = Flask(__name__)
-app.config.update(mail_config)
-mail = Mail(app)
+mail = Mail()
 
 def create_message(to_email, subject, from_email=None):
     body = 'abcasdg'
@@ -22,4 +21,3 @@ def send_async(to_email, subject, from_email):
     sender = threading.Thread(name='mail_sender', target=send_message, args=(msg, ))
     sender.start()
 
-send_async('qiguo@hustunique.com', 'helloworld', 'uniqueguoqi@gmail.com')
