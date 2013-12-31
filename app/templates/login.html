@@ -37,7 +37,8 @@
                                         {{ login_form.hidden_tag() }}
                                         {{ render_field(login_form.email, class="loginName loginAndRegisterInput") }}
                                         {{ render_field(login_form.password, class="loginPassword loginAndRegisterInput") }}
-                                        <input type="submit" class="SubmitButton" value="登录" />
+                                        {{ render_field(login_form.remember_me, class="") }}
+                                        </br><input type="submit" class="SubmitButton" value="登录" />
                                     </form>
                                 </div>
                                 <div class="registerDiv">

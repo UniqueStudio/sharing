@@ -1,6 +1,6 @@
 #encoding: utf-8
 mail_config = {
-		'MAIL_SERVER': 'smtp.gmail.com',
+		'MAIL_SERVER': 'smtp.googlemail.com',
 		'MAIL_PORT': 465, 
 		'MAIL_USE_SSL': True, 
 		'MAIL_USER_NAME': 'uniqueguoqi@gmail.com',
@@ -14,6 +14,6 @@ constance = {
         'register': 'register.html', 
         'index': 'index.html', 
         'profile': 'profile.html', 
-        'reading': 'reading.html', 
+        'reading': 'reading2.html', 
         'per_page': 3
         }
