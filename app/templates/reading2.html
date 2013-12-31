@@ -60,8 +60,7 @@
                         <img src="{{share.author.avatar(60)}}" alt="" class="shareManPic">
 						<div class="shareManDetailDiv">
                             <p class="shareManName">{{share.author.username}}</p>
-                            <p
-                            class="shareTime">{{share.timestamp.isocalendar()}}</p>
+                            <p class="shareTime">{{share.timestamp.isocalendar()}}</p>
 							<div class="shareManLoveButton">
 								<img src="../static/img/heart.png" alt="">
 							</div>
@@ -72,39 +71,40 @@
 				<div class="commentRight">
 					<div class="sendCommentDiv">
 						<img src="../static/img/shareMan.jpg" alt="" class="sendCommentManPic">
-						<form class="sendCommentTextDiv">
-							<textarea class="sendCommentText"></textarea>
+						<form class="sendCommentTextDiv" onsubmit="commentSubmit()">
+							<textarea class="sendCommentText" maxlength="120" ></textarea>
 							<br>
+							<p class="commentInputNum"></p>
 							<input type="submit" class="sendCommentTextButton" value="发送">
 						</form>
 					</div>
 					<div class="commentShowDiv">
 						<div class="comtentShow">
-							<div class="contentEach">
+							<div class="commentEach">
 								<img src="../static/img/commentEach.jpg" alt="" >
-								<textarea rows=4 readonly="readonly">俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
-								<div>
+								<textarea rows=4 readonly="readonly">呵呵1:俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！</textarea>
+								<div onclick="sendComment(this)">
 									<img src="../static/img/bubble.png" alt="">
 								</div>
 							</div>
-							<div class="contentEach">
+							<div class="commentEach">
 								<img src="../static/img/commentEach.jpg" alt="">
-								<textarea rows="4" readonly="readonly">俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
-								<div>
+								<textarea rows="4" readonly="readonly">呵呵2:俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
+								<div onclick="sendComment(this)">
 									<img src="../static/img/bubble.png" alt="">
 								</div>
 							</div>
-							<div class="contentEach">
+							<div class="commentEach">
 								<img src="../static/img/commentEach.jpg" alt="">
-								<textarea rows="4" readonly="readonly">俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
-								<div>
+								<textarea rows="4" readonly="readonly">呵呵3对@呵呵2说：俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
+								<div onclick="sendComment(this)">
 									<img src="../static/img/bubble.png" alt="">
 								</div>
 							</div>
-							<div class="contentEach">
+							<div class="commentEach">
 								<img src="../static/img/commentEach.jpg" alt="">
-								<textarea rows="4" readonly="readonly">俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
-								<div>
+								<textarea rows="4" readonly="readonly">呵呵4:俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
+								<div onclick="sendComment(this)">
 									<img src="../static/img/bubble.png" alt="">
 								</div>
 							</div>
