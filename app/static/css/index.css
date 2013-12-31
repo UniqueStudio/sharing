@@ -71,6 +71,10 @@ p,a{
         margin: 0px auto;
 }
 
+.bannerContent:hover>.bannerMoveLeftButton,.bannerContent:hover>.bannerMoveRightButton{
+       opacity: 0.2;
+}
+
 .bannerContentShowDiv{
         position: relative;
         width:400px;

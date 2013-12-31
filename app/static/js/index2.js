@@ -212,22 +212,43 @@ function sendComment(element){
 	if(SCTnameLength == -1){
 		SCTnameLength = sendCommentText.value.indexOf("：");
 	};
-	if(SCTnameLength>=3&&sendCommentText.value.indexOf("@")<SCTnameLength){
+	if(SCTnameLength>=3
+		&&sendCommentText.value.indexOf("@")<SCTnameLength
+		&&sendCommentText.value.indexOf("@")<sendCommentText.value.indexOf("说")
+		&&sendCommentText.value.indexOf("对") === 0
+		&&sendCommentText.value.indexOf("说")<SCTnameLength){
 		var text = sendCommentText.value.substring(SCTnameLength+1);
 		sendCommentText.focus();
 		sendCommentText.value = "对@"+name + "说:" + text;
 	}
 	else{
-		
+		sendCommentText.focus();
 		sendCommentText.value = "对@"+name + "说:" + sendCommentText.value;
 	};
 	
 };
 
 var commentSubmit = function(){
+	
 	var xmlhttp;
-	var comment_body = document.getElementsByClassName("sendCommentText")[0].value;
-	var share_id = "{{ share.id }}";
+	var shareManName = document.getElementsByClassName("shareManName")[0].innerHTML;
+	var sendCommentText = document.getElementsByClassName("sendCommentText")[0].value;
+	var SCTnameLength = sendCommentText.indexOf(":");
+	if(SCTnameLength === -1){
+		SCTnameLength = sendCommentText.indexOf("：");
+	};
+	if(SCTnameLength>=3
+		&&sendCommentText.indexOf("@")<SCTnameLength
+		&&sendCommentText.indexOf("@")<sendCommentText.indexOf("说")
+		&&sendCommentText.indexOf("对") === 0
+		&&sendCommentText.indexOf("说")<SCTnameLength){
+		var comment_body = shareManName+sendCommentText;
+	}
+	else{
+		var comment_body = shareManName+":"+sendCommentText;
+	};
+	
+	var share_id = document.getElementsByClassName("sendCommentTextDiv")[0].children[1].innerHTML;
 	if (window.XMLHttpRequest)
 	  {// code for IE7+, Firefox, Chrome, Opera, Safari
 	  xmlhttp=new XMLHttpRequest();
@@ -236,14 +257,7 @@ var commentSubmit = function(){
 	  {// code for IE6, IE5
 	  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 	  }
-	xmlhttp.onreadystatechange=function()
-	  {
-	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-	    {
-	    document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
-	    }
-	  }
-	xmlhttp.open("POST","{{ url_for('add_comment') }}",true);
+	xmlhttp.open("POST","/add_comment",true);
 	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	xmlhttp.send("comment_body="+comment_body+"&share_id=" + share_id);
 };
