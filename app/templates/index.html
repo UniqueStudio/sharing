@@ -39,45 +39,51 @@
 		<div class="contentDiv">
             <!-- @ author guoqi -->
             <!-- 这儿的class是干嘛的? -->
-			<class class="content">
+            <class class="content">
 			<p class="switchContentButtonDiv">
-                <a href="{{ url_for('index_hot', desc=desc) }}" class="hotest switchContentChoice">最热</a>
-                <a href="{{ url_for('index', desc=desc) }}" class="latest">最新</a>
+                <a href="{{ url_for('index_hot', group_id=current_group_id) }}" class="hotest switchContentChoice">最热</a>
+                <a href="{{ url_for('index', group_id=current_group_id) }}" class="latest">最新</a>
 			</p>
 
             <!-- 显示条目 -->
-            {% for share in shares.items %}
-                <div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{share.url}}');">
-                    <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail" title="{{share.title}}">
-                        <p class="contentDetailTitle">{{share.title}}</p>
-                        <p
-                        class="contentDetailTime">{{share.timestamp.isocalendar()}}</p>
-                        <p class="contentDetailCommentNum">likes {{share.likes}}</p>
-                    </a>
+            {% if shares and user_groups and shares.items != [] %}
+                {% for share in shares.items %}
+                    <div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{share.url}}');">
+                        <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail" title="{{share.title}}">
+                            <p class="contentDetailTitle">{{share.title}}</p>
+                            <p
+                            class="contentDetailTime">{{share.timestamp.isocalendar()}}</p>
+                            <p class="contentDetailCommentNum">likes {{share.likes}}</p>
+                        </a>
+                    </div>
+                {% endfor %}
+                </class>
+
+                <!-- 页码及翻页 -->
+                <div class="page_num">
+                {% if shares.has_prev %}
+                    <a href="{{ url_for(current_url, page = shares.prev_num, group_id = current_group_id) }}" class="not_current_page_num">&lt;&lt;</a>
+                {% endif %}
+
+                {% for page_num in shares.iter_pages() %}
+                    <span class="pagination">
+                        {% if page_num != shares.page %}
+                            <a href="{{ url_for(current_url, page = page_num, group_id = current_group_id) }}" class="not_current_page_num">{{ page_num }}</a>
+                        {% else %}
+                            <a href="{{ url_for(current_url, page = page_num, group_id = current_group_id) }}" class="current_page_num">{{ page_num }}</a>
+                        {% endif %}
+                    </span>
+                {% endfor %}
+
+                {% if shares.has_next %}
+                    <a href="{{ url_for(current_url, page = shares.next_num, group_id = current_group_id) }}" class="not_current_page_num">&gt;&gt;</a>
+                {% endif %}
                 </div>
-            {% endfor %}
-			</class>
-
-            <!-- 页码及翻页 -->
-            <div class="page_num">
-            {% if shares.has_prev %}
-                <a href="{{ url_for(current_url, page = shares.prev_num) }}" class="not_current_page_num">&lt;&lt;</a>
+            {% elif user_groups != [] and shares.items != []%}
+                <h3>还未加入群组</h3>
+            {% else %}
+                <h3>该群组暂无分享</h3>
             {% endif %}
-
-            {% for page_num in shares.iter_pages() %}
-                <span class="pagination">
-                    {% if page_num != shares.page %}
-                        <a href="{{ url_for(current_url, page = page_num) }}" class="not_current_page_num">{{ page_num }}</a>
-                    {% else %}
-                        <a href="{{ url_for(current_url, page = page_num) }}" class="current_page_num">{{ page_num }}</a>
-                    {% endif %}
-                </span>
-            {% endfor %}
-
-            {% if shares.has_next %}
-                <a href="{{ url_for(current_url, page = shares.next_num) }}" class="not_current_page_num">&gt;&gt;</a>
-            {% endif %}
-            </div>
 		</div>
 
         <!-- 分组 -->
@@ -89,25 +95,30 @@
 			<!-- <a href="">安卓</a> -->
 			<!-- <a href="">嵌入式</a> -->
 			<!-- <a href="">算法</a> -->
-            <div class="user_groups">
+            <!-- <div class="user_groups"> -->
                 <h4 style="margin-top: 5px; margin-bottom: 5px;">已关注</h4>
                 {% if user_groups %}
                 {% for group in user_groups %}
-                    <a href="{{ url_for(current_url, desc=desc, group_id=group.id ) }}" class="group">{{group.title}}</a>
-                    <button data='{{group.id}}'>取消</button>
+                    {% if group.id == current_group_id %}
+                        <a href="{{ url_for(current_url, group_id=group.id ) }}"
+                            class="homeChoice">{{group.title}}</a>
+                    {% else %}
+                        <a href="{{ url_for(current_url, group_id=group.id ) }}">{{group.title}}</a>
+                    {% endif %}
+                    <button data='{{group.id}}' class="remove">取消</button>
                 {% endfor %}
                 {% endif %}
-            </div>
+            <!-- </div> -->
 
-            <div class="diff_groups">
+            <!-- <div class="diff_groups"> -->
                 <h4 style="margin-top: 5px; margin-bottom: 5px;">未关注</h4>
                 {% if diff_groups %}
                 {% for group in diff_groups %}
-                    <a href="" class="group">{{ group.title }}</a>
-                    <button data="{{group.id}}">关注</button>
+                    <a>{{ group.title }}</a>
+                    <button data="{{group.id}}" class="add">关注</button>
                 {% endfor %}
                 {% endif %}
-            </div>
+            <!-- </div> -->
 		</div>
 
 		<script >
@@ -117,6 +128,7 @@
 	</div>
 {% endblock %}
 {% block script %}
+    <script src="../static/js/jquery.js">
 	<script type="text/javascript" rel="script" src="../static/js/indexBanner.js"></script>
 	<script type="text/javascript" rel="script" src="../static/js/index.js"></script>
 {% endblock %}
