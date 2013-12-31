@@ -282,7 +282,7 @@ def reading(id):
         return redirect(url_for('login'))
     shares = Share.query.all()
     share = Share.query.get(id)
-    comments = share.comments
+    comments = share.comments.order_by(Comment.id.desc())
     return render_template(constance['reading'],
             share = share,
             shares = shares,
@@ -292,7 +292,10 @@ def reading(id):
 
 @app.route('/add_comment', methods = ['POST'])
 def add_comment():
-    if 'user_id' not in session:
+    if 'user_id' in session:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+    else:
         return redirect(url_for('login'))
 
     c = Comment(body = request.form['comment_body'],
@@ -300,7 +303,10 @@ def add_comment():
             user_id = session['user_id'])
     db.session.add(c)
     db.session.commit()
-    return 'success'
+    resp = {}
+    resp['c_body'] = c.body
+    resp['user_avatar_src'] = user.avatar(50)
+    return json.dumps(resp)
 
 # 对群组加关注
 @app.route('/add_attention_to_group/', methods = ['POST'])
