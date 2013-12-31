@@ -86,11 +86,9 @@ def index(page=1):
     else:
         group = Group.query.all()
 
-    user_id_list = [user.id for user in group.users]
-    print user_id_list
 
     # 这里BaseQuery.paginate方法返回的是一个Paginate对象，不是一个list
-    shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp).paginate(page, constance['per_page'],
+    shares = Share.query.order_by(Share.timestamp).paginate(page, constance['per_page'],
             False)
 
     # @ by guoqi
