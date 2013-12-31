@@ -110,6 +110,7 @@ def index(page=1):
     if group_id is not None:
         groups.append(Group.query.get(group_id))
 
+
     # @ by guoqi
     # add groups 
     all_groups = list(Group.query.all()) or None
