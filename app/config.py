@@ -15,5 +15,7 @@ constance = {
         'index': 'index.html', 
         'profile': 'profile.html', 
         'reading': 'reading2.html', 
-        'per_page': 3
+        'per_page': 3,
+        'comment_per_page': 3,
+        'download_folder': '/home/z_sky/unique/flask/sharing2/download_files'
         }

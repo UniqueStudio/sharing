@@ -1,6 +1,6 @@
 #encoding:utf-8
 from flask import render_template, redirect, url_for, session,\
-        request, flash, abort, make_response
+        request, flash, abort, make_response, send_from_directory
 from app import app, db
 from models import Group, User, Share, Comment
 from forms import RegisterForm, LoginForm, CommentForm
@@ -139,9 +139,9 @@ def index(page=1):
 
    #  mail testing 
     
-    mail_shares = Share.query.order_by(Share.likes.desc(),
-            Share.timestamp.desc())[0:2]
-    share_mail(mail_shares)
+    #mail_shares = Share.query.order_by(Share.likes.desc(),
+    #        Share.timestamp.desc())[0:2]
+    #share_mail(mail_shares)
 
     if user_id_list  != []:
         shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp.desc()).paginate(page, constance['per_page'],
@@ -364,6 +364,11 @@ def create_group():
     else:
         return 'not logged'
 
+#  download files  -- extension
+@app.route('/download/<path:filename>')
+def download(filename):
+    return send_from_directory(constance['download_folder'],
+            filename, as_attachment=True)
 
 
 ###################################################################
