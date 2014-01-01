@@ -12,9 +12,7 @@
 		</div>
 		
 		<div class="headerLeftDiv">
-			<a href="" class="catalog">首页</a>
-			<p class="toTag">></p>
-			<a href="" class="catalog">web</a>
+			<a href="{{url_for('index')}}" class="catalog">首页</a>
 		</div>
 		
 		<p class="catalogNowShow">首页</p>
@@ -23,9 +21,7 @@
 		<div class="catalogSwitchShowDiv">
 			<div class="verticalSpace"></div>
 			<div class="catalogSwitchShow">
-				<a href="" class="catalogChoice">首页</a>
-				<a href="">web</a>
-				<a href="">IT</a>
+				<a href="{{url_for('index')}}" class="catalogChoice">首页</a>
 				<div class="catalogSwitchArrowDiv">
 					<div class="catalogSwitchArrow"></div>
 				</div>
@@ -50,7 +46,11 @@
 				<img class="bubbleImg" src="../static/img/bubble.png" alt="">
 			</div>
 			<div class="loveButton">
-				<img class="loveImg" src="../static/img/heart.png" alt="">
+                {% if user.is_like(share) %}
+                	<img class="loveImg" style="display:none;" src="../static/img/heart.png" alt="">
+                {% else %}
+                	<img class="loveImg" style="display:inline-block;" src="../static/img/heart.png" alt="">
+                {% endif %}
 			</div>
 		</div>
 		<div class="commentBlock">
@@ -80,17 +80,12 @@
 						</div>
 					</div>
 					<div class="commentShowDiv">
+
+
 						<div class="commentShow">
                             {% for comment in comments %}
                             {% include 'comment.html' %}
                             {% endfor %}
-							<div class="commentEach">
-								<img src="../static/img/commentEach.jpg" alt="">
-								<textarea rows="4" readonly="readonly">呵呵4:俄罗斯摄影师Murad Osmann被女友Nataly Zakharova 拖着手环游世界。。。他们的旅行还在继续，来看看他们最近又去了哪些地方吧！无论繁华还是寂静，只要你牵着我，就是整个世界！</textarea>
-								<div onclick="sendComment(this)">
-									<img src="../static/img/bubble.png" alt="">
-								</div>
-							</div>
 						</div>
 					</div>
 				</div>
@@ -98,5 +93,6 @@
 		</div>
 	</div>
 	<script type="text/javascript" rel="script" src="../static/js/index2.js"></script>
+	<script type="text/javascript" rel="script" src="../static/js/jquery.js"></script>
 </body>
 </html>

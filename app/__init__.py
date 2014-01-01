@@ -10,4 +10,8 @@ app.config.update(mail_config)
 mail_abc = Mail(app)
 db = SQLAlchemy(app)
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
 from app import views, models, forms

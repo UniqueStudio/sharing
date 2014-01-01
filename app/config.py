@@ -1,12 +1,12 @@
 #encoding: utf-8
 mail_config = {
-		'MAIL_SERVER': 'smtp.googlemail.com',
-		'MAIL_PORT': 465, 
-		'MAIL_USE_SSL': True, 
-		'MAIL_USER_NAME': 'uniqueguoqi@gmail.com',
-		'MAIL_PASSWORD': '!#%&(_618753294g', 
+		'MAIL_SERVER': 'smtp.gmail.com',
+		'MAIL_PORT': 587, 
+        'MAIL_USE_TLS': True,
+		'MAIL_USER_NAME': 'kabsky9@gmail.com',
+		'MAIL_PASSWORD': 'jalmoeijckdptkos', 
 		'MAIL_DEBUG': True, 
-		'MAIL_DEFAULT_SENDER': 'uniqueguoqi@gmail.com'
+		'MAIL_DEFAULT_SENDER': '948282320@qq.com'
 }
 
 constance = {
@@ -15,5 +15,7 @@ constance = {
         'index': 'index.html', 
         'profile': 'profile.html', 
         'reading': 'reading2.html', 
-        'per_page': 3
+        'per_page': 3,
+        'comment_per_page': 3,
+        'download_folder': '/home/z_sky/unique/flask/sharing2/download_files'
         }
