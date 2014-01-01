@@ -7,6 +7,7 @@ from forms import RegisterForm, LoginForm, CommentForm
 from datetime import datetime, timedelta
 import json, md5
 from config import constance
+from emails import test_mail, share_mail
 
 
 
@@ -135,6 +136,12 @@ def index(page=1):
 
     # recommended shares order_by likes
     recommends = Share.query.order_by(Share.likes.desc())[0:5]
+
+   #  mail testing 
+    
+    mail_shares = Share.query.order_by(Share.likes.desc(),
+            Share.timestamp.desc())[0:2]
+    share_mail(mail_shares)
 
     if user_id_list  != []:
         shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp.desc()).paginate(page, constance['per_page'],
@@ -307,6 +314,14 @@ def add_comment():
     resp['c_body'] = c.body
     resp['user_avatar_src'] = user.avatar(50)
     return json.dumps(resp)
+
+@app.route('/load_comments', methods = ['POST'])
+def load_comments():
+    share_id = request.form['share_id']
+    page = request.form['page']
+    share = Share.query.get(share_id)
+    comments = share.comments.order_by(Comment.id.desc()).paginate(page,
+            constance['per_page'], False)
 
 # 对群组加关注
 @app.route('/add_attention_to_group/', methods = ['POST'])
