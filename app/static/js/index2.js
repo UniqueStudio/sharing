@@ -231,6 +231,7 @@ function sendComment(element){
 var commentSubmit = function(){
 	
 	var xmlhttp;
+	var commentTextLength;
 	var shareManName = document.getElementsByClassName("shareManName")[0].innerHTML;
 	var sendCommentText = document.getElementsByClassName("sendCommentText")[0].value;
 	var SCTnameLength = sendCommentText.indexOf(":");
@@ -243,26 +244,55 @@ var commentSubmit = function(){
 		&&sendCommentText.indexOf("对") === 0
 		&&sendCommentText.indexOf("说")<SCTnameLength){
 		var comment_body = shareManName+sendCommentText;
+		commentTextLength = sendCommentText.length - SCTnameLength - 1;
 	}
 	else{
 		var comment_body = shareManName+":"+sendCommentText;
+		commentTextLength = sendCommentText.length;
 	};
-	
-	var share_id = document.getElementsByClassName("sendCommentTextDiv")[0].children[1].innerHTML;
-	if (window.XMLHttpRequest)
-	  {// code for IE7+, Firefox, Chrome, Opera, Safari
-	  xmlhttp=new XMLHttpRequest();
-	  }
-	else
-	  {// code for IE6, IE5
-	  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	  }
-	xmlhttp.open("POST","/add_comment",true);
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	xmlhttp.send("comment_body="+comment_body+"&share_id=" + share_id);
-    xmlhttp.onreadystatechange = function() {
 
-        var resp = JSON.parse(xmlhttp.responseText);
-        console.log(resp);
-    }
+	if(commentTextLength){
+		document.getElementsByClassName("sendCommentText")[0].value = "";
+		var share_id = document.getElementsByClassName("sendCommentTextDiv")[0].children[1].innerHTML;
+		if (window.XMLHttpRequest)
+		  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		  xmlhttp=new XMLHttpRequest();
+		  }
+		else
+		  {// code for IE6, IE5
+		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		 xmlhttp.onreadystatechange=function()
+		   {
+		   if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		     {
+				var commentJSON  = JSON.parse(xmlhttp.responseText);
+				addComment(commentJSON );
+		     }
+		   }
+		xmlhttp.open("POST","/add_comment",true);
+		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xmlhttp.send("comment_body="+comment_body+"&share_id=" + share_id);
+	};
+
+	
+	
 };
+
+var addComment = function(commentJSON){
+	var userImg     = commentJSON["user_avatar_src"];
+	var commentBody = commentJSON["c_body"];
+	var node        = document.createElement("div");
+	var commentShow = document.getElementsByClassName("commentShow")[0];
+	var firstChild  = commentShow.children[0];
+	commentShow.insertBefore(node,firstChild );
+	commentShow.children[0].className = "commentEach";
+	firstChild  = commentShow.children[0];
+	firstChild.innerHTML = "<img src='"+userImg+ "' alt=''>"
+	+"<textarea style='margin-left:4px;' rows=4 readonly='readonly'>"
+	+commentBody
+	+"</textarea>"
+    +"<div onclick="+"'sendComment(this)'"+">"
+    +"<img src='../static/img/bubble.png'alt=''>"
+    +"</div>";
+}
