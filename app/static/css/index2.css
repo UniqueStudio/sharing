@@ -298,7 +298,7 @@ p,a{
 .commentRight{
 	display: inline-block;
 	height: 100%;
-	width: 674px;
+	width: 673px;
 }
 
 .shareManDiv{
@@ -372,6 +372,7 @@ p,a{
 }
 
 .sendCommentDiv{
+	position: relative;
 	height: 100px;
 	margin-bottom: 10px;
 }
@@ -388,6 +389,24 @@ p,a{
 	display: inline-block;
 	width: 605px;
 	height: 100px;
+}
+
+.statusShowdiv{
+	position: absolute;
+	top: 0px;
+	left: 60px;
+	display: none;
+	width: 580px;
+	height: 65px;
+	text-align: center!important;
+	vertical-align: middle;
+}
+
+.sendsucceed{
+	display: inline-block;
+	margin:15px 0px;
+	font-size: 30px;
+	color: #5F5F5F;
 }
 
 .sendCommentText{
@@ -436,9 +455,9 @@ p,a{
 	outline: 0px;
 	width: 90px;
 	height: 30px;
-	color: #5F5F5F;
+	color: #c9c9c9;
 	font-size: 20px;
-	cursor: pointer;
+	cursor: default;
 }
 
 .commentShowDiv{
@@ -473,8 +492,9 @@ p,a{
 
 .commentEach>textarea{
 	display: inline-block;
-	width: 578px;
+	width: 583px;
 	height: 67px;
+	margin:0px 0px 1px;
 	background-color: #fafafa;
 	border: 1px #c9c9c9 solid;
 	color: #5F5F5F;
@@ -492,13 +512,13 @@ p,a{
 	height: 50px;
 	margin-right: 10px;
 	border-radius: 4px;
-	margin-bottom: 15px;
+	margin-bottom: 13px;
 }
 
 .commentEach>div{
 	position: absolute;
-	bottom: 0px;
-	right: 1px;
+	bottom: 1px;
+	right: 0px;
 	display: inline-block;
 	width: 30px;
 	height: 30px;

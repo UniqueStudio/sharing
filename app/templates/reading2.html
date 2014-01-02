@@ -75,18 +75,18 @@
 				</div>
 				<div class="commentRight">
 					<div class="sendCommentDiv">
+						<div class="statusShowdiv">
+							<p class="sendsucceed">发送成功!!</p>
+						</div>
 						<img src="../static/img/shareMan.jpg" alt="" class="sendCommentManPic">
 						<div class="sendCommentTextDiv" >
 							<textarea class="sendCommentText" maxlength="120" ></textarea>
-							<p style="display:none;">{{ share.id }}</p>
 							<br>
 							<p class="commentInputNum"></p>
 							<input type="submit" class="sendCommentTextButton" onclick="commentSubmit()" value="发送">
 						</div>
 					</div>
 					<div class="commentShowDiv">
-
-
 						<div class="commentShow">
                             {% for comment in comments %}
                             {% include 'comment.html' %}
