@@ -45,11 +45,11 @@
 			<div class="bubbleButton">
 				<img class="bubbleImg" src="../static/img/bubble.png" alt="">
 			</div>
-			<div class="loveButton">
+			<div class="loveButton likeClick">
                 {% if user.is_like(share) %}
                 	<img class="loveImg" style="display:none;" src="../static/img/heart.png" alt="">
                 {% else %}
-                	<img class="loveImg" style="display:inline-block;" src="../static/img/heart.png" alt="">
+                	<img class="loveImg likeButton" style="display:inline-block;" src="../static/img/heart.png" alt="">
                 {% endif %}
 			</div>
 		</div>
@@ -61,8 +61,13 @@
 						<div class="shareManDetailDiv">
                             <p class="shareManName">{{share.author.username}}</p>
                             <p class="shareTime">{{share.timestamp.strftime("%Y-%m-%d")}}</p>
-							<div class="shareManLoveButton">
-								<img src="../static/img/heart.png" alt="">
+                            <p class="shareId" style="display:none;">{{ share.id }}</p>
+							<div class="shareManLoveButton likeClick">
+							{% if user.is_like(share) %}
+								<img class="" style="display:none;" src="../static/img/heart.png" alt="">
+							{% else %}
+								<img class="" style="display:inline-block;" src="../static/img/heart.png" alt="">
+							{% endif %}
 							</div>
 						</div>
 					</div>
@@ -93,6 +98,5 @@
 		</div>
 	</div>
 	<script type="text/javascript" rel="script" src="../static/js/index2.js"></script>
-	<script type="text/javascript" rel="script" src="../static/js/jquery.js"></script>
 </body>
 </html>

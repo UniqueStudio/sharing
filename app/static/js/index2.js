@@ -80,6 +80,14 @@ document.getElementsByClassName("sendCommentText")[0].onkeydown = function(){
 	document.getElementsByClassName("commentInputNum")[0].innerHTML = 120 -inputNum;
 };
 
+document.getElementsByClassName("likeClick")[0].onclick = function(){
+	sendLike();
+};
+
+document.getElementsByClassName("likeClick")[1].onclick = function(){
+	sendLike();
+};
+
 var catalogShowDown = function(T){
 	var countTime = 1;
 	const a1 = 500/(T*T);
@@ -252,8 +260,7 @@ var commentSubmit = function(){
 	};
 
 	if(commentTextLength){
-		document.getElementsByClassName("sendCommentText")[0].value = "";
-		var share_id = document.getElementsByClassName("sendCommentTextDiv")[0].children[1].innerHTML;
+		var share_id = document.getElementsByClassName("shareId")[0].innerHTML;
 		if (window.XMLHttpRequest)
 		  {// code for IE7+, Firefox, Chrome, Opera, Safari
 		  xmlhttp=new XMLHttpRequest();
@@ -262,21 +269,47 @@ var commentSubmit = function(){
 		  {// code for IE6, IE5
 		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 		  }
-		 xmlhttp.onreadystatechange=function()
-		   {
-		   if (xmlhttp.readyState==4 && xmlhttp.status==200)
-		     {
+		xmlhttp.onreadystatechange=function(){
+		    if (xmlhttp.readyState==4 && xmlhttp.status==200){
+		    	document.getElementsByClassName("sendCommentText")[0].value = "";
+		    	document.getElementsByClassName("commentInputNum")[0].innerHTML = 120;
 				var commentJSON  = JSON.parse(xmlhttp.responseText);
 				addComment(commentJSON );
-		     }
-		   }
+		    };
+		};
 		xmlhttp.open("POST","/add_comment",true);
 		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		xmlhttp.send("comment_body="+comment_body+"&share_id=" + share_id);
 	};
+};
 
-	
-	
+var sendLike = function(){
+	var xmlhttp;
+	var share_id = document.getElementsByClassName("shareId")[0].innerHTML;
+	if (window.XMLHttpRequest)
+	{// code for IE7+, Firefox, Chrome, Opera, Safari
+		 xmlhttp=new XMLHttpRequest();
+	 }
+	else
+	{// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	};
+	xmlhttp.open("POST","/toggleLikes",true);
+	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xmlhttp.send("&shareID=" + share_id);
+	xmlhttp.onreadystatechange=function(){
+	   if (xmlhttp.readyState==4 && xmlhttp.status==200){
+			var likeJSON  = JSON.parse(xmlhttp.responseText);
+			if(likeJSON.userLike){
+				document.getElementsByClassName("likeClick")[0].children[0].style.display = "none"
+				document.getElementsByClassName("likeClick")[1].children[0].style.display = "none"
+			}
+			else{
+				document.getElementsByClassName("likeClick")[0].children[0].style.display = "inline-block"
+				document.getElementsByClassName("likeClick")[1].children[0].style.display = "inline-block"
+			}
+	    };
+	;}
 };
 
 var addComment = function(commentJSON){
@@ -288,6 +321,7 @@ var addComment = function(commentJSON){
 	commentShow.insertBefore(node,firstChild );
 	commentShow.children[0].className = "commentEach";
 	firstChild  = commentShow.children[0];
+	firstChild.style.opacity = 0;
 	firstChild.innerHTML = "<img src='"+userImg+ "' alt=''>"
 	+"<textarea style='margin-left:4px;' rows=4 readonly='readonly'>"
 	+commentBody
@@ -295,4 +329,15 @@ var addComment = function(commentJSON){
     +"<div onclick="+"'sendComment(this)'"+">"
     +"<img src='../static/img/bubble.png'alt=''>"
     +"</div>";
+    var countTime = 0;
+    var time = setInterval(function(){	
+		firstChild.style.opacity = 0.004*countTime;
+		if(countTime < 250){
+			++countTime;
+		}
+		else{
+			commentMoveJudge = 2;
+			clearInterval(time);
+		}
+	},1);
 }
