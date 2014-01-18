@@ -321,6 +321,8 @@ def toggle_group():
             result['status'] = False
             result['msg'] = 'not logged'
         return json.dumps(result)
+    else:
+        abort(404)
 
 # 查询用户的群组信息
 @app.route('/query_group', methods = ['POST'])
@@ -340,6 +342,8 @@ def query_group():
             result['status'] = False
             result['msg'] = 'not logged'
         return json.dumps(result)
+    else:
+        abort(404)
 
 
 # 创建群组
@@ -360,6 +364,8 @@ def create_group():
             result['status'] = False
             result['msg'] = 'not logged'
             return json.dumps(result)
+    else:
+        abort(404)
 
 #  download files  -- extension
 @app.route('/download/<path:filename>')
