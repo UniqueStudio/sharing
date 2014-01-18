@@ -69,7 +69,7 @@ document.getElementsByClassName("sendCommentText")[0].onkeyup = function(){
 	document.getElementsByClassName("commentInputNum")[0].innerHTML = 120 -inputNum;
 	//根据评论字数是否为零对提交按钮设置不同的样式
 	if(inputNum){
-		endCommentTextButton.color = "#5F5F5F";
+		sendCommentTextButton.color = "#5F5F5F";
 		sendCommentTextButton.cursor = "pointer";
 	}
 	else{
