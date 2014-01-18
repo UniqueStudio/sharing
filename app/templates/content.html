@@ -1,0 +1,46 @@
+<class class="content">
+<p class="switchContentButtonDiv">
+<a href="{{ url_for('index_hot', group_id=current_group_id) }}" class="hotest switchContentChoice">最热</a>
+<a href="{{ url_for('index', group_id=current_group_id) }}" class="latest">最新</a>
+</p>
+
+<!-- 显示条目 -->
+{% if shares and user_groups and shares.items != [] %}
+{% for share in shares.items %}
+<div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{share.url}}');">
+    <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail" title="{{share.title}}">
+        <p class="contentDetailTitle">{{share.title}}</p>
+        <p
+        class="contentDetailTime">{{share.timestamp.strftime("%Y-%m-%d")}}</p>
+        <p class="contentDetailCommentNum">likes {{share.likes}}</p>
+    </a>
+</div>
+{% endfor %}
+</class>
+
+<!-- 页码及翻页 -->
+<div class="page_num">
+    {% if shares.has_prev %}
+    <a href="{{ url_for(current_url, page = shares.prev_num, group_id = current_group_id) }}" class="not_current_page_num">&lt;&lt;</a>
+    {% endif %}
+
+    {% for page_num in shares.iter_pages() %}
+    <span class="pagination">
+        {% if page_num != shares.page %}
+        <a href="{{ url_for(current_url, page = page_num, group_id = current_group_id) }}" class="not_current_page_num">{{ page_num }}</a>
+        {% else %}
+        <a href="{{ url_for(current_url, page = page_num, group_id = current_group_id) }}" class="current_page_num">{{ page_num }}</a>
+        {% endif %}
+    </span>
+    {% endfor %}
+
+    {% if shares.has_next %}
+    <a href="{{ url_for(current_url, page = shares.next_num, group_id = current_group_id) }}" class="not_current_page_num">&gt;&gt;</a>
+    {% endif %}
+</div>
+{% elif user_groups != [] and shares.items != []%}
+<h3>还未加入群组</h3>
+{% else %}
+<h3>该群组暂无分享</h3>
+{% endif %}
+

@@ -14,8 +14,8 @@
         <!-- banner -->
 		<div class="banner">
 			<div class="bannerContent">
-				<div class="bannerMoveLeftButton"><</div>
-				<div class="bannerMoveRightButton">></div>
+				<div class="bannerMoveLeftButton"></div>
+				<div class="bannerMoveRightButton"></div>
 				<div class="bannerContentShowDiv">
 					<div class="bannerContentShow">
                         {% for recommend in recommends %}
@@ -40,9 +40,10 @@
 		<div class="contentDiv">
             <!-- @ author guoqi -->
             <!-- 这儿的class是干嘛的? -->
+            <!--
             <class class="content">
 			<p class="switchContentButtonDiv">
-                <a href="{{ url_for('index_hot', group_id=current_group_id) }}" class="hotest switchContentChoice">最热</a>
+                <a href="{{ url_for('', group_id=current_group_id) }}" class="hotest switchContentChoice">最热</a>
                 <a href="{{ url_for('index', group_id=current_group_id) }}" class="latest">最新</a>
 			</p>
 
@@ -85,6 +86,7 @@
             {% else %}
                 <h3>该群组暂无分享</h3>
             {% endif %}
+            -->
 		</div>
 
         <!-- 分组 -->

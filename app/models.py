@@ -24,6 +24,10 @@ class Group(db.Model):
     def __repr__(self):
         return '<Group %r>' % (self.title)
 
+    def is_attentioned(self, user):
+        return user in self.users.all()
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String(40))

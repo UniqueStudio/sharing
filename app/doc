@@ -1,0 +1,16 @@
+加关注/取消关注群组
+接口: /toggle_group
+参数: group_id
+返回值: json['status']表示操作状态, 如果出错，有json['msg']提示错误信息
+
+创建群组
+接口: /create_group
+参数: group_name
+返回值： 同上
+
+获取群组
+接口：/query_group 
+参数: 无
+返回值：json['status']
+表示操作状态，如果成功，则json['user_groups']表示用户关注的群组。
+json['diff_groups'] 表示用户尚未关注的群组。如果出错,json['msg']记录错误信息
