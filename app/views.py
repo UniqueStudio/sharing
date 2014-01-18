@@ -22,7 +22,7 @@ def login():
             session['logged_in'] = True
             session['user_id'] = login_form.current_user()
             user = User.query.get(session['user_id'])
-            redirect_to_index = redirect(url_for('index', group_id=user.get_group_first_id()))
+            redirect_to_index = redirect(url_for('index'))
             resp = make_response(redirect_to_index)
             if login_form.remember_me.data:
                 resp.set_cookie('email',login_form.email.data, expires =
@@ -66,7 +66,7 @@ def register():
             db.session.commit()
             session['logged_in'] = True
             session['user_id'] = user.id
-            return redirect(url_for('index', group_id=user.get_group_first_id()))
+            return redirect(url_for('index'))
 
     return render_template(constance['login'],
             title = 'login',
@@ -79,15 +79,19 @@ def redirect_to_index():
     if 'logged_in' not in  session:
         return redirect(url_for('login'))
     else:
-        user = User.query.get(session['user_id'])
-    return redirect(url_for('index', group_id=user.get_group_first_id()))
+        return redirect(url_for('index'))
 
 
 @app.route('/index')
 @app.route('/index/<int:page>')
 def index(page=1):
-
+    
     current_user = None
+   
+    if 'logged_in' not in  session:
+        return redirect(url_for('login'))
+
+    # 处理cookies
     if 'user_id' in session:
         user_id = session['user_id']
         if user_id:
@@ -101,70 +105,43 @@ def index(page=1):
             session['user_id'] = user.id
             current_user = user
 
-    if 'logged_in' not in  session:
-        return redirect(url_for('login'))
-
+    # 获取查询的group_id来得到指定group中的share
     group_id = request.args.get('group_id', '') or None
-
-    groups = []
     if group_id is not None:
-        groups.append(Group.query.get(group_id))
+        group = Group.query.get(group_id)
+    else:
+        group = current_user.groups.first()
 
-
-    # @ by guoqi
-    # add groups 
-    all_groups = list(Group.query.all()) or None
-    user_groups = list(current_user.groups.all()) or None
-    diff_groups = None
-    if all_groups and user_groups:
-        diff_groups = list(set(all_groups).difference(set(user_groups))) 
-    elif all_groups:
-        diff_groups = all_groups
-
-
-    user_id_list = []
-    for group in groups:
-        user_id_list.extend([user.id for user in group.users])
-
-
-    # user_id_list = [user.id for user in group.users]
-
-    #shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp).paginate(page, constance['per_page'],
-    #        False)
-
+    # 获取当前加入该群组的所有用户信息
+    user_id_list = [user.id for user in group.users]
 
     # recommended shares order_by likes
     recommends = Share.query.order_by(Share.likes.desc())[0:5]
 
-   #  mail testing 
-    
-    #mail_shares = Share.query.order_by(Share.likes.desc(),
-    #        Share.timestamp.desc())[0:2]
-    #share_mail(mail_shares)
-
-    if user_id_list  != []:
-        shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(Share.timestamp.desc()).paginate(page, constance['per_page'],
-                False)
+    # 获取查询参数中的排序信息, 默认为按时间排序
+    order = request.args.get('order_by', '') or 'timestamp'
+    if order == 'timestamp':
+        order = Share.timestamp
     else:
-        shares = None
+        order = Share.likes
 
-    # shares = Share.query.order_by(Share.timestamp).paginate(page,
-            # constance['per_page'],False)
+    # 读取分享信息
+    shares = Share.query.filter(Share.user_id.in_(user_id_list)).order_by(order.desc()).paginate(page, constance['per_page'],
+                False)
     
     current_url = 'index'
     # if current_url.find('/') == 0:
         # current_url = current_url[1:]
 
-    return render_template(constance['index'],
+    return render_template(constance['content'],
             current_url = current_url, 
             shares = shares,
             current_group_id = group_id, 
-            user_groups = user_groups, 
-            diff_groups = diff_groups, 
             current_user = current_user,
             recommends = recommends,
             title = 'home')
 
+'''
 @app.route('/index_hot')
 @app.route('/index_hot/<int:page>')
 def index_hot(page=1):
@@ -224,6 +201,7 @@ def index_hot(page=1):
             user_groups = user_groups, 
             diff_groups = diff_groups, 
             title = 'home')
+'''
 
 @app.route('/profile/')
 @app.route('/profile/<profile_desc>')
@@ -322,46 +300,66 @@ def load_comments():
     comments = share.comments.order_by(Comment.id.desc()).paginate(page,
             constance['per_page'], False)
 
-# 对群组加关注
-@app.route('/add_attention_to_group/', methods = ['POST'])
-def add_attention_to_group():
-    group_id = request.form['group_id']
-    group = Group.query.get(group_id)
-    if 'logged_in' in session:
-        user_id = session['user_id']
-        user = User.query.get(user_id)
-        user.add_to_group(group)
-        db.session.commit()
-        return 'success'
-    else:
-        return 'not logged'
+# 切换关注/取消关注群组
+@app.route('/toggle_group', methods = ['POST'])
+def toggle_group():
+    if request.method == 'POST':
+        group_id = request.form['group_id']
+        group = Group.query.get(group_id)
+        # result
+        result = {}
+        if 'logged_in' in session:
+            user_id = session['user_id']
+            user = User.query.get(user_id)
+            if group.is_attentioned(user):
+                user.remove_from_group(group)
+            else:
+                user.add_to_group(group)
+            db.session.commit()
+            result['status'] = True
+        else:
+            result['status'] = False
+            result['msg'] = 'not logged'
+        return json.dumps(result)
 
-# 取消群组关注
-@app.route('/remove_attention_from_group/', methods = ['POST'])
-def remove_attention_from_group():
-    group_id = request.form['group_id']
-    group = Group.query.get(group_id)
-    if 'logged_in' in session:
-        user_id = session['user_id']
-        user = User.query.get(user_id)
-        user.remove_from_group(group)
-        db.session.commit()
-        return 'success'
-    else:
-        return 'not logged'
+# 查询用户的群组信息
+@app.route('/query_group', methods = ['POST'])
+def query_group():
+    if request.method == 'POST':
+        result = {}
+        if 'logged_in' in session:
+            user_id = session['user_id']
+            user = User.query.get(user_id)
+            user_groups = user.groups.all()
+            all_groups = Group.query.all()
+            diff_groups = list(set(all_groups).difference(set(user_groups)))
+            result['user_groups'] = user_groups
+            result['diff_groups'] = diff_groups
+            result['status'] = True
+        else:
+            result['status'] = False
+            result['msg'] = 'not logged'
+        return json.dumps(result)
+
 
 # 创建群组
-@app.route('/create_group/', methods = ['POST'])
+@app.route('/create_group', methods = ['POST'])
 def create_group():
-    group_name = request.form['group_name']
-    if 'logged_in' in session:
-        user_id = session['user_id']
-        group = Group(group_name, user_id)
-        db.session.add(group)
-        db.session.commit()
-        return 'success'
-    else:
-        return 'not logged'
+    if request.method == 'POST':
+        group_name = request.form['group_name']
+        # result
+        result = {}
+        if 'logged_in' in session:
+            user_id = session['user_id']
+            group = Group(group_name, user_id)
+            db.session.add(group)
+            db.session.commit()
+            result['status'] = True
+            return json.dumps(result)
+        else:
+            result['status'] = False
+            result['msg'] = 'not logged'
+            return json.dumps(result)
 
 #  download files  -- extension
 @app.route('/download/<path:filename>')
