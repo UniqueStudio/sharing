@@ -7,63 +7,88 @@
          <div class="header">
             <img src="../static/img/share-2.png" style="height:100%" alt="" />
         </div>
-        <div class="verticalSpace"></div>
-        <div class="content">
-            <div class="contentLeft">
-                <div class="verticalSpace"></div>
-                <div class="contentLeftMain"></div>
-                <div class="verticalSpace"></div>
-            </div>
-            <div class="contentRight">
-                <div class="verticalSpace"></div>
-                <div class="contentRightMain">
-                    <div class="contentRightMenu">
-                        <div>
-                            <p class="loginButton">登录</p>
-                            <p class="registerButton">注册</p>
+        <div class="contentDiv">
+            <div class="content">
+                <div class="contentLeft">
+                    <div class="contentLeftMain"></div>
+                </div>
+                <div class="contentRight">
+                    <div class="contentRightMain">
+                        <div class="contentRightMenu">
+                            <div>
+                                <p class="loginButton" style="cursor:default;">登录</p>
+                                <p class="registerButton">注册</p>
+                            </div>
                         </div>
-                    </div>
-                    <div style="height:3px;width:100%;opacity:0;"></div>
-                    <div class="contentRightBody">
-                        <div class="loginAndRegisterDiv">
-                            <div class="loginAndRegisterMoveDiv">
-                                <div class="loginDiv">
-                                    {% if error %}
-                                    <p>{{ error }}</p>
-                                    {% endif %}
-                                    <!-- 登陆框 -->
-                                    {% from "_formhelpers.html" import render_field %}
-                                    <form action="{{ url_for('login') }}" method="post" class="loginForm">
-                                        {{ login_form.hidden_tag() }}
-                                        {{ render_field(login_form.email, class="loginName loginAndRegisterInput") }}
-                                        {{ render_field(login_form.password, class="loginPassword loginAndRegisterInput") }}
-                                        {{ render_field(login_form.remember_me, class="") }}
-                                        </br><input type="submit" class="SubmitButton" value="登录" />
-                                    </form>
-                                </div>
-                                <div class="registerDiv">
-                                    {% if error %}
-                                    <p>{{ error }}</p>
-                                    {% endif %}
-                                    <!-- 注册框 -->
-                                    {% from "_formhelpers.html" import render_field %}
-                                    <form action="{{ url_for('register') }}" method="post" class="registerForm">
-                                        {{ register_form.hidden_tag() }}
-                                        {{ render_field(register_form.name, class="loginName loginAndRegisterInput") }}
-                                        {{ render_field(register_form.email, class="loginName loginAndRegisterInput") }}
-                                        {{ render_field(register_form.password, class="loginPassword loginAndRegisterInput" ) }}
-                                        {{ render_field(register_form.confirm, class="loginPassword loginAndRegisterInput") }}
-                                        <input type="submit" class="SubmitButton" value="提交" />
-                                    </form>
+                        <div style="height:3px;width:100%;opacity:0;"></div>
+                        <div class="contentRightBody">
+                            <div class="loginAndRegisterDiv">
+                                <div class="loginAndRegisterMoveDiv">
+                                    <div class="loginDiv">
+                                        <p class = "loginAlert">请正确填写相关信息</p>
+                                        {% if error %}
+                                        <p>{{ error }}</p>
+                                        {% endif %}
+                                        <!-- 登陆框 -->
+                                        {% from "_formhelpers.html" import render_field %}
+                                        <form action="{{ url_for('login') }}" method="post" class="loginForm" onsubmit="return loginJudge()">
+                                            {{ login_form.hidden_tag() }}
+                                            {{ render_field(login_form.email, class="loginName loginAndRegisterInput") }}
+                                            <div>
+                                                <img src="../static/img/ok.png" class = "loginNameOk" alt="">
+                                                <img src="../static/img/false.png" class = "loginNameFalse" alt="">
+                                            </div>
+                                            
+                                            {{ render_field(login_form.password, class="loginPassword loginAndRegisterInput") }}
+                                            <div>
+                                                <img src="../static/img/ok.png" class = "loginPasswordOk" alt="">
+                                                <img src="../static/img/false.png" class = "loginPasswordFalse" alt="">
+                                            </div>
+                                            {{ render_field(login_form.remember_me, class="") }}
+                                            </br><input type="submit" class="SubmitButton" value="登录" />
+                                        </form>
+                                    </div>
+                                    <div class="registerDiv">
+                                        <p class = "registerAlert">请正确填写相关信息</p>
+                                        {% if error %}
+                                        <p>{{ error }}</p>
+                                        {% endif %}
+                                        <!-- 注册框 -->
+                                        {% from "_formhelpers.html" import render_field %}
+                                        <form action="{{ url_for('register') }}" method="post" class="registerForm" onsubmit="return registerJudge()">
+                                            {{ register_form.hidden_tag() }}
+                                            {{ render_field(register_form.name, class="registerName loginAndRegisterInput") }}
+                                            <div>
+                                                <img src="../static/img/ok.png" class = "registerNameOk" alt="">
+                                                <img src="../static/img/false.png" class = "registerNameFalse" alt="">
+                                            </div>
+                                            {{ render_field(register_form.email, class="registerEmail loginAndRegisterInput") }}
+                                                <div>
+                                                    <img src="../static/img/ok.png" class = "registerEmailOk" alt="">
+                                                    <img src="../static/img/false.png" class = "registerEmailFalse" alt="">
+                                                </div>
+                                            {{ render_field(register_form.password, class="registerPassword1 loginAndRegisterInput" ,placeholder="password.length>=6" ) }}
+                                                <div>
+                                                    <img src="../static/img/ok.png" class = "registerPassword1Ok" alt="">
+                                                    <img src="../static/img/false.png" class = "registerPassword1False" alt="">
+                                                </div>
+                                            {{ render_field(register_form.confirm, class="registerPassword2 loginAndRegisterInput" ,placeholder="password.length>=6") }}
+                                                <div>
+                                                    <img src="../static/img/ok.png" class = "registerPassword2Ok" alt="">
+                                                    <img src="../static/img/false.png" class = "registerPassword2False" alt="">
+                                                </div>
+                                            <input type="submit" class="SubmitButton" value="提交" />
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="verticalSpace"></div>
             </div>
         </div>
-        <div class="verticalSpace"></div>
+        
+        <div style="display:inline-block;height:1px;width:100%;"></div>
         {% endblock %}
         {% block script %}
         <script type="text/javascript" rel="script" src="../static/js/login.js"></script>
