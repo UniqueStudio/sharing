@@ -114,7 +114,10 @@ def index(page=1):
         group = current_user.groups.first()
 
     # 获取当前加入该群组的所有用户信息
-    user_id_list = [user.id for user in group.users.all()]
+    if group is not None:
+        user_id_list = [user.id for user in group.users.all()]
+    else:
+        user_id_list = []
 
     # recommended shares order_by likes
     recommends = Share.query.order_by(Share.likes.desc())[0:5]
