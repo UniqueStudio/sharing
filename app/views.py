@@ -113,14 +113,14 @@ def index(page=1):
         group = current_user.groups.first()
 
     # 获取当前加入该群组的所有用户信息
-    user_id_list = [user.id for user in group.users]
+    user_id_list = [user.id for user in group.users.all()]
 
     # recommended shares order_by likes
     recommends = Share.query.order_by(Share.likes.desc())[0:5]
 
     # 获取查询参数中的排序信息, 默认为按时间排序
-    order = request.args.get('order_by', '') or 'timestamp'
-    if order == 'timestamp':
+    order_by = request.args.get('order_by', '') or 'likes'
+    if order_by == 'timestamp':
         order = Share.timestamp
     else:
         order = Share.likes
@@ -133,8 +133,9 @@ def index(page=1):
     # if current_url.find('/') == 0:
         # current_url = current_url[1:]
 
-    return render_template(constance['content'],
+    return render_template(constance['index'],
             current_url = current_url, 
+            order_by = order_by, 
             shares = shares,
             current_group_id = group_id, 
             current_user = current_user,
@@ -321,6 +322,8 @@ def toggle_group():
             result['status'] = False
             result['msg'] = 'not logged'
         return json.dumps(result)
+    else:
+        abort(404)
 
 # 查询用户的群组信息
 @app.route('/query_group', methods = ['POST'])
@@ -340,6 +343,8 @@ def query_group():
             result['status'] = False
             result['msg'] = 'not logged'
         return json.dumps(result)
+    else:
+        abort(404)
 
 
 # 创建群组
@@ -360,6 +365,8 @@ def create_group():
             result['status'] = False
             result['msg'] = 'not logged'
             return json.dumps(result)
+    else:
+        abort(404)
 
 #  download files  -- extension
 @app.route('/download/<path:filename>')

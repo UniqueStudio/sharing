@@ -40,15 +40,16 @@
 		<div class="contentDiv">
             <!-- @ author guoqi -->
             <!-- 这儿的class是干嘛的? -->
-            <!--
             <class class="content">
 			<p class="switchContentButtonDiv">
-                <a href="{{ url_for('', group_id=current_group_id) }}" class="hotest switchContentChoice">最热</a>
-                <a href="{{ url_for('index', group_id=current_group_id) }}" class="latest">最新</a>
+                <a href="{{ url_for('index', group_id=current_group_id,
+                    order_by='likes') }}" class="hotest switchContentChoice">最热</a>
+                <a href="{{ url_for('index', group_id=current_group_id,
+                    order_by='timestamp') }}" class="latest">最新</a>
 			</p>
 
             <!-- 显示条目 -->
-            {% if shares and user_groups and shares.items != [] %}
+            {% if shares and shares.items != [] %}
                 {% for share in shares.items %}
                     <div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{share.url}}');">
                         <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail" title="{{share.title}}">
@@ -64,42 +65,36 @@
                 <!-- 页码及翻页 -->
                 <div class="page_num">
                 {% if shares.has_prev %}
-                    <a href="{{ url_for(current_url, page = shares.prev_num, group_id = current_group_id) }}" class="not_current_page_num">&lt;&lt;</a>
+                    <a href="{{ url_for(current_url, page = shares.prev_num,
+                        group_id = current_group_id, order_by = order_by) }}" class="not_current_page_num">&lt;&lt;</a>
                 {% endif %}
 
                 {% for page_num in shares.iter_pages() %}
                     <span class="pagination">
                         {% if page_num != shares.page %}
-                            <a href="{{ url_for(current_url, page = page_num, group_id = current_group_id) }}" class="not_current_page_num">{{ page_num }}</a>
+                            <a href="{{ url_for(current_url, page = page_num,
+                                group_id = current_group_id, order_by = order_by) }}" class="not_current_page_num">{{ page_num }}</a>
                         {% else %}
-                            <a href="{{ url_for(current_url, page = page_num, group_id = current_group_id) }}" class="current_page_num">{{ page_num }}</a>
+                            <a href="{{ url_for(current_url, page = page_num,
+                                group_id = current_group_id, order_by = order_by) }}" class="current_page_num">{{ page_num }}</a>
                         {% endif %}
                     </span>
                 {% endfor %}
 
                 {% if shares.has_next %}
-                    <a href="{{ url_for(current_url, page = shares.next_num, group_id = current_group_id) }}" class="not_current_page_num">&gt;&gt;</a>
+                    <a href="{{ url_for(current_url, page = shares.next_num,
+                        group_id = current_group_id, order_by = order_by) }}" class="not_current_page_num">&gt;&gt;</a>
                 {% endif %}
                 </div>
-            {% elif user_groups != [] and shares.items != []%}
-                <h3>还未加入群组</h3>
             {% else %}
                 <h3>该群组暂无分享</h3>
             {% endif %}
-            -->
 		</div>
 
         <!-- 分组 -->
+        <!--
 		<div class="groupDiv">
-			<!-- <a href="" class="homeChoice">首页</a> -->
-			<!-- <a href="">Web</a> -->
-			<!-- <a href="">Design</a> -->
-			<!-- <a href="">IT</a> -->
-			<!-- <a href="">安卓</a> -->
-			<!-- <a href="">嵌入式</a> -->
-			<!-- <a href="">算法</a> -->
-            <!-- <div class="user_groups"> -->
-                <h4 style="margin-top: 5px; margin-bottom: 5px;">已关注</h4>
+            <h4 style="margin-top: 5px; margin-bottom: 5px;">已关注</h4>
                 {% if user_groups %}
                 {% for group in user_groups %}
                     {% if group.id == current_group_id %}
@@ -111,9 +106,9 @@
                     <button data='{{group.id}}' class="remove">取消</button>
                 {% endfor %}
                 {% endif %}
-            <!-- </div> -->
+            </div>
 
-            <!-- <div class="diff_groups"> -->
+            <div class="diff_groups">
                 <h4 style="margin-top: 5px; margin-bottom: 5px;">未关注</h4>
                 {% if diff_groups %}
                 {% for group in diff_groups %}
@@ -121,8 +116,9 @@
                     <button data="{{group.id}}" class="add">关注</button>
                 {% endfor %}
                 {% endif %}
-            <!-- </div> -->
+            </div>
 		</div>
+        -->
 
 		<script >
 			var contentDivMarginWidth = parseFloat(window.getComputedStyle(document.getElementsByClassName("contentDiv")[0],false).marginLeft);
