@@ -156,7 +156,6 @@ var moveLeft = function(T){
 		moveLength = 1;
 	};
 	var bannerOrderNum = whereBeforeMove/(-100);
-	console.log(bannerOrderNum);
 	document.getElementsByClassName("bannerOrder")[0].children[bannerOrderNum].style.cssText = "";
 	document.getElementsByClassName("bannerOrder")[0].children[bannerOrderNum+moveLength].style.cssText = "background-color:rgb(213,213,213) !important";
 	var t = setInterval(function(){
@@ -169,7 +168,6 @@ var moveLeft = function(T){
 			moveDistance = 40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1);
 			bannerContentShow.style.marginLeft = (whereBeforeMove - moveLength*moveDistance)+"%";
 		};
-		//console.log(countTime+":"+moveDistance);
 		if(countTime < T){
 			++countTime;
 		}
@@ -211,7 +209,6 @@ var moveRight = function(T){
 			moveDistance = 40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1);
 			bannerContentShow.style.marginLeft = (whereBeforeMove + moveLength*moveDistance)+"%";
 		};
-		//console.log(countTime+":"+moveDistance);
 		if(countTime < T){
 			++countTime;
 		}

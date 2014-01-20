@@ -9,7 +9,7 @@ html,body{
 }
 
 body{
-    min-width:1120px; 
+    min-width:900px; 
     overflow:auto; 
 }
 
@@ -255,16 +255,31 @@ p,a{
 }
 
 .groupDiv{
-    display: inline-block;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-flex-direction:row;
+    -moz-flex-direction:row;
+    -ms-flex-direction:row;
+    -o-flex-direction:row;
+    flex-direction:row;
+
+    
+
+    -webkit-align-items:center ;
+    -moz-align-items: center;
+    -ms-align-items:center ;
+    -o-align-items:center ;
+    align-items:center ;
+
     position: absolute;
     top: 295px;
     margin-top: 10px;
 
-    width: 100px;
-    height: auto;
-    min-height: 200px;
-
-    background-color:#669091;
+    width: 150px;
 }
 
 .groupDiv>a{
@@ -276,6 +291,46 @@ p,a{
     text-decoration: none;
     color: white;
     text-align: center;
+}
+
+.groupDivInfo>p{
+    display: inline-block;
+    width: 30px;
+
+    margin: 3px 3px 0px;
+
+    font-size: 15px;
+    color: #fff;
+}
+
+.groupManage{
+    float: right;
+    cursor: pointer;
+}
+
+.groupMain{
+    display: inline-block;
+    width: 100px;
+    height: auto;
+    min-height: 200px;
+
+    background-color:#669091;
+}
+
+.slideRightButton{
+    display: none;
+    width: 35px;
+    height: 70px;
+    background-color: #669091;
+    border-radius: 0px 35px 35px 0px;
+    margin-left: -15px;
+    cursor: pointer;
+}
+
+.toRightImg{
+    width: 20px;
+    height: 20px;
+    margin: 25px 0px 0px 12px;
 }
 
 .homeChoice{

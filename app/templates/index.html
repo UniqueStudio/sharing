@@ -14,8 +14,8 @@
         <!-- banner -->
 		<div class="banner">
 			<div class="bannerContent">
-				<div class="bannerMoveLeftButton"></div>
-				<div class="bannerMoveRightButton"></div>
+				<div class="bannerMoveLeftButton"><</div>
+				<div class="bannerMoveRightButton">></div>
 				<div class="bannerContentShowDiv">
 					<div class="bannerContentShow">
                         {% for recommend in recommends %}
@@ -92,13 +92,17 @@
 		</div>
 
         <!-- 分组 -->
-        <!--
 		<div class="groupDiv">
-            <h4 style="margin-top: 5px; margin-bottom: 5px;">已关注</h4>
+            <div class="groupMain">
+                <div class="groupDivInfo">
+                    <p>分组</p>
+                    <p class="groupManage">管理</p>
+                </div>
+                <hr style="margin:0px;height:1px;border:0px;background-color:#fff;"/>
                 {% if user_groups %}
                 {% for group in user_groups %}
                     {% if group.id == current_group_id %}
-                        <a href="{{ url_for(current_url, group_id=group.id ) }}"
+                         <a href="{{ url_for(current_url, group_id=group.id ) }}"
                             class="homeChoice">{{group.title}}</a>
                     {% else %}
                         <a href="{{ url_for(current_url, group_id=group.id ) }}">{{group.title}}</a>
@@ -107,6 +111,8 @@
                 {% endfor %}
                 {% endif %}
             </div>
+            <div class="slideRightButton"><img src="../static/img/toRight.png" class="toRightImg" alt=""></div>
+        </div>
 
             <div class="diff_groups">
                 <h4 style="margin-top: 5px; margin-bottom: 5px;">未关注</h4>
@@ -118,11 +124,16 @@
                 {% endif %}
             </div>
 		</div>
-        -->
 
 		<script >
-			var contentDivMarginWidth = parseFloat(window.getComputedStyle(document.getElementsByClassName("contentDiv")[0],false).marginLeft);
-			document.getElementsByClassName("groupDiv")[0].style.left = (contentDivMarginWidth -110)+"px";
+			if(parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width) >= 1120){
+                    var contentDivMarginWidth = parseFloat(window.getComputedStyle(document.getElementsByClassName("contentDiv")[0],false).marginLeft);
+                    document.getElementsByClassName("groupDiv")[0].style.left = (contentDivMarginWidth -110)+"px";
+                }
+                else{
+                    document.getElementsByClassName("groupDiv")[0].style.left = "-100px";
+                    document.getElementsByClassName("slideRightButton")[0].style.display = "inline-block";
+                }
 		</script>
 	</div>
 {% endblock %}
