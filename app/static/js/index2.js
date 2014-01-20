@@ -329,9 +329,9 @@ var sendLike = function(){
 			else{
 				document.getElementsByClassName("likeClick")[0].children[0].style.display = "inline-block"
 				document.getElementsByClassName("likeClick")[1].children[0].style.display = "inline-block"
-			}
+			};
 	    };
-	;}
+	};
 };
 //新评论加载到评论流前端
 var addComment = function(commentJSON){

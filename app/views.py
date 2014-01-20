@@ -107,6 +107,7 @@ def index(page=1):
 
     # 获取查询的group_id来得到指定group中的share
     group_id = request.args.get('group_id', '') or None
+    print group_id
     if group_id is not None:
         group = Group.query.get(group_id)
     else:
