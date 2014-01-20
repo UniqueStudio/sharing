@@ -339,8 +339,22 @@ def query_group():
             user_groups = user.groups.all()
             all_groups = Group.query.all()
             diff_groups = list(set(all_groups).difference(set(user_groups)))
-            result['user_groups'] = user_groups
-            result['diff_groups'] = diff_groups
+            i = 0
+            for group in user_groups:
+                result['user_groups'][i] = {
+                                            'group_name': group.title,
+                                            'group_id': group.id, 
+                                            'group_creator': group.creator.username
+                                            }
+                i = i+1
+            i = 0
+            for group in diff_groups:
+                result['diff_groups'][i] = {
+                                            'group_name': group.tilte, 
+                                            'group_id': group.id,
+                                            'group_creator': group.creator.username
+                                            }
+                i = i+1
             result['status'] = True
         else:
             result['status'] = False
