@@ -3,30 +3,27 @@ from flask import make_response, redirect, request, Blueprint
 import urllib2
 import urllib
 import json
+from ..config import params
 
 bp = Blueprint('oauth', __name__)
 
 url_prefix = 'https://accounts.google.com/o/oauth2'
 
-params = {
-        'RESPONSE_TYPE': 'code', 
-        'CLIENT_ID': '619166640784-ddtj5snjjv01g26v6otfvns1ncissjd0.apps.googleusercontent.com', 
-        'CLIENT_SECRET': 'zTE-_Ljfege61faalXKYTAyL', 
-        'REDIRECT_URI': 'http://localhost:5000/oauth/redirect', 
-        'SCOPE': 'email', 
-        'STATE': 'abc', 
-        'ACCESS_TYPE': 'online',
-        'LOGIN_HINT': 'email' 
-        }
 
-
-@bp.route('/start')
+# 访问获取code
+@bp.route('/login')
 def login():
-    data = '?response_type=%s&client_id=%s&redirect_uri=%s&scope=%s&state=%s&access_type=%s&login_hint=%s' % (params['RESPONSE_TYPE'], params['CLIENT_ID'], params['REDIRECT_URI'], params['SCOPE'], params['STATE'], params['ACCESS_TYPE'], params['LOGIN_HINT'])
+    str = ''
+    for scope in params['SCOPE']:
+        str += scope
+        str += '+'
+
+    data = '?response_type=%s&client_id=%s&redirect_uri=%s&scope=%s&state=%s&access_type=%s&login_hint=%s' % (params['RESPONSE_TYPE'], params['CLIENT_ID'], params['REDIRECT_URI'], str, params['STATE'], params['ACCESS_TYPE'], params['LOGIN_HINT'])
     data = url_prefix + '/auth' + data
     return make_response(redirect(data))
 
-@bp.route('/redirect', methods=['GET', 'POST'])
+# 验证登陆请求, 并获取个人信息
+@bp.route('/oauth', methods=['GET', 'POST'])
 def oauth():
     # 第一次redirect
     data = {
@@ -42,9 +39,16 @@ def oauth():
     res = urllib2.urlopen(req)
     oauth = json.loads(res.read())
     token = oauth['access_token']
+
     url_people = 'https://www.googleapis.com/plus/v1/people/me?access_token=' + token
     req = urllib2.Request(url_people)
     res = urllib2.urlopen(req)
-    return res.read()
+    id = json.loads(res.read())['id']
+
+    url_user = 'https://www.googleapis.com/admin/directory/v1/users/' + id + '?access_token' + token
+    req = urllib2.Request(url_user)
+    res = urllib2.urlopen(req)
+
+    print res.read()
 
 

@@ -17,7 +17,7 @@ class Group(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(40), unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    # creator = db.relationship('User', lazy='select')
+    creator = db.relationship('User', lazy='select')
     def __init__(self, name, user_id):
         self.title = name
         self.user_id = user_id
