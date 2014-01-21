@@ -21,14 +21,4 @@ constance = {
         'download_folder': '/home/z_sky/unique/flask/sharing2/download_files'
 }
 
-params = {
-        'RESPONSE_TYPE': 'code', 
-        'CLIENT_ID': '619166640784-ddtj5snjjv01g26v6otfvns1ncissjd0.apps.googleusercontent.com', 
-        'CLIENT_SECRET': 'zTE-_Ljfege61faalXKYTAyL', 
-        'REDIRECT_URI': 'http://localhost:5000/oauth/oauth', 
-        'SCOPE': ['email', 'https://www.googleapis.com/auth/admin.directory.user'], 
-        # 'SCOPE': 'https://www.google.com/m8/feeds', 
-        'STATE': 'abc', 
-        'ACCESS_TYPE': 'online',
-        'LOGIN_HINT': 'email' 
-}
+
