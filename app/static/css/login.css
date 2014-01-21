@@ -1,10 +1,4 @@
 html,body{
-    margin:0px;
-    width: 100%;
-    height:100%;
-}
-
-body{
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
@@ -13,254 +7,171 @@ body{
 
     -webkit-flex-direction:column;
     -moz-flex-direction:column;
-    -ms-flex-direction:column;
-    -o-flex-direction:column;
     flex-direction:column;
 
     -webkit-justify-content:space-between ;
     -moz-justify-content: space-between;
-    -ms-justify-content:space-between ;
-    -o-justify-content: space-between;
     justify-content:space-between;
 
-    background-color:  #E7F7ED;
+
+
+    width: 100%;
+    height: 100%;
+    min-height: 350px;
+    margin:0px;
+    background: url("../img/loginbg.jpg") repeat;
+    background-size: 350px 350px;
 }
 
 p,a{
-    font-family:arial,SimSun, sans-serif;
+    font-family: arial,Times New Roman,sans-serif;
 }
 
 .header{
-    width: 100%;
-    min-height: 30px;
-    max-height: 50px;
-    height: 5%;
-
-    text-align: center;
-    background: -webkit-linear-gradient(top, #2479CA 0%, #0F47BE 100%);
-    background: -moz-linear-gradient(top, #2479CA 0%, #0F47BE 100%);
-    background: linear-gradient(top, #2479CA 0%, #0F47BE 100%);
-    //background-color: #0F47BE;
-}
-
-.contentDiv{
-    width: 100%;
-    text-align: center;
-}
-
-.content{
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-
-    -webkit-flex-direction:row;
-    -moz-flex-direction:row;
-    -ms-flex-direction:row;
-    -o-flex-direction:row;
-    flex-direction:row;
-
-    -webkit-justify-content:center ;
-    -moz-justify-content: center;
-    -ms-justify-content:center ;
-    -o-justify-content:center ;
-    justify-content:center ;
-
-    -webkit-align-items:center ;
-    -moz-align-items: center;
-    -ms-align-items:center ;
-    -o-align-items:center ;
-    align-items:center ;
-
-     max-width: 1500px;
-     text-align: left;
-     margin:0px auto;
-}
-
-
-.contentLeft{   
-    width: 54%;     
-    //min-width: 810px;
-    min-height: 450px;
-    max-height: 575px;
-    text-align: center;
-}
-
-.contentLeftMain{
-    background: url("../img/loginShare.png");
-    background-size: 100% 100%;
-    min-height: 450px;
-    max-height: 575px;
-    width: 100%;
-}
-
-
-.contentRight{
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-
-    -webkit-flex-direction:column;
-    -moz-flex-direction:column;
-    -ms-flex-direction:column;
-    -o-flex-direction:column;
-    flex-direction:column;
-
-    -webkit-justify-content:center ;
-    -moz-justify-content: center;
-    -ms-justify-content:center ;
-    -o-justify-content: center;
-    justify-content:center;
-
-    width:36%;
-}
-
-.contentRightMain{
-    display: inline;
-    width: 60%;
-    min-width:250px;
-
-    box-shadow: 3px 3px 10px #535353;
-}
-
-.contentRightMain>div{
-    width:100%;
-    background-color: #1445B1;
-}
-
-
-.contentRightMenu p{
     display: inline-block;
-    margin-left: 20px;
-    font-size: 25px;
-    font-weight: 300;
-    color: white;
-}
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    background-color: rgba(3, 3, 163, 0.72);
+}  
 
-.contentRightBody p{
-    display: inline;
-   margin: 3px 0px;
-   font-size: 18px;
-   color: rgb(226, 226, 226);
-}
-
-.loginButton{
+.header>p{
+    display: inline-block;
+    color: #DBDBDB;
+    font-size: 21px;
+    margin: 6px auto 0px;
     cursor: default;
 }
 
-.registerButton{
-    cursor: pointer;
-}
-
-.registerForm{
-    opacity: 0;
-}
-
-.loginAndRegisterDiv{
-    position: relative;
-
-    width:100%;
-    height:100%;
+.headerCenterDiv{
+    position: absolute;
+    top: 30px;
+    width: 100%;
+    height: 15px;
     overflow: hidden;
-}
-
-.loginAndRegisterMoveDiv{
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-
-    -webkit-flex-direction:row;
-    -moz-flex-direction:row;
-    -ms-flex-direction:row;
-    -o-flex-direction:row;
-    flex-direction:row;
-
-    width:200%;
-    height:100%;
-}
-
-.loginDiv{
-    width: 100%;
-    height: 100%;
-}
-
-.loginDiv div{
-    display: inline-block;
-    height: 25px;
-    width: 25px;
-    margin-bottom: -9px;
-} 
-
-.registerDiv{
-    width: 100%;
-    height: 100%;
-}
-
-.registerDiv div{
-    display: inline-block;
-    height: 25px;
-    width: 25px;
-    margin-bottom: -9px;
-}
-
-.loginAlert,.registerAlert{
-    display: block!important;
-    opacity: 0;
     text-align: center;
-    height: 14px;
-    font-size: 14px!important;
-    color: rgb(252, 25, 25)!important;
 }
 
-.loginAndRegisterMoveDiv form{
-   width: 93%;
-   margin: 0px 25% 20px 10%;
-   display: inline-block;
+.headerCenter{
+    width: 200px;
+    height: 100px;
+    margin: -86px auto 0px auto;
+    border-radius: 0px 0px 300px 300px;
+    background-color:rgba(3, 3, 163, 0.72);
 }
 
-.loginAndRegisterInput{
-    outline-color: rgba(256,256,256,0);
-    border: 1px solid rgba(256,256,256,0);
-    max-height: 25px;
-    width: 80%;
-    font-size: 17px;
-    padding: 2px 3px;
-    color: #494949;
-    border-radius: 2px;
+.content{
+    display: inline-block;
+    width: 100%;
+    height: 300px;
+    text-align: center;
 }
 
-.loginAndRegisterInput:hover{
-    border-color:rgb(63, 236, 167);
+.loginForm{
+    display: inline-block;
+
+    width: 335px;
+    height: 240px;
+
+    margin:0px auto;
 }
 
-.loginAndRegisterInput:focus{
-    border-color:rgb(63, 236, 167);
+.username,.password{
+    width:300px;
+    height:24px;
+    
+    margin-top:20px;
+    padding: 8px; 
+
+    background-color: rgba(95, 95, 95, 0.1);
+    border-radius: 5px; 
+    outline:0px;
+    border: 0px;
+    color: #8F8F8F;
+    font-size: 19px;
 }
 
-.SubmitButton{
-    width: 80px;
-    height: 35px;
-    margin: 10px auto;
-    outline-color:rgba(256,256,256,0);
-    border:0px;
-    background-color: #f0faf1;
-    font-size: 25px;
+.username:hover,.password:hover,.username:focus,.password:focus{
+    box-shadow: 1px 1px 3px rgba(100, 100, 100, 0.2),-1px -1px 3px rgba(100, 100, 100, 0.2);
+}
+
+.remenberBox{
+   display: none;
+}
+
+.checkShow{
+    display: inline-block;
+    float: left;
+    width: 10px;
+    height: 10px;
+    border: 4px solid rgba(153, 153, 153, 0.76);
+    border-radius: 100px;
+    margin: 21px 0px -4px 10px;
     cursor: pointer;
-    color: #313131;
 }
 
-.SubmitButton:hover{
-    background-color: #D0DAD1;
+.remenberMe{
+    display: inline-block;
+    float: left;
+    color: #B1B1B1;
+    font-weight: 700;
+    margin: 19px 0px 0px 10px;
+    font-size: 18px;
 }
 
-.loginAndRegisterMoveDiv img{
-    margin-bottom: -8px;
-    display: none;
-    width: 25px;
-    height: 25px;
+.subitButton{
+    width: 316px;
+    height: 40px;
+
+    margin-top: 17px;
+    padding: 8px;
+
+    background-color: rgba(2, 39, 155, 0.75);
+    border-radius: 5px;
+    outline: 0px;
+    border: 0px;
+    color: #F3F3F3;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
 }
+
+.subitButton:hover{
+    background-color: rgba(2, 57, 155, 0.75);
+}
+
+.signUpDiv{
+    display: inline-block;
+    height: 40px;
+    width: 335px;
+}
+
+.signUpP{
+    float: left;
+    margin-left: 10px;
+    color:#8F8F8F;
+    cursor: default;
+}
+
+.signUpButton{
+    float: right;
+    margin-right: 10px;
+
+    display: inline-block;
+    width: 95px;
+    height: 40px;
+
+    border: 2px solid rgb(3, 86, 211);
+    border-radius: 10px;
+
+    text-decoration: none;
+    color: rgb(3, 86, 211);
+    font: 17px/40px Arial,sans-serif;
+    font-weight: 600;;
+}
+
+.signUpButton:hover{
+    background-color: rgba(235, 236, 238, 0.66);
+}
+
+
