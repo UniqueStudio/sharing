@@ -1,143 +1,35 @@
-{% extends "base.html" %}
-{% block style %}
-	<link type="text/css" rel="stylesheet" href="../static/css/index.css"/>
-{% endblock %}
-{% block content %}
-
-	<div class="header">
-		<img src="../static/img/share-2.png" style="margin-left:50px;height:100%" alt="" />
-		{% if session.logged_in %}
-		<a href="{{ url_for('logout') }}" class="logout">登出</a>
-		{% endif %}
-	</div>
-	<div class="main">
-        <!-- banner -->
-		<div class="banner">
-			<div class="bannerContent">
-				<div class="bannerMoveLeftButton"><</div>
-				<div class="bannerMoveRightButton">></div>
-				<div class="bannerContentShowDiv">
-					<div class="bannerContentShow">
-                        {% for recommend in recommends %}
-
-                        <div
-                            style="background:url('http://thumbshots.absolutethumbshots.com/index.php?url={{recommend.url}}&s=400x300&code=499944589');">
-                        </div>
-                        {% endfor %}
-					</div>
-					<div class="bannerOrder">
-						<div class="bannerOrder0" style="background-color: rgb(213,213,213)"></div>
-						<div class="bannerOrder1"></div>
-						<div class="bannerOrder2"></div>
-						<div class="bannerOrder3"></div>
-						<div class="bannerOrder4"></div>						
-					</div>
-				</div>
-			</div>
-		</div>
-
-        <!-- content -->
-		<div class="contentDiv">
-            <!-- @ author guoqi -->
-            <!-- 这儿的class是干嘛的? -->
-            <class class="content">
-			<p class="switchContentButtonDiv">
-                <a href="{{ url_for('index', group_id=current_group_id,
-                    order_by='likes') }}" class="hotest switchContentChoice">最热</a>
-                <a href="{{ url_for('index', group_id=current_group_id,
-                    order_by='timestamp') }}" class="latest">最新</a>
-			</p>
-
-            <!-- 显示条目 -->
-            {% if shares and shares.items != [] %}
-                {% for share in shares.items %}
-                    <div style="background:url('http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{share.url}}');">
-                        <a href="{{ url_for('reading', id=share.id) }}" class="contentDetail" title="{{share.title}}">
-                            <p class="contentDetailTitle">{{share.title}}</p>
-                            <p
-                            class="contentDetailTime">{{share.timestamp.strftime("%Y-%m-%d")}}</p>
-                            <p class="contentDetailCommentNum">likes {{share.likes}}</p>
-                        </a>
-                    </div>
-                {% endfor %}
-                </class>
-
-                <!-- 页码及翻页 -->
-                <div class="page_num">
-                {% if shares.has_prev %}
-                    <a href="{{ url_for(current_url, page = shares.prev_num,
-                        group_id = current_group_id, order_by = order_by) }}" class="not_current_page_num">&lt;&lt;</a>
-                {% endif %}
-
-                {% for page_num in shares.iter_pages() %}
-                    <span class="pagination">
-                        {% if page_num != shares.page %}
-                            <a href="{{ url_for(current_url, page = page_num,
-                                group_id = current_group_id, order_by = order_by) }}" class="not_current_page_num">{{ page_num }}</a>
-                        {% else %}
-                            <a href="{{ url_for(current_url, page = page_num,
-                                group_id = current_group_id, order_by = order_by) }}" class="current_page_num">{{ page_num }}</a>
-                        {% endif %}
-                    </span>
-                {% endfor %}
-
-                {% if shares.has_next %}
-                    <a href="{{ url_for(current_url, page = shares.next_num,
-                        group_id = current_group_id, order_by = order_by) }}" class="not_current_page_num">&gt;&gt;</a>
-                {% endif %}
-                </div>
-            {% else %}
-                <h3>该群组暂无分享</h3>
-            {% endif %}
-		</div>
-
-        <!-- 分组 -->
-		<div class="groupDiv">
-            <div class="groupMain">
-                <div class="groupDivInfo">
-                    <p>分组</p>
-                    <p class="groupManage">管理</p>
-                </div>
-                <hr style="margin:0px;height:1px;border:0px;background-color:#fff;"/>
-                {% if user_groups %}
-                {% for group in user_groups %}
-                    {% if group.id == current_group_id %}
-                         <a href="{{ url_for(current_url, group_id=group.id ) }}"
-                            class="homeChoice">{{group.title}}</a>
-                    {% else %}
-                        <a href="{{ url_for(current_url, group_id=group.id ) }}">{{group.title}}</a>
-                    {% endif %}
-                    <button data='{{group.id}}' class="remove">取消</button>
-                {% endfor %}
-                {% endif %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="../static/css/index.css"/>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/> 
+</head>
+<body>
+    <div class="header">
+        <div class="headerLeft">
+            <div>
+                <div class="hdL0"><img src="../static/img/collect.png" alt=""></div>
+                <div class="hdL1"><img src="../static/img/home.png" alt=""></div>
+                <div class="hdL2"><img src="../static/img/announce.png" alt=""></div>
+                <div class="hdL3"><img src="../static/img/communicate.png" alt=""></div>
             </div>
-            <div class="slideRightButton"><img src="../static/img/toRight.png" class="toRightImg" alt=""></div>
+            
         </div>
+        <div class="headerRight">
+            <div class="moreButton"></div>
+            <div class="hdR0"></div>
+            <div class="hdR1"></div>
+            <div class="hdR2"></div>
+            <div class="hdR3"></div>
+        </div>
+    </div>
 
-            <div class="diff_groups">
-                <h4 style="margin-top: 5px; margin-bottom: 5px;">未关注</h4>
-                {% if diff_groups %}
-                {% for group in diff_groups %}
-                    <a>{{ group.title }}</a>
-                    <button data="{{group.id}}" class="add">关注</button>
-                {% endfor %}
-                {% endif %}
-            </div>
-		</div>
+    <div class="content">
+        <div class="contentLeft"></div>
+        <div class="contentRight"></div>
+    </div>
 
-		<script >
-			if(parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width) >= 1120){
-                    var contentDivMarginWidth = parseFloat(window.getComputedStyle(document.getElementsByClassName("contentDiv")[0],false).marginLeft);
-                    document.getElementsByClassName("groupDiv")[0].style.left = (contentDivMarginWidth -110)+"px";
-                }
-                else{
-                    document.getElementsByClassName("groupDiv")[0].style.left = "-100px";
-                    document.getElementsByClassName("slideRightButton")[0].style.display = "inline-block";
-                }
-		</script>
-	</div>
-{% endblock %}
-{% block script %}
-	<script type="text/javascript" rel="script" src="../static/js/indexBanner.js"></script>
-	<script type="text/javascript" rel="script" src="../static/js/index.js"></script>
-{% endblock %}
+    <script type="text/javascript" rel="script" src="../static/js/index.js"></script>
+    <script type="text/javascript" rel="script" src="../static/js/jquery-min.js"></script>
+</body>
+</html>
