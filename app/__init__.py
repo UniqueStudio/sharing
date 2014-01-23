@@ -9,6 +9,8 @@ from account import account
 from share import share
 from comment import comment
 
+# import error
+from error import OutputError
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -33,3 +35,12 @@ sys.setdefaultencoding('utf8')
 from app import views, models, forms
 
 
+@app.errorhandler(OutputError)
+def handle_OutputError(error):
+    import json
+
+    result = {
+            'status': False, 
+            'msg': error.msg
+            }
+    return json.dumps(result)
