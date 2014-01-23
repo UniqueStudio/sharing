@@ -1,16 +1,103 @@
-加关注/取消关注群组
-接口: /toggle_group
-参数: group_id
-返回值: json['status']表示操作状态, 如果出错，有json['msg']提示错误信息
+以下返回值均为json格式
+其中status键对应了该操作的状态,若成功时
+    如果需要返回数据，则result键对应了返回的数据（数组形式）
+    如果不需要返回数据，无result键
+若失败时, 则有msg键对应显示了错误信息
+以下参数除了特殊标注外都必须非空, 括号中的为参数类型
 
-创建群组
-接口: /create_group
-参数: group_name
-返回值： 同上
+用户信息: 
+    **登陆**
+    方法: POST
+    接口: /account/login
+    参数: email(email格式, string(255)), password(string(16)), remember_me(bool)
+    返回值: 无
 
-获取群组
-接口：/query_group 
-参数: 无
-返回值：json['status']
-表示操作状态，如果成功，则json['user_groups']表示用户关注的群组。
-json['diff_groups'] 表示用户尚未关注的群组。如果出错,json['msg']记录错误信息
+
+    **注册**
+    方法: POST
+    接口: /account/register
+    参数: email(email格式, string(255)), password(string(16)), nickname(string(40)),
+          image(可选，默认为空，用户头像uri, string(1024))
+    返回值: 无
+
+
+    **注销**
+    方法: POST
+    接口: /account/logout
+    参数: 无
+    返回值: 无
+
+
+    **上传头像**(表单提交)
+    方法: POST
+    接口: /account/upload
+    参数: 无
+    返回值: 临时存储的文件uri
+
+
+    **修改个人信息**
+    方法: POST
+    接口: /account/profile
+    参数: nickname(string(40), 可选，默认为已登陆用户的nickname),
+          password(string(16), 可选，默认为已登陆用户的password)
+    返回值: 无
+
+
+分享：
+    **添加分享**
+    方法: POST
+    接口: /share/add
+    参数: title(string(255)), explain(string(65535)), url(string(1024))
+    返回值: 无
+
+
+    **查看分享列表**
+    方法: GET
+    接口: /share/list
+    参数: start(int, 表示当前页码, 从1开始计数), pages(int,
+          表示每页的条目数量), sortby(可选的值为'timestamp'和'likes'，默认值为'timestamp')
+    返回值: 根据模板渲染过的html代码片段
+
+
+    **查看分享详细信息**
+    方法: GET
+    接口: /share/detail
+    参数: id(int, 分享的id)
+    返回值: 一个share(title, explain, url, likes, comments)对象
+
+
+评论: 
+    **添加评论**
+    方法: POST
+    接口: /comment/add
+    参数: share_id(int), content(string(65535))
+    返回值: 无
+
+
+    **查看评论**
+    方法: GET
+    接口: /comment/list
+    参数: start(int, 表示当前页码, 从1开始计数), pages(int, 表示每页的条目数量)
+    返回值: 根据模板渲染过的html代码片段
+
+
+
+
+群组:
+    加关注/取消关注群组
+    方法: POST
+    接口: /group/toggle_group
+    参数: group_id
+    返回值: json['status']表示操作状态, 如果出错，有json['msg']提示错误信息
+
+    创建群组
+    接口: /create_group
+    参数: group_name
+    返回值： 同上
+
+    获取群组
+    接口：/query_group 
+    参数: 无
+    返回值：json['status']
+    表示操作状态，如果成功，则json['user_groups']表示用户关注的群组。
+    json['diff_groups'] 表示用户尚未关注的群组。如果出错,json['msg']记录错误信息
