@@ -1,9 +1,10 @@
 # encoding: utf-8
 from account import account
-from flask import make_response, redirect, request, session, g
+from flask import make_response, redirect, request, session, g, url_for
 import json
-from core import get_auth_url, get_token, get_user_profile
+from core import get_auth_url, get_token, get_user_profile, photos
 import uuid
+from datetime import datetime, timedelta
 
 from ..filters import check_logged, check_email, check_password, check_nickname, check_image
 
@@ -20,22 +21,78 @@ from ..app import db
 @account.route('/auth')
 def auth():
     state = str(uuid.uuid4())
+    session['state'] = state
     return make_response(redirect(get_auth_url(state)))
 
 # 验证登陆请求, 并获取个人信息
-@account.route('/connect', methods=['GET', 'POST'])
-def oauth():
+@account.route('/connect', methods=['GET'])
+def connect():
     # 获取token
     if request.method == 'GET':
-        code = request.args.get('code', '')
-        token = json.loads(get_token(code))['access_token']
-        # 获取用户信息
-        return get_user_profile(token)
+        state = request.args.get('state', '')
+        # 验证state, 防止uri被修改
+        if session.has_key('state') and session['state'] == state:
+            code = request.args.get('code', '')
+            token = json.loads(get_token(code))['access_token']
+
+            # 获取用户信息
+            user_profile = get_user_profile(token)
+            
+            # 如果该用户以前授权过, 则直接跳转到首页
+            if User.is_exist(user_profile['email']):
+                user = User.query.filter(User.email ==
+                        user_profile['email']).first()
+                session['user_id'] = user.id
+                session['email'] = user.email
+                return make_response(redirect(url_for('share.list')))
+
+            # 删除state, 并加入user_profile
+            session.pop('state')
+            session['user_profile'] = user_profile
+            # 重定向到添加本站密码的页面
+            return make_response(redirect(url_for('add_pwd')))
+        else:
+            raise OutputError('参数错误')
+
+
+# 通过google oauth授权的，获取到个人信息，并且设置密码
+@account.route('/add_pwd', methods = ['POST'])
+def add_pwd():
+    try:
+        password = request.get('password')
+        email = session.get('user_profile')['email']
+        nickname = session.get('user_profile')['nickname']
+        image = session.get('user_profile')['image']
+        user = User(email, password, nickname, image)
+        db.session.add(user)
+        db.commit()
+        return json.dumps({'result': True})
+    except ValueError:
+        raise OutputError('参数错误')
+        
 
 
 @account.route('/login', methods = ['POST'])
 def login():
-    pass
+    args = request.form
+    try:
+        email = args.get('email')
+        password = args.get('password')
+        remember_me = args.get('remember_me', type=bool)
+        user = User.query.filter(User.email == email).first() or None
+        if user is not None and user.check_password(password):
+            session['user_id'] = user.id
+            session['email'] = user.email
+            response = make_response(redirect(url_for('share.list')))
+            if remember_me is True:
+                delta = datetime.now() + timedelta(days=7)
+                response.set_cookie('email', user.email, expires = delta)
+                response.set_cookie('user_id', user.id, expires = delta)
+            return response
+        else:
+            raise OutputError('密码错误，请重新输入')
+    except ValueError:
+        raise OutputError('参数错误')
 
 @account.route('/register', methods = ['POST'])
 def register():
@@ -85,7 +142,15 @@ def logout():
 
 @account.route('/upload', methods = ['POST'])
 def upload():
-    pass
+    if 'image' in request.files:
+        filename = uuid.uuid1()
+        photos.save(request.files['image'], name=filename)
+        url = photos.url(filename)
+        result = {
+                'status': True, 
+                'result': {'url': url}
+                }
+        return json.dumps(result)
 
 
 @account.route('/profile', methods = ['POST'])

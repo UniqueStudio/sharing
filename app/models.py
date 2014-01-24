@@ -58,8 +58,9 @@ class User(db.Model):
     def check_password(self, password):
         return self.pwdhash == md5.new(password).hexdigest()
 
-    def is_exist(self, email):
-        return self.query.filter(User.email == email).first()
+    @classmethod
+    def is_exist(cls, email):
+        return cls.query.filter(User.email == email).first()
     
     # likes
     def like(self, share_id):
