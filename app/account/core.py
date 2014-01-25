@@ -1,6 +1,7 @@
 import urllib
 import urllib2
 import json
+from flask.ext.uploads import UploadSet, IMAGES
 
 URL_AUTH = 'https://accounts.google.com/o/oauth2/auth'
 URL_TOKEN = 'https://accounts.google.com/o/oauth2/token'
@@ -16,6 +17,8 @@ REDIRECT_URI = 'http://localhost:5000/oauth/connect'
 SCOPE = 'email'
 ACCESS_TYPE = 'online'
 LOGIN_HINT = 'email' 
+
+photos = UploadSet('photos', IMAGES)
 
 
 
@@ -96,6 +99,6 @@ def get_user_profile(token):
                     'nickname': display_name, 
                     'image': image 
                     }
-    return json.dumps(user_profile)
+    return user_profile
                 
     

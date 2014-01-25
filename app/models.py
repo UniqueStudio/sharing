@@ -3,13 +3,13 @@ from app import db
 import md5
 
 group_users = db.Table('group_users',
-        db.Column('group_id', db.Integer, db.ForeignKey('group.id')),
-        db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+            db.Column('group_id', db.Integer, db.ForeignKey('group.id')),
+            db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
         )
 
 user_likes = db.Table('user_likes',
-        db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-        db.Column('share_id', db.Integer, db.ForeignKey('share.id')),
+            db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+            db.Column('share_id', db.Integer, db.ForeignKey('share.id')),
         )
 
 
@@ -30,35 +30,47 @@ class Group(db.Model):
 
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String(40))
-    email = db.Column(db.String(150), unique = True)
-    pwdhash = db.Column(db.String(32))
-    shares = db.relationship('Share', lazy='dynamic', backref='author')
-    comments = db.relationship('Comment', lazy='dynamic', backref='publisher')
+    id = db.Column(db.Integer, primary_key = True, nullable = False)
+    email = db.Column(db.String(255), unique = True, nullable = False)
+    pwdhash = db.Column(db.String(32), nullable = False)
+    nickname = db.Column(db.String(40), nullable = False)
+    image = db.Column(db.String(1024))
+
+    shares = db.relationship('Share', lazy='dynamic',
+            backref=db.backref('author', lazy='select'))
+    comments = db.relationship('Comment', lazy='dynamic',
+            backref=db.backref('author', lazy='select'))
     like_shares = db.relationship('Share', lazy='dynamic', secondary=user_likes)
     groups = db.relationship('Group', lazy='dynamic', backref=db.backref('users', lazy='dynamic'),  secondary=group_users)
 
-    def __init__(self, username, email, password):
-        self.username = username
+    def __init__(self, email, password, nickname, image = None):
         self.email = email
         self.set_password(password)
+        self.nickname = nickname
+        self.image = image
+
     def __repr__(self):
-        return '<User %r>' % (self.username)
+        return '<User %d: %s\nNickName: %s>' % (self.id, self.email, self.nickname)
 
     def set_password(self, password):
         self.pwdhash = md5.new(password).hexdigest()
 
     def check_password(self, password):
         return self.pwdhash == md5.new(password).hexdigest()
+
+    @classmethod
+    def is_exist(cls, email):
+        return cls.query.filter(User.email == email).first()
     
     # likes
-    def like(self, share):
+    def like(self, share_id):
+        share = Share.get(share_id)
         if not self.is_like(share):
             self.like_shares.append(share)
             share.likes += 1
     
-    def dislike(self, share):
+    def dislike(self, share_id):
+        share = Share.get(share_id)
         if self.is_like(share):
             self.like_shares.remove(share)
             share.likes -= 1
@@ -87,25 +99,39 @@ class User(db.Model):
             return None
         return group.id
 
+
 class Share(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    url = db.Column(db.String(200))
-    title = db.Column(db.String(180))
-    explain = db.Column(db.String(350))
-    likes = db.Column(db.Integer, default=0)
-    timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id = db.Column(db.Integer, primary_key = True, nullable = False)
+    title = db.Column(db.String(255), nullable = False)
+    explain = db.Column(db.String(65535), nullable = False)
+    url = db.Column(db.String(1024), nullable = False)
+    likes = db.Column(db.Integer, default=0, nullable = False)
+    timestamp = db.Column(db.DateTime, nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+
     comments = db.relationship('Comment', lazy='dynamic')
 
+    def __init__(self, title, explain, url, user_id):
+        self.title = title
+        self.explain = explain
+        self.url = url
+        self.user_id = user_id
+
     def __repr__(self):
-        return '<Share id=%d url=%s>' % (self.id, self.url)
+        return '<Share %d: %s\nAuthored by %s>' % (self.id, self.url, self.author)
 
 class Comment(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    body = db.Column(db.String(528))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    share_id = db.Column(db.Integer, db.ForeignKey('share.id'))
+    id = db.Column(db.Integer, primary_key = True, nullable = False)
+    body = db.Column(db.String(65535), nullable = False)
+    timestamp = db.Column(db.DateTime, nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    share_id = db.Column(db.Integer, db.ForeignKey('share.id'), nullable = False)
+
+    def __init__(self, body, user_id, share_id):
+        self.body = body
+        self.user_id = user_id
+        self.share_id = share_id
 
     def __repr__(self):
-        return '<Comment %r>' % (self.id)
+        return '<Comment %r: %s\nAuthored by %s>' % (self.id, self.body, self.author)
     

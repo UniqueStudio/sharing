@@ -54,9 +54,9 @@
     **查看分享列表**
     方法: GET
     接口: /share/list
-    参数: start(int, 表示当前页码, 从1开始计数), pages(int,
-          表示每页的条目数量), sortby(可选的值为'timestamp'和'likes'，默认值为'timestamp')
-    返回值: 根据模板渲染过的html代码片段
+    参数: start(int, 表示当前页码, 从1开始计数, 默认值为1)
+          sortby(可选的值为'timestamp'和'likes'，默认值为'timestamp')
+    返回值: 根据模板渲染过的html代码片段, 通过返回的json对象的result键访问
 
 
     **查看分享详细信息**
@@ -77,8 +77,8 @@
     **查看评论**
     方法: GET
     接口: /comment/list
-    参数: start(int, 表示当前页码, 从1开始计数), pages(int, 表示每页的条目数量)
-    返回值: 根据模板渲染过的html代码片段
+    参数: start(int, 表示当前页码, 从1开始计数), share_id(int)
+    返回值: 根据模板渲染过的html代码片段, 通过返回的json对象的result键访问 
 
 
 
