@@ -31,7 +31,7 @@ class Group(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True, nullable = False)
-    email = db.Column(db.String(255), unique = True, nullable = False)
+    email = db.Column(db.String(128), unique = True, nullable = False)
     pwdhash = db.Column(db.String(32), nullable = False)
     nickname = db.Column(db.String(40), nullable = False)
     image = db.Column(db.String(1024))
