@@ -1,17 +1,16 @@
 #encoding: utf-8
-
-from comment import comment
 import json
-from flask import request, g, render_template
+from flask import request, g, render_template, Blueprint
 
 # import error
 from ..error import OutputError
-
-from ..models import Comment
-from ..app import db
-
+# import models
+from ..models import db, Comment
+# import constances
 import constances
 
+
+comment = Blueprint('comment', __name__)
 
 @comment.route('/add', methods = ['POST'])
 def add():

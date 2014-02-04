@@ -1,19 +1,17 @@
-#encoding: utf-8
-from share import share
+# encoding: utf-8
 import json
-from flask import request, g, render_template
+from flask import request, g, render_template, Blueprint
 
 # import error
 from ..error import OutputError
-
-from ..models import Share
-
-from ..app import db
-
+# import models
+from ..models import db, Share
 import constances
 
+share = Blueprint('share', __name__)
 
-@share.route('/add', methods = ['POST'])
+
+@share.route('/add', methods=['POST'])
 def add():
     args = request.form
     result = {}
@@ -24,7 +22,8 @@ def add():
         user_id = g.current_user.id
 
     # 添加到数据库
-        share = Share(title = title, explain = explain, url = url, user_id = user_id)
+        share = Share(title=title, explain=explain,
+                      url=url, user_id=user_id)
         db.session.add(share)
         db.session.commit()
         result['status'] = True
@@ -33,7 +32,7 @@ def add():
         raise OutputError('参数错误')
 
 
-@share.route('/list', methods = ['GET'])
+@share.route('/list', methods=['GET'])
 def list():
     args = request.args
     if args.has_key('start') and args.has_key('sortby'):
@@ -48,18 +47,19 @@ def list():
             order = Share.timestamp
         else:
             order = Share.timestamp
-            
-        shares = Share.query.order_by(order.desc()).paginate(start, per_page, False)
+
+        shares = Share.query.order_by(
+            order.desc()).paginate(start, per_page, False)
 
         # 渲染HTML片段
         result = {}
         result['status'] = True
-        result['result'] = render_template('share_snippet', shares = shares)
+        result['result'] = render_template('share_snippet', shares=shares)
 
         return json.dumps(result)
 
 
-@share.route('/detail', methods = ['GET'])
+@share.route('/detail', methods=['GET'])
 def detail():
     # TODO
     pass

@@ -1,7 +1,12 @@
-#encoding: utf-8
-from flask import Blueprint
+# encoding: utf-8
+from controller import comment
 from ..filters import check_logged
+from ..error import OutputError
 
-comment = Blueprint('comment', __name__)
 
-comment.before_request(check_logged)
+def before():
+    if check_logged() is False:
+        raise OutputError('您还未登陆，请登陆后重试')
+
+
+comment.before_request(before)
