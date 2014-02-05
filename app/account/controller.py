@@ -80,30 +80,32 @@ def login():
         # 是否已经登陆
         if check_logged():
             # 跳转到首页
-            return make_response(redirect(url_for('share.index')))
-        return render_template('login.html',
-                               title='login',
-                               login_form=login_form,
-                               error=error
-                               )
+            return make_response(redirect(url_for('share.list')))
     else:
-        # TODO
-        args = request.form
-        email = args.get('email')
-        password = args.get('password')
-        remember_me = args.get('remember_me', type=bool)
-        user = User.query.filter(User.email == email).first() or None
-        if user is not None and user.check_password(password):
-            session['user_id'] = user.id
-            session['email'] = user.email
-            response = make_response(redirect(url_for('share.list')))
-            if remember_me is True:
-                delta = datetime.now() + timedelta(days=7)
-                response.set_cookie('email', user.email, expires=delta)
-                response.set_cookie('user_id', user.id, expires=delta)
-            return response
-        else:
-            raise OutputError('密码错误，请重新输入')
+        # Form.validate_on_submit()
+        # 等价于 Form.is_submitted() and Form.validate()
+        if login_form.validate_on_submit():
+            print login_form.email
+            user = User.query.filter(User.email == login_form.email).first() or None
+            if user is not None and user.check_password(login_form.password):
+                print login_form.password
+                print login_form.remember_me
+                session['user_id'] = user.id
+                session['email'] = user.email
+                response = make_response(redirect(url_for('share.list')))
+                if login_form.remember_me is True:
+                    delta = datetime.now() + timedelta(days=7)
+                    response.set_cookie('email', user.email, expires=delta)
+                    response.set_cookie('user_id', user.id, expires=delta)
+                return response
+            else:
+                error = '用户名或密码错误，请重新输入'
+    # 渲染模板
+    return render_template('login.html',
+                           title='login',
+                           login_form=login_form,
+                           error=error
+                           )
 
 
 @account.route('/register', methods=['GET', 'POST'])

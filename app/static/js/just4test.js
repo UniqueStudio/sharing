@@ -4,8 +4,9 @@ function list_share(start, sortby) {
         sortby: sortby || null
     };
 
-    $.get('/share/list', data)
+    $.post('/share/list', data)
         .done(function(json) {
+            console.log(json);
             var j = $.parseJSON(json);
             if (j.status === true) {
                 var html = j.result;
@@ -61,3 +62,7 @@ function list_comment(start, share_id){
             console.log('加载错误');
         })
 }
+
+$(function(){
+    list_share(2, 'likes');
+});

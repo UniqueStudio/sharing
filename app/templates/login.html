@@ -17,18 +17,16 @@
     <div class="content">
         <div style="width:335px;margin:0px auto;">
             {% if error %}
-                <p style="opacity: 1;" class = "loginAlert">请正确填写相关信息</p>
-            {%else%}
-                <p style="opacity: 0;" class = "loginAlert">请正确填写相关信息</p>
+                <p style="opacity: 1;" class = "loginAlert">{{ error }}</p>
             {% endif %}
             {% from "_formhelpers.html" import render_field %}
             <form action="{{ url_for('account.login') }}" method="post" class="loginForm" onsubmit="return loginJudge()">
                 {{ login_form.hidden_tag() }}
-                {{ render_field(login_form.email, class="username",placeholder="Email") }}
-                {{ render_field(login_form.password, class="password",placeholder = "Password") }}
+                {{ render_field(login_form.email_field, class="username",placeholder="Email") }}
+                {{ render_field(login_form.password_field, class="password",placeholder = "Password") }}
                 <div class="checkShow"></div>
                 <p class="remenberMe">Remenber me</p>
-                {{ render_field(login_form.remember_me, class="remenberBox") }}
+                {{ render_field(login_form.remember_me_field, class="remenberBox") }}
                 <input type="submit" class="subitButton" value="Sign in">
             </form>
             <div class="signUpDiv">

@@ -27,11 +27,11 @@ def check_logged():
     from models import User
 
     if session.has_key('user_id'):
-        user = User.get(session['user_id'])
+        user = User.query.get(session['user_id'])
         g.current_user = user
         return True
     elif request.cookies.get('user_id') is not None:
-        user = User.get(request.cookies.get('user_id'))
+        user = User.query.get(request.cookies.get('user_id'))
         g.current_user = user
         return True
     else:

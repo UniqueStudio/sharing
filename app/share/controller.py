@@ -32,9 +32,12 @@ def add():
         raise OutputError('参数错误')
 
 
-@share.route('/list', methods=['GET'])
+@share.route('/list', methods=['GET', 'POST'])
 def list():
-    args = request.args
+    if request.method == 'GET':
+        return render_template('index.html')
+
+    args = request.form
     if args.has_key('start') and args.has_key('sortby'):
         try:
             start = args.get('start', 1, type=int)
@@ -43,10 +46,13 @@ def list():
         except ValueError:
             raise OutputError('参数错误')
 
+        if sortby not in ('timestamp', 'likes'):
+            raise OutputError('参数错误')
+
         if sortby == 'timestamp':
             order = Share.timestamp
         else:
-            order = Share.timestamp
+            order = Share.likes
 
         shares = Share.query.order_by(
             order.desc()).paginate(start, per_page, False)
@@ -54,7 +60,7 @@ def list():
         # 渲染HTML片段
         result = {}
         result['status'] = True
-        result['result'] = render_template('share_snippet', shares=shares)
+        result['result'] = render_template('share_snippet.html', shares=shares)
 
         return json.dumps(result)
 
