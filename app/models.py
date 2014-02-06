@@ -105,7 +105,7 @@ class User(db.Model):
 class Share(db.Model):
     id = db.Column(db.Integer, primary_key = True, nullable = False)
     title = db.Column(db.String(255), nullable = False)
-    explain = db.Column(db.String(65535), nullable = False)
+    explain = db.Column(db.String(1024), nullable = False)
     url = db.Column(db.String(1024), nullable = False)
     likes = db.Column(db.Integer, default=0, nullable = False)
     timestamp = db.Column(db.DateTime, nullable = False)
@@ -124,7 +124,7 @@ class Share(db.Model):
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key = True, nullable = False)
-    body = db.Column(db.String(65535), nullable = False)
+    body = db.Column(db.String(1024), nullable = False)
     timestamp = db.Column(db.DateTime, nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     share_id = db.Column(db.Integer, db.ForeignKey('share.id'), nullable = False)
@@ -136,4 +136,6 @@ class Comment(db.Model):
 
     def __repr__(self):
         return '<Comment %r: %s\nAuthored by %s>' % (self.id, self.body, self.author)
+
+#将comment的body以及share的explain字段长度改为1024 by@Yang
     

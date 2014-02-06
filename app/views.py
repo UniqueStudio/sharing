@@ -59,7 +59,8 @@ def register():
     register_form = RegisterForm()
     if register_form.validate_on_submit():
         if register_form.validate():
-            user = User(username = register_form.name.data,
+            #将username改为nickname by @Yang
+            user = User(nickname = register_form.name.data,
                     email = register_form.email.data,
                     password = register_form.password.data)
             db.session.add(user)
