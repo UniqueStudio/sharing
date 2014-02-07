@@ -1,6 +1,8 @@
 #encoding:utf-8
-from app import db
+from flask.ext.sqlalchemy import SQLAlchemy
 import md5
+
+db = SQLAlchemy()
 
 group_users = db.Table('group_users',
             db.Column('group_id', db.Integer, db.ForeignKey('group.id')),

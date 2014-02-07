@@ -1,20 +1,19 @@
 # encoding: utf-8
-from account import account
-from flask import make_response, redirect, request, session, g, url_for
+from flask import make_response, redirect, request, session, g, url_for, \
+    render_template, Blueprint
 import json
 from core import get_auth_url, get_token, get_user_profile, photos
 import uuid
 from datetime import datetime, timedelta
 
 from ..filters import check_logged, check_email, check_password, check_nickname, check_image
-
 # import error
 from ..error import OutputError
+from ..models import db, User
+from ..forms import RegisterForm, LoginForm
 
-from ..models import User
 
-from ..app import db
-
+account = Blueprint('account', __name__)
 
 
 # 访问获取code
@@ -25,6 +24,8 @@ def auth():
     return make_response(redirect(get_auth_url(state)))
 
 # 验证登陆请求, 并获取个人信息
+
+
 @account.route('/connect', methods=['GET'])
 def connect():
     # 获取token
@@ -37,11 +38,11 @@ def connect():
 
             # 获取用户信息
             user_profile = get_user_profile(token)
-            
+
             # 如果该用户以前授权过, 则直接跳转到首页
             if User.is_exist(user_profile['email']):
                 user = User.query.filter(User.email ==
-                        user_profile['email']).first()
+                                         user_profile['email']).first()
                 session['user_id'] = user.id
                 session['email'] = user.email
                 return make_response(redirect(url_for('share.list')))
@@ -56,7 +57,7 @@ def connect():
 
 
 # 通过google oauth授权的，获取到个人信息，并且设置密码
-@account.route('/add_pwd', methods = ['POST'])
+@account.route('/add_pwd', methods=['POST'])
 def add_pwd():
     try:
         password = request.get('password')
@@ -69,68 +70,85 @@ def add_pwd():
         return json.dumps({'result': True})
     except ValueError:
         raise OutputError('参数错误')
-        
 
 
-@account.route('/login', methods = ['POST'])
+@account.route('/login', methods=['GET', 'POST'])
 def login():
-    args = request.form
-    try:
-        email = args.get('email')
-        password = args.get('password')
-        remember_me = args.get('remember_me', type=bool)
-        user = User.query.filter(User.email == email).first() or None
-        if user is not None and user.check_password(password):
+    error = None
+    login_form = LoginForm()
+    if request.method == 'GET':
+        # 是否已经登陆
+        if check_logged():
+            # 跳转到首页
+            return make_response(redirect(url_for('share.list')))
+    else:
+        # Form.validate_on_submit()
+        # 等价于 Form.is_submitted() and Form.validate()
+        if login_form.validate_on_submit():
+            print login_form.email
+            user = User.query.filter(User.email == login_form.email).first() or None
+            if user is not None and user.check_password(login_form.password):
+                print login_form.password
+                print login_form.remember_me
+                session['user_id'] = user.id
+                session['email'] = user.email
+                response = make_response(redirect(url_for('share.list')))
+                if login_form.remember_me is True:
+                    delta = datetime.now() + timedelta(days=7)
+                    response.set_cookie('email', user.email, expires=delta)
+                    response.set_cookie('user_id', user.id, expires=delta)
+                return response
+            else:
+                error = '用户名或密码错误，请重新输入'
+    # 渲染模板
+    return render_template('login.html',
+                           title='login',
+                           login_form=login_form,
+                           error=error
+                           )
+
+
+@account.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html')
+    else:
+        args = request.form
+        result = {}
+        if args.has_key('email') and args.has_key('password') and args.has_key('nickname'):
+            email = args['email']
+            password = args['password']
+            nickname = args['nickname']
+            image = None
+
+            if args.has_key('image'):
+               # 保存用户头像
+                pass
+
+            # check args
+            check_email(email)
+            check_password(password)
+            check_nickname(nickname)
+            check_image(image)
+
+            # 添加到数据库
+            user = User(email=email, password=password,
+                        nickname=nickname, image=image)
+            db.session.add(user)
+            db.session.commit()
+
+            # 添加session
             session['user_id'] = user.id
             session['email'] = user.email
-            response = make_response(redirect(url_for('share.list')))
-            if remember_me is True:
-                delta = datetime.now() + timedelta(days=7)
-                response.set_cookie('email', user.email, expires = delta)
-                response.set_cookie('user_id', user.id, expires = delta)
-            return response
+
+            # 返回数据
+            result['status'] = True
+            return json.dumps(result)
         else:
-            raise OutputError('密码错误，请重新输入')
-    except ValueError:
-        raise OutputError('参数错误')
-
-@account.route('/register', methods = ['POST'])
-def register():
-    args = request.form
-    result = {}
-    if args.has_key('email') and args.has_key('password') and args.has_key('nickname'):
-        email = args['email']
-        password = args['password']
-        nickname = args['nickname']
-        image = None
-
-        if args.has_key('image'):
-           # 保存用户头像
-            pass
-    
-        # check args
-        check_email(email)
-        check_password(password)
-        check_nickname(nickname)
-        check_image(image)
-
-        # 添加到数据库
-        user = User(email = email, password = password, nickname = nickname, image = image)
-        db.session.add(user)
-        db.session.commit()
-
-        # 添加session
-        session['user_id'] = user.id
-        session['email'] = user.email
-
-        # 返回数据
-        result['status'] = True
-        return json.dumps(result)
-    else:
-        raise OutputError('参数错误')
+            raise OutputError('参数错误')
 
 
-@account.route('/logout', methods = ['POST'])
+@account.route('/logout', methods=['POST'])
 def logout():
     result = {}
     check_logged()
@@ -140,27 +158,29 @@ def logout():
     return json.dumps(result)
 
 
-@account.route('/upload', methods = ['POST'])
+@account.route('/upload', methods=['POST'])
 def upload():
     if 'image' in request.files:
         filename = uuid.uuid1()
         photos.save(request.files['image'], name=filename)
         url = photos.url(filename)
         result = {
-                'status': True, 
-                'result': {'url': url}
-                }
+            'status': True,
+            'result': {'url': url}
+        }
         return json.dumps(result)
 
 
-@account.route('/profile', methods = ['POST'])
+@account.route('/profile', methods=['POST'])
 def profile():
     check_logged()
     args = request.form
     result = {}
-    
-    nickname = args['nickname'] if args.has_key('nickname') else g.current_user.nickname
-    password = args['password'] if args.has_key('password') else g.current_user.password
+
+    nickname = args['nickname'] if args.has_key(
+        'nickname') else g.current_user.nickname
+    password = args['password'] if args.has_key(
+        'password') else g.current_user.password
 
     # 修改数据库
     g.current_user.nickname = nickname
