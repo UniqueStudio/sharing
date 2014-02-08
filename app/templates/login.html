@@ -19,19 +19,21 @@
             <p style="opacity: 1;" class = "loginAlert">{{ error }}</p>
         {% endif %}
          {% from "_formhelpers.html" import render_field %}
-        <form action="{{ url_for('account.login') }}" method="post" class="loginForm" onsubmit="return loginJudge()">
-            {{ login_form.hidden_tag() }}
-            {{ render_field(login_form.email_field, class="username",placeholder="Email") }}
-            {{ render_field(login_form.password_field, class="password",placeholder = "Password") }}
-            <div class="checkShow"></div>
-            <p class="remenberMe">Remenber me</p>
-            {{ render_field(login_form.remember_me_field, class="remenberBox") }}
-            <input type="submit" class="subitButton" value="Sign in">
-         </form>
-        <div class="signUpInfoDiv">
-            <p class="signUpInfoP">Don't have an account?</p>
-            <a href="" class="signUpButton">Sign Up</a>
+        <div class="loginDiv">
+            <form action="{{ url_for('account.login') }}" method="post" class="loginForm" onsubmit="return loginJudge()">
+                {{ login_form.hidden_tag() }}
+                {{ render_field(login_form.email_field, class="username",placeholder="Email") }}
+                {{ render_field(login_form.password_field, class="password",placeholder = "Password") }}
+                <div class="checkShow"></div>
+                <p class="remenberMe">Remenber me</p>
+                {{ render_field(login_form.remember_me_field, class="remenberBox") }}
+                <input type="submit" class="subitButton" value="Sign in">
+             </form>
+            <div class="signUpInfoDiv">
+                <p class="signUpInfoP">Don't have an account?</p>
+                <a href="" class="signUpButton">Sign Up</a>
 
+            </div>
         </div>
     </div>
     

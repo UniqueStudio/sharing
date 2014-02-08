@@ -443,12 +443,17 @@ p,a,span{
     margin: 0px;
 }
 
-.logout{
-    height: 35px;
 
+.logout{
+    display: inline-block;
+    height: 15px;
+
+    margin: 10px 0px;
+    
     text-decoration: none;
+    cursor: pointer;
     color: #ece2e1;
-    font: 15px/35px arial,Times New Roman,sans-serif;
+    font: 15px/15px arial,Times New Roman,sans-serif;
     font-weight: 500;
     border-right: 1px solid #ece2e1;
     padding: 0px 8px 0px 20px;
@@ -457,12 +462,12 @@ p,a,span{
 
 .ctLBottom>.username{
     display: inline-block;
-    height: 35px;
+    height: 15px;
+    margin: 10px 0px;
     width: 100px;
-    margin: 0px;
 
     color: #ece2e1;
-    font: 15px/35px arial,Times New Roman,sans-serif;
+    font: 15px/15px arial,Times New Roman,sans-serif;
     font-weight: 500;  
     padding-left: 8px;  
 }
