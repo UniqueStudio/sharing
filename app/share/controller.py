@@ -21,7 +21,7 @@ def add():
         url = args['url']
         user_id = g.current_user.id
 
-    # 添加到数据库
+        # 添加到数据库
         share = Share(title=title, explain=explain,
                       url=url, user_id=user_id)
         db.session.add(share)
@@ -35,7 +35,7 @@ def add():
 @share.route('/list', methods=['GET', 'POST'])
 def list():
     if request.method == 'GET':
-        return render_template('index.html')
+        return render_template('index.html', current_user = g.current_user)
 
     args = request.form
     if args.has_key('start') and args.has_key('sortby'):
@@ -70,22 +70,3 @@ def detail():
     # TODO
     pass
 
-# chrome extension 
-@share.route('/extension/login', methods = ['GET', 'POST'])
-def ext_login():
-    resp = {}
-    if request.method == 'POST':
-        email = request.form['email']
-        pwd = request.form['password']
-        user = User.query.filter_by(email = email).first()
-        if not user:
-            resp['success'] = False
-            resp['errorCode'] = 1
-        elif  user.pwdhash != pwd:
-            resp['success'] = False
-            resp['errorCode'] = 2
-        else:
-            session['logged_in'] = True
-            session['user_id'] = user.id
-            resp['success'] = True
-    return json.dumps(resp)
