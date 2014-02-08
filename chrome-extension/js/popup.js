@@ -1,4 +1,4 @@
-var urlPrefix = "http://localhost:5000/extension"
+var urlPrefix = "http://localhost:5000"
 var loginButton = document.getElementById('loginButton');
 var shareButton = document.getElementById('shareButton');
 var logoutButton = document.getElementById('logout');
@@ -11,7 +11,7 @@ var shareDiv = document.getElementById('share');
 function init(){
     loginDiv.style.display = "none";
     var email = getCookie("email");
-    var pwd = getCookie("pwd");
+    var pwd = getCookie("password");
     if(email && pwd){
         login(email, pwd);
     }else{
@@ -57,18 +57,15 @@ function getCookie(c_name){
 function login(email, password){
     var pwdhash = hex_md5(password);
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", urlPrefix + "/login", true);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send("email="+email+"&pwd="+pwdhash);
     xhr.onreadystatechange = function() {
-        if(xhr.readyState == 4) {
+        if(xhr.readyState == 4  && xhr.status==200) {
             var resp = JSON.parse(xhr.responseText);
             console.log(resp);
             if(resp.success){
                 loginDiv.style.display = "none";
                 shareDiv.style.display = "block";
                 setCookie("email", email, 30);
-                setCookie("pwd", pwdhash, 30);
+                setCookie("password", pwdhash, 30);
             }else if(resp.errorCode == 1){
                 error = "no email found"
                 loginError.innerHTML = error
@@ -78,6 +75,9 @@ function login(email, password){
             }
         }
     }
+    xhr.open("POST",urlPrefix+"/extension/login", true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhr.send("email="+email+"&password="+pwdhash);
 }
 
 function share(parameters){
@@ -85,11 +85,11 @@ function share(parameters){
     var title = parameters.title;
     var explain = parameters.explain;
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", urlPrefix + "/share", true);
+    xhr.open("POST",  urlPrefix+"/add", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send("title="+title+"&url="+url+"&explain="+explain);
+    xhr.send("url="+url+"&title="+title+"&explain="+explain);
     xhr.onreadystatechange = function() {
-        if(xhr.readyState == 4) {
+        if(xhr.readyState==4 && xhr.status==200) {
             var resp = JSON.parse(xhr.responseText);
             if(resp.success){
                 console.log("shared");
@@ -105,9 +105,10 @@ function share(parameters){
                 showInfo(error);
             }
         }
+        console.log("ok");
     }
 
-}
+};
 
 init();
 
@@ -133,7 +134,7 @@ shareButton.onclick = function() {
 logoutButton.onclick = function() {
     console.log('a');
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", urlPrefix + "/logout", true);
+    xhr.open("GET", "/logout", true);
     xhr.send();
     xhr.onreadystatechange = function() {
         if(xhr.readyState == 4) {

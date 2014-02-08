@@ -69,3 +69,23 @@ def list():
 def detail():
     # TODO
     pass
+
+# chrome extension 
+@share.route('/extension/login', methods = ['GET', 'POST'])
+def ext_login():
+    resp = {}
+    if request.method == 'POST':
+        email = request.form['email']
+        pwd = request.form['password']
+        user = User.query.filter_by(email = email).first()
+        if not user:
+            resp['success'] = False
+            resp['errorCode'] = 1
+        elif  user.pwdhash != pwd:
+            resp['success'] = False
+            resp['errorCode'] = 2
+        else:
+            session['logged_in'] = True
+            session['user_id'] = user.id
+            resp['success'] = True
+    return json.dumps(resp)

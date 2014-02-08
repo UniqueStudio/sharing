@@ -45,7 +45,7 @@ $(document).ready(function(){
     });
 
     $(".ctLMain")[0].onmousewheel = function(event) {
-        var event = event || window.event; 
+        event = event || window.event; 
         ctLMainScroll(event.wheelDelta/120);
     };
     $(".ctLMain")[0].addEventListener("DOMMouseScroll", function(event) {
