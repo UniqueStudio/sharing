@@ -10,7 +10,7 @@ class RegisterForm(Form):
     email_field = TextField('E-mail', validators=[DataRequired()])
     password_field = PasswordField('New Password', [
         validators.Required(),
-        validators.EqualTo('confirm', message='Passwords must match')
+        validators.EqualTo('confirm_field', message='Passwords must match')
     ])
     name_field = TextField('Name', validators=[DataRequired()])
     confirm_field = PasswordField('Repeat Password')
@@ -41,7 +41,7 @@ class RegisterForm(Form):
     #         self.email.errors.append("unvalid email")
     #         return False
 
-    #     # email check duplicate
+    # email check duplicate
     #     user = User.query.filter_by(email=self.email.data).first()
     #     if user:
     #         self.email.errors.append("this email had been registered")
@@ -93,3 +93,16 @@ class LoginForm(Form):
 
 class CommentForm(Form):
     body = TextField('Comment', validators=[DataRequired()])
+
+
+class AddPwdForm(Form):
+    password_field = PasswordField('New Password', [
+        validators.DataRequired(),
+        validators.EqualTo(
+            'confirm_field', message='Password doesn\'tmatch')
+    ])
+    confirm_field = PasswordField('Repeat Password')
+
+    @property
+    def password(self):
+        return self.password_field.data

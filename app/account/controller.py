@@ -10,7 +10,7 @@ from ..filters import check_logged, check_email, check_password, check_nickname,
 # import error
 from ..error import OutputError
 from ..models import db, User
-from ..forms import RegisterForm, LoginForm
+from ..forms import RegisterForm, LoginForm, AddPwdForm
 
 
 account = Blueprint('account', __name__)
@@ -51,25 +51,30 @@ def connect():
             session.pop('state')
             session['user_profile'] = user_profile
             # 重定向到添加本站密码的页面
-            return make_response(redirect(url_for('add_pwd')))
+            return make_response(redirect(url_for('account.add_pwd')))
         else:
             raise OutputError('参数错误')
 
 
 # 通过google oauth授权的，获取到个人信息，并且设置密码
-@account.route('/add_pwd', methods=['POST'])
+@account.route('/add_pwd', methods=['GET', 'POST'])
 def add_pwd():
-    try:
-        password = request.get('password')
-        email = session.get('user_profile')['email']
-        nickname = session.get('user_profile')['nickname']
-        image = session.get('user_profile')['image']
-        user = User(email, password, nickname, image)
-        db.session.add(user)
-        db.commit()
-        return json.dumps({'result': True})
-    except ValueError:
-        raise OutputError('参数错误')
+    add_pwd_form = AddPwdForm()
+    if request.method == 'GET':
+        return render_template('add_pwd.html', add_pwd_form = add_pwd_form)
+    else:
+        if add_pwd_form.validate_on_submit():
+            try:
+                password = add_pwd_form.password
+                email = session.get('user_profile')['email']
+                nickname = session.get('user_profile')['nickname']
+                image = session.get('user_profile')['image']
+                user = User(email, password, nickname, image)
+                db.session.add(user)
+                db.session.commit()
+                return make_response(redirect(url_for('share.list')))
+            except ValueError:
+                raise OutputError('参数错误')
 
 
 @account.route('/login', methods=['GET', 'POST'])
@@ -85,18 +90,16 @@ def login():
         # Form.validate_on_submit()
         # 等价于 Form.is_submitted() and Form.validate()
         if login_form.validate_on_submit():
-            print login_form.email
             user = User.query.filter(User.email == login_form.email).first() or None
             if user is not None and user.check_password(login_form.password):
-                print login_form.password
-                print login_form.remember_me
                 session['user_id'] = user.id
                 session['email'] = user.email
+                print user.email, type(user.id)
                 response = make_response(redirect(url_for('share.list')))
                 if login_form.remember_me is True:
                     delta = datetime.now() + timedelta(days=7)
                     response.set_cookie('email', user.email, expires=delta)
-                    response.set_cookie('user_id', user.id, expires=delta)
+                    response.set_cookie('user_id', str(user.id), expires=delta)
                 return response
             else:
                 error = '用户名或密码错误，请重新输入'
@@ -143,19 +146,19 @@ def register():
 
             # 返回数据
             result['status'] = True
-            return json.dumps(result)
+            return make_response(redirect(url_for('share.list')))
         else:
             raise OutputError('参数错误')
 
 
-@account.route('/logout', methods=['POST'])
+@account.route('/logout', methods=['GET'])
 def logout():
-    result = {}
     check_logged()
     session.clear()
-    request.cookies.clear()
-    result['status'] = True
-    return json.dumps(result)
+    resp = make_response(redirect(url_for('account.login')))
+    resp.set_cookie('email', expires=0)
+    resp.set_cookie('user_id', expires=0)
+    return resp
 
 
 @account.route('/upload', methods=['POST'])

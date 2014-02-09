@@ -10,6 +10,7 @@ from models import db
 from account.controller import account
 from share.controller import share
 from comment.controller import comment
+from extension.controller import extension
 
 # import error
 from error import OutputError
@@ -25,6 +26,7 @@ db.init_app(app)
 app.register_blueprint(account, url_prefix = '/account')
 app.register_blueprint(share, url_prefix = '/share')
 app.register_blueprint(comment, url_prefix = '/comment')
+app.register_blueprint(extension, url_prefix = '/extension')
 
 # mail_abc = Mail(app)
 

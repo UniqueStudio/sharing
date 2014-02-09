@@ -307,7 +307,25 @@ p,a,span{
 .ctLBottom{
     position: absolute;
     bottom: 0px;
-    display: inline-block;
+
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-flex-direction:row;
+    -moz-flex-direction:row;
+    flex-direction:row;
+    
+    -webkit-justify-content:flex-start;
+    -moz--justify-content:flex-start;
+    webkit-justify-content:flex-start;
+
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    align-items: center;
+
     width: 100%;
     height: 35px;
 
@@ -443,15 +461,10 @@ p,a,span{
     margin: 0px;
 }
 
-
 .logout{
-    display: inline-block;
     height: 15px;
 
-    margin: 10px 0px;
-    
     text-decoration: none;
-    cursor: pointer;
     color: #ece2e1;
     font: 15px/15px arial,Times New Roman,sans-serif;
     font-weight: 500;
@@ -462,12 +475,21 @@ p,a,span{
 
 .ctLBottom>.username{
     display: inline-block;
-    height: 15px;
-    margin: 10px 0px;
-    width: 100px;
+    height: 35px;
+    width: auto;
+    margin: 0px;
 
     color: #ece2e1;
-    font: 15px/15px arial,Times New Roman,sans-serif;
+    font: 15px/35px arial,Times New Roman,sans-serif;
     font-weight: 500;  
     padding-left: 8px;  
+    padding-right: 10px;
+}
+
+.ctLBottom>.userImg{
+    display: inline-block;
+    height:30px;
+    width:30px;
+    -webkit-background-size: 100% 100%!important;
+    background-size: 100% 100%!important;
 }

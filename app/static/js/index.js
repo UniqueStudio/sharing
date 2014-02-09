@@ -88,24 +88,6 @@ $(document).ready(function(){
         $(document).unbind("mousemove");
     });
 
-    $(".logout").click(function(){
-        $.ajax({
-        type: "POST",
-            url: "/account/logout",
-            data: {},
-            dataType: "json",
-
-            success: function(data) {
-                alert(data);
-            },
-            error: function(data){
-            alert("fail");
-
-            }
-
-        });
-    });
-
     var selectFalse = function(){
         $(document).bind("selectstart",function(){return false;});
         $("div").css("-moz-user-select","none");
