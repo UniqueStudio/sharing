@@ -34,7 +34,6 @@ def add():
 
 @share.route('/list', methods=['GET', 'POST'])
 def list():
-    return render_template('add_share.html')
     if request.method == 'GET':
         return render_template('index.html', current_user=g.current_user)
 

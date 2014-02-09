@@ -80,6 +80,7 @@ def add_pwd():
 
 @account.route('/login', methods=['GET', 'POST'])
 def login():
+    state = request.args.get('state', 'login')
     login_form = LoginForm()
     # 注册表单
     register_form = RegisterForm()
@@ -111,7 +112,7 @@ def login():
     # 渲染模板
     return render_template('login.html',
                            title='login',
-                           state='login',
+                           state=state,
                            login_form=login_form,
                            register_form=register_form,
                            )
@@ -119,36 +120,35 @@ def login():
 
 @account.route('/register', methods=['POST'])
 def register():
-    login_form = LoginForm()
     register_form = RegisterForm()
 
     # 当表单提交时
-    if register_form.validate_on_submit():
-        email = register_form.email
-        password = register_form.password
-        nickname = register_form.nickname
-        image = None
+    try:
+        if register_form.validate_on_submit():
+            email = register_form.email
+            if User.query.filter(User.email == email) is not None:
+                raise ValidationError('该邮箱已经被使用')
+            password = register_form.password
+            nickname = register_form.nickname
+            image = None
 
-        # 添加到数据库
-        user = User(email=email, password=password,
-                    nickname=nickname, image=image)
-        db.session.add(user)
-        db.session.commit()
+            # 添加到数据库
+            user = User(email=email, password=password,
+                        nickname=nickname, image=image)
+            db.session.add(user)
+            db.session.commit()
 
-        # 添加session
-        session['user_id'] = user.id
-        session['email'] = user.email
+            # 添加session
+            session['user_id'] = user.id
+            session['email'] = user.email
 
-        # 返回数据
-        return make_response(redirect(url_for('share.list')))
+            # 返回数据
+            return make_response(redirect(url_for('share.list')))
+    except ValidationError as e:
+        print e.message
 
     # 输入有误时重新返回注册页
-    return render_template('login.html',
-                           title='register',
-                           state='register',
-                           login_form=login_form,
-                           register_form=register_form,
-                           )
+    return make_response(redirect(url_for('account.login', state='register')))
 
 
 @account.route('/logout', methods=['GET'])
