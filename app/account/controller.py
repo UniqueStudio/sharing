@@ -5,8 +5,9 @@ import json
 from core import get_auth_url, get_token, get_user_profile, photos
 import uuid
 from datetime import datetime, timedelta
+from wtforms.validators import ValidationError
 
-from ..filters import check_logged, check_email, check_password, check_nickname, check_image
+from ..filters import check_logged
 # import error
 from ..error import OutputError
 from ..models import db, User
@@ -61,7 +62,7 @@ def connect():
 def add_pwd():
     add_pwd_form = AddPwdForm()
     if request.method == 'GET':
-        return render_template('add_pwd.html', add_pwd_form = add_pwd_form)
+        return render_template('add_pwd.html', add_pwd_form=add_pwd_form)
     else:
         if add_pwd_form.validate_on_submit():
             try:
@@ -79,8 +80,9 @@ def add_pwd():
 
 @account.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
     login_form = LoginForm()
+    # 注册表单
+    register_form = RegisterForm()
     if request.method == 'GET':
         # 是否已经登陆
         if check_logged():
@@ -90,7 +92,8 @@ def login():
         # Form.validate_on_submit()
         # 等价于 Form.is_submitted() and Form.validate()
         if login_form.validate_on_submit():
-            user = User.query.filter(User.email == login_form.email).first() or None
+            user = User.query.filter(
+                User.email == login_form.email).first() or None
             if user is not None and user.check_password(login_form.password):
                 session['user_id'] = user.id
                 session['email'] = user.email
@@ -99,56 +102,53 @@ def login():
                 if login_form.remember_me is True:
                     delta = datetime.now() + timedelta(days=7)
                     response.set_cookie('email', user.email, expires=delta)
-                    response.set_cookie('user_id', str(user.id), expires=delta)
+                    response.set_cookie(
+                        'user_id', str(user.id), expires=delta)
                 return response
             else:
-                error = '用户名或密码错误，请重新输入'
+                raise ValidationError('用户名或密码错误，请重新输入')
+
     # 渲染模板
     return render_template('login.html',
                            title='login',
+                           state='login',
                            login_form=login_form,
-                           error=error
+                           register_form=register_form,
                            )
 
 
-@account.route('/register', methods=['GET', 'POST'])
+@account.route('/register', methods=['POST'])
 def register():
-    if request.method == 'GET':
-        return render_template('register.html')
-    else:
-        args = request.form
-        result = {}
-        if args.has_key('email') and args.has_key('password') and args.has_key('nickname'):
-            email = args['email']
-            password = args['password']
-            nickname = args['nickname']
-            image = None
+    login_form = LoginForm()
+    register_form = RegisterForm()
 
-            if args.has_key('image'):
-               # 保存用户头像
-                pass
+    # 当表单提交时
+    if register_form.validate_on_submit():
+        email = register_form.email
+        password = register_form.password
+        nickname = register_form.nickname
+        image = None
 
-            # check args
-            check_email(email)
-            check_password(password)
-            check_nickname(nickname)
-            check_image(image)
+        # 添加到数据库
+        user = User(email=email, password=password,
+                    nickname=nickname, image=image)
+        db.session.add(user)
+        db.session.commit()
 
-            # 添加到数据库
-            user = User(email=email, password=password,
-                        nickname=nickname, image=image)
-            db.session.add(user)
-            db.session.commit()
+        # 添加session
+        session['user_id'] = user.id
+        session['email'] = user.email
 
-            # 添加session
-            session['user_id'] = user.id
-            session['email'] = user.email
+        # 返回数据
+        return make_response(redirect(url_for('share.list')))
 
-            # 返回数据
-            result['status'] = True
-            return make_response(redirect(url_for('share.list')))
-        else:
-            raise OutputError('参数错误')
+    # 输入有误时重新返回注册页
+    return render_template('login.html',
+                           title='register',
+                           state='register',
+                           login_form=login_form,
+                           register_form=register_form,
+                           )
 
 
 @account.route('/logout', methods=['GET'])

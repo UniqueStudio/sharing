@@ -59,11 +59,11 @@
     返回值: 根据模板渲染过的html代码片段, 通过返回的json对象的result键访问
 
 
-    **查看分享详细信息**
-    方法: GET
-    接口: /share/detail
-    参数: id(int, 分享的id)
-    返回值: 一个share(title, explain, url, likes, comments)对象
+    **赞分享**
+    方法: POST
+    接口: /share/toggleLikes
+    参数: share_id(int)
+    返回值: 无
 
 
 评论: 
