@@ -1,5 +1,6 @@
 #encoding:utf-8
 from flask.ext.sqlalchemy import SQLAlchemy
+from datetime import datetime
 import md5
 
 db = SQLAlchemy()
@@ -118,9 +119,11 @@ class Share(db.Model):
         self.explain = explain
         self.url = url
         self.user_id = user_id
+        self.timestamp = datetime.now()
 
     def __repr__(self):
         return '<Share %d: %s\nAuthored by %s>' % (self.id, self.url, self.author)
+
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key = True, nullable = False)

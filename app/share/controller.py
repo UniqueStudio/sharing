@@ -35,7 +35,7 @@ def add():
 @share.route('/list', methods=['GET', 'POST'])
 def list():
     if request.method == 'GET':
-        return render_template('index.html', current_user = g.current_user)
+        return render_template('index.html', current_user=g.current_user)
 
     args = request.form
     if args.has_key('start') and args.has_key('sortby'):
@@ -65,8 +65,28 @@ def list():
         return json.dumps(result)
 
 
+@share.route('/toggleLikes', methods=['POST'])
+def toggleLikes():
+    result = []
+    args = request.form
+    if args.has_key('share_id'):
+        share = Share.query.get(args['share_id']) or None
+        if g.current_user.is_like(share):
+            g.current_user.dislike(share)
+        else:
+            g.current_user.like(share)
+        db.session.add(share)
+        db.session.commit()
+        result['status'] = True
+
+    else:
+        result['status'] = False
+        result['msg'] = ['参数错误']
+
+    return json.dumps(result)
+
+
 @share.route('/detail', methods=['GET'])
 def detail():
     # TODO
     pass
-
