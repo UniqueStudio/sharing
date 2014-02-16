@@ -9,12 +9,13 @@ $(document).ready(function(){
         changeScrollBarHeight();
         var status;
         var i = 0;
-        do{
-            status = linkContentLoad(timestampNum);
-            console.log(status);
-            ++i;
-            console.log(document.getElementsByClassName("eachConnection").length)
-        }while(i<20);
+        //do{
+            linkContentLoad(timestampNum);
+            //console.log(status);
+            //++i;
+            changeScrollBarHeight();
+            //console.log(document.getElementsByClassName("eachConnection").length)
+       // }while(i<20);
     }; 
 
     $(".hdL0").children(0).click(function(){
@@ -155,6 +156,7 @@ $(document).ready(function(){
         else{
             $(".ctLScrollBar").css("height",50);
         }
+        changeScrollBarTop();
     };
 
     var changeScrollBarTop = function(scrollHeight,contentHeight,marginTopNow){
@@ -206,14 +208,14 @@ $(document).ready(function(){
             .done(function(data) {
                 var json = JSON.parse(data);
                 $(".ctLMain1").append(json.result);
-                status = 1;;
+                status = 1;
             })
         if(lengthBefore<$(".ctLMain1").children().length){
             return true;
-            console.log($("body").children().length)
+            //console.log($("body").children().length)
         }
         else{
-            console.log($(".ctLMain1").children())
+            //console.log($(".ctLMain1").children())
             return false;
         }
     };
