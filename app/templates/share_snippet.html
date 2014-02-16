@@ -1,5 +1,4 @@
-{% if shares.items %}
-{% for share in shares.items %}
+{% if shares.items %} {% for share in shares.items %}
 <a href="{{ share.url }}" class="eachConnection">
     <div class="eachLeft">
         <div class="ELShareShot" style="background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{ share.url }});"></div>
@@ -15,6 +14,4 @@
         </div>
     </div>
 </a>
-<hr/>
-{% endfor %}
-{% endif %}
+<hr/>{% endfor %} {% endif %}

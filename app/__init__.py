@@ -12,11 +12,19 @@ from share.controller import share
 from comment.controller import comment
 from extension.controller import extension
 
+# import upload
+from account.core import photos
+from flaskext.uploads import configure_uploads
+
 # import error
 from error import OutputError
 
 app = Flask(__name__)
 app.config.from_object('config')
+
+# configure uploadset
+configure_uploads(app, photos)
+
 # app.config.update(mail_config)
 
 # 把数据库和应用相关联 

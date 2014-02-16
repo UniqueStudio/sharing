@@ -121,8 +121,6 @@ class Share(db.Model):
         self.user_id = user_id
         self.timestamp = datetime.now()
 
-    def __repr__(self):
-        return '<Share %d: %s\nAuthored by %s>' % (self.id, self.url, self.author)
 
 
 class Comment(db.Model):
