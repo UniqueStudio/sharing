@@ -73,6 +73,8 @@ def add_pwd():
                 user = User(email, password, nickname, image)
                 db.session.add(user)
                 db.session.commit()
+                session.clear()
+                session['user_id'] = user.id
                 return make_response(redirect(url_for('share.list')))
             except ValueError:
                 raise OutputError('参数错误')

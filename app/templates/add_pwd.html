@@ -9,8 +9,6 @@
     <form action="{{ url_for('account.add_pwd') }}" method="post">
         {{ add_pwd_form.hidden_tag() }}
         {{ render_field(add_pwd_form.password_field, placeholder="Password") }}
-        {{ render_field(add_pwd_form.confirm_field,
-        placeholder="Repeat Password") }}
         <input type="submit" value="SUBMIT">
     </form>
 </body>
