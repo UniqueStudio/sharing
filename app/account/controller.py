@@ -2,7 +2,6 @@
 from flask import make_response, redirect, request, session, g, url_for, \
     render_template, Blueprint
 import json
-from core import get_auth_url, get_token, get_user_profile, photos
 import uuid
 from datetime import datetime, timedelta
 from wtforms.validators import ValidationError
@@ -12,6 +11,8 @@ from ..filters import check_logged
 from ..error import OutputError
 from ..models import db, User
 from ..forms import RegisterForm, LoginForm, AddPwdForm
+from core import get_auth_url, get_token, get_user_profile, photos, PHOTO_PREFIX
+
 
 
 account = Blueprint('account', __name__)
@@ -163,17 +164,19 @@ def logout():
     return resp
 
 
-@account.route('/upload', methods=['POST'])
+@account.route('/upload', methods=['GET', 'POST'])
 def upload():
-    if 'image' in request.files:
-        filename = uuid.uuid1()
-        photos.save(request.files['image'], name=filename)
-        url = photos.url(filename)
-        result = {
-            'status': True,
-            'result': {'url': url}
-        }
-        return json.dumps(result)
+    if request.method == 'GET':
+        return render_template('upload.html')
+
+    if 'image' in request.files and check_logged() is True:
+        filename = str(uuid.uuid4())
+        filename = photos.save(request.files['image'], name=filename + '.')
+        url = PHOTO_PREFIX + filename
+        g.current_user.image = url
+        db.session.add(g.current_user)
+        db.session.commit()
+        return make_response(redirect(url_for('share.list')))
 
 
 @account.route('/profile', methods=['POST'])

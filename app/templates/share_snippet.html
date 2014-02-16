@@ -1,6 +1,7 @@
 {% if shares.items %}
 {% for share in shares.items %}
-<a href="{{ share.url }}" class="eachConnection" onclick="return ecCilck(this)">
+<a href="{{ share.url }}" class="eachConnection">
+>>>>>>> 9158523ec9b8d156dfd18bae1806c20f94104714
     <div class="eachLeft">
         <div class="ELShareShot" style="background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url={{ share.url }});"></div>
         <div class="ELShareTitle">
@@ -16,5 +17,5 @@
     </div>
 </a>
 <hr/>
-{% endfor %}
+{% endfor %} 
 {% endif %}

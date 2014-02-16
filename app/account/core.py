@@ -1,7 +1,7 @@
 import urllib
 import urllib2
 import json
-from flask.ext.uploads import UploadSet, IMAGES
+from flaskext.uploads import UploadSet, ALL
 
 URL_AUTH = 'https://accounts.google.com/o/oauth2/auth'
 URL_TOKEN = 'https://accounts.google.com/o/oauth2/token'
@@ -18,7 +18,10 @@ SCOPE = 'email'
 ACCESS_TYPE = 'online'
 LOGIN_HINT = 'email' 
 
-photos = UploadSet('photos', IMAGES)
+
+photos = UploadSet('photos', ALL, default_dest=lambda app: 'app/static/uploads')
+
+PHOTO_PREFIX = '../static/uploads/'
 
 
 

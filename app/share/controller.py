@@ -1,6 +1,7 @@
 # encoding: utf-8
 import json
 from flask import request, g, render_template, Blueprint
+import pickle
 
 # import error
 from ..error import OutputError
@@ -57,10 +58,28 @@ def list():
         shares = Share.query.order_by(
             order.desc()).paginate(start, per_page, False)
 
-        # 渲染HTML片段
+        items = []
+        if shares.items is not None:
+            for item in shares.items:
+                tmp = {
+                        'id': item.id, 
+                        'title': item.title, 
+                        'explain': item.explain, 
+                        'url': item.url, 
+                        'likes': item.likes, 
+                        'timestamp': str(item.timestamp), 
+                        'author_name': item.author.nickname, 
+                        'author_image': item.author.image or '../static/img/default.jpg',  
+                        'author_id': item.author.id
+                        }
+                items.append(tmp)
+                
+
+        # 返回结果
         result = {}
         result['status'] = True
-        result['result'] = render_template('share_snippet.html', shares=shares)
+        result['result'] = items
+        result['length'] = len(shares.items)
 
         return json.dumps(result)
 
