@@ -68,6 +68,7 @@ p,a,span{
     height: 100%;
     width: 30%;
     min-width: 335px;
+    max-width: 480px;
 
     overflow: hidden;
 }
@@ -213,7 +214,6 @@ p,a,span{
 }
 
 .headerRight{
-    width: 70%;
     height: 45px;
 
     background-color: rgba(3, 3, 163, 0.72);
@@ -283,7 +283,6 @@ p,a,span{
 
 .contentRight{
     height: 100%;
-    width: 70%;
 }
 
 .ctLMainDiv{
@@ -415,12 +414,21 @@ p,a,span{
 }
 
 .ELShareTitle,.ERShareReason{
+    display: inline-block;
     position: absolute;
     top: 0px;
     right: 0px;
     left: 84px;
-    height: 56px;
     padding:5px 0px;
+    overflow: hidden;
+}
+
+.ELShareTitle{
+    height: 60px;
+}
+.ERShareReason{
+    height: 58px;
+    overflow: hidden;
 }
 
 .shareTitle{
@@ -460,7 +468,7 @@ p,a,span{
 
 .shareReason{
     color:#475e81;
-    font-size: 16px;
+    font: 16px/20px arial,Times New Roman,sans-serif;
     word-wrap:break-word;   
 }
 
@@ -503,4 +511,11 @@ p,a,span{
     width:30px;
     -webkit-background-size: 100% 100%!important;
     background-size: 100% 100%!important;
+}
+
+.ctRMain{
+    display:inline-block;
+    width: 100%;
+    height: 100%;
+
 }
