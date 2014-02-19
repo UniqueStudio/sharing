@@ -157,6 +157,7 @@ class Comment(db.Model):
         self.body = body
         self.user_id = user_id
         self.share_id = share_id
+        self.timestamp = datetime.now()
 
     def __repr__(self):
         return '<Comment %r: %s\nAuthored by %s>' % (self.id, self.body, self.author)
