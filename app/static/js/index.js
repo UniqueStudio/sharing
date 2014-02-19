@@ -149,7 +149,6 @@ var ctLMainScroll = function(theScroll){
 };
 
 var linkContentLoad = function(type){
-    var lengthBefore = $("ctLMain1").children.length;
     var json;
     var content;
     var contentJson;
@@ -173,7 +172,8 @@ var linkContentLoad = function(type){
                                         +"'><div class='eachLeft'><div class='ELShareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                         +")'></div><div class='ELShareTitle'><div class='shareTitle'>"+content.title
                                         +"</div><span class='shareDetail'>赞("+content.likes
-                                        +") "+content.timestamp
+                                        +")  评论("+ content.comments
+                                        +")  " + content.timestamp
                                         +"</span></div></div><div class='eachRight'><div class='ERSharemanImg' style='background:url("+content.author_image
                                         +")'></div><div class='ERShareReason'><span class='shareName'>"+content.author_name
                                         +"</span><span class='shareReason'>"+content.explain
@@ -190,8 +190,24 @@ var linkContentLoad = function(type){
     }
     else if(type === "likes"){
         xmlhttp.send("start="+likesNum+"&sortby=likes");
-    }
+    };
     
+};
+
+var shuffleLoad = function(){
+    var xmlhttp=new XMLHttpRequest();
+    xmlhttp.onreadystatechange=function(){
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){//成功发送请求
+            var json  = JSON.parse(xmlhttp.responseText);
+            if(json.status){
+                $("ctRMain").src = json.url;
+                contentId = json.id;
+            }
+        };
+    };
+    xmlhttp.open("POST","/share/shuffle",true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.send();
 };
 
 var ecCilck = function(obj){
@@ -301,6 +317,7 @@ window.onload = function(){
     $("headerRight").style.width = ctRMainWidth + "px";
     $("contentRight").style.width = ctRMainWidth + "px";
     linkContentLoad("timestamp");
+    shuffleLoad();
 }; 
 
 window.onresize = function(){
