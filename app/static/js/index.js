@@ -5,6 +5,7 @@ var contentIdLoadBefore = 1;
 var contentLengthNow = 0;
 var contentId = 1;
 var ctLShowJudge = true;
+var needToLoad = true;
 
 var $ = function(className){
     return document.getElementsByClassName(className)[0];
@@ -63,8 +64,6 @@ var ctLMainMove = function(T,thePoint){
     },1);
 };
 
-
-
 var arrowMove = function(T,thePoint){
     var countTime = 1;
     const a1 = 500/(T*T);
@@ -94,6 +93,15 @@ var arrowMove = function(T,thePoint){
     },1);
 };
 
+var changeScrollBarTop = function(scrollHeight,contentHeight,marginTopNow){
+    var contentHeight =  parseFloat(getCss("ctLMain").height);
+    var scrollHeight  = parseFloat(getCss("ctLMain"+point).height) - contentHeight;
+    var marginTopNow  = 0 - parseFloat(getCss("ctLMain"+point).marginTop);
+    var scrollBarHeiht = parseFloat(getCss("ctLScrollBar").height);
+    var scrollTop     = marginTopNow/scrollHeight*(contentHeight - scrollBarHeiht);
+    $("ctLScrollBar").style.top = scrollTop +"px";
+};
+
 var changeScrollBarHeight = function(){
     var contentHeight = parseFloat(getCss("ctLMain").height);
     var mainNowHeight = parseFloat(getCss("ctLMain"+point).height);
@@ -102,17 +110,9 @@ var changeScrollBarHeight = function(){
         $("ctLScrollBar").style.height = 0 +"px";
     }
     else{
-        $("ctLScrollBar").style.height = 50 +"px";
+        $("ctLScrollBar").style.height = contentHeight*contentHeight/mainNowHeight +"px";
     }
     changeScrollBarTop();
-};
-
-var changeScrollBarTop = function(scrollHeight,contentHeight,marginTopNow){
-    var contentHeight =  parseFloat(getCss("ctLMain").height);
-    var scrollHeight  = parseFloat(getCss("ctLMain"+point).height) - contentHeight;
-    var marginTopNow  = 0 - parseFloat(getCss("ctLMain"+point).marginTop);
-    var scrollTop     = marginTopNow/scrollHeight*(contentHeight - 50);
-    $("ctLScrollBar").style.top = scrollTop +"px";
 };
 
 var ctLMainScroll = function(theScroll){
@@ -130,10 +130,9 @@ var ctLMainScroll = function(theScroll){
                 $("ctLMain"+point).style.marginTop = (contentHeight - mainNowHeight) + "px";
                 changeScrollBarTop();
             };
-            if(parseFloat($("ctLMain"+point).style.marginTop) === (contentHeight - mainNowHeight)){
+            if(parseFloat($("ctLMain"+point).style.marginTop) <= (contentHeight - mainNowHeight + 70)){
                 linkContentLoad("timestamp");
-            }
-            
+            };            
         }
         else if(theScroll > 0){//主体内容下滚
             if(marginTopNow < -55){
@@ -248,8 +247,6 @@ var ctLMainShow = function(T){
     const t1 = 0.4*T;//加速时间
     const t2 = 0.6*T;//减速时间
     const v  = 200/T;
-    const ctRMainWidth = parseFloat(getCss("headerRight").width);
-
 
     if(bodyWidth <= 1117){
         ctLMainWidth = 335;
@@ -278,9 +275,9 @@ var ctLMainShow = function(T){
             moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
         };
         $("headerLeft").style.marginLeft = (0 - ctLMainWidth + moveDistance) +"px";
-        $("headerRight").style.width  = (ctRMainWidth - moveDistance) +"px";
+        $("headerRight").style.width  = (bodyWidth - moveDistance) +"px";
         $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";
-        $("contentRight").style.width = (ctRMainWidth - moveDistance) +"px";
+        $("contentRight").style.width = (bodyWidth - moveDistance) +"px";
         if(countTime < T){
             ++countTime;
         }
@@ -289,8 +286,8 @@ var ctLMainShow = function(T){
             $("contentLeft").style.width  = "30%";
             $("headerLeft").style.minWidth = "335px";
             $("contentLeft").style.minWidth  = "335px";
-            $("headerRight").style.width = "100%";
-            $("contentRight").style.width  = "100%";
+            $("headerRight").style.width = (bodyWidth - ctLMainWidth) + "px";
+            $("contentRight").style.width  = (bodyWidth - ctLMainWidth) + "px";
             clearInterval(moveTime);
         }
     },1);
@@ -308,6 +305,7 @@ window.onload = function(){
 
 window.onresize = function(){
     var ctRMainWidth
+    changeScrollBarHeight();
     if(ctLShowJudge){
         ctRMainWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width) - parseFloat(getCss("headerLeft").width);  
         $("headerRight").style.width = ctRMainWidth + "px";
@@ -354,11 +352,11 @@ $("hdL3").children[0].onclick = function(){
 $("moreButton").onclick = function(){
     console.log(1);
     if(ctLShowJudge){
-        ctLMainHide(30);
+        ctLMainHide(20);
         console.log(2);
     }
     else{
-        ctLMainShow(30);
+        ctLMainShow(20);
         console.log(3);
     };
 };
@@ -377,8 +375,9 @@ $("ctLScrollBar").onmousedown =function(event){
     var contentHeight   = parseFloat(getCss("ctLMain").height);
     var scrollBartopNow = parseFloat(getCss("ctLScrollBar").top);
     var mainNowHeight   = parseFloat(getCss("ctLMain"+point).height);
+    var scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
     var scrollHeight    = contentHeight - mainNowHeight;
-    var barMoveHeight   = contentHeight - 50;
+    var barMoveHeight   = contentHeight - scrollBarHeight;
     var ctLMainMarginTop;
     $("screen").style.display = "block";
     selectFalse();
@@ -394,14 +393,26 @@ $("ctLScrollBar").onmousedown =function(event){
                 $("ctLScrollBar").style.top = 0;                    
                 $("ctLMain"+point).style.marginTop = 0;
             }
-            else if(moveY > barMoveHeight){
+            else if(moveY >= barMoveHeight){
                     $("ctLScrollBar").top = barMoveHeight + "px";                    
                     $("ctLMain"+point).marginTop = scrollHeight + "px";
                 }
+        if(parseFloat($("ctLMain"+point).style.marginTop) <= (contentHeight - mainNowHeight + 70)){
+            if(needToLoad){
+                needToLoad = false;
+                scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
+                barMoveHeight   = contentHeight - scrollBarHeight;
+                linkContentLoad("timestamp");
+            };            
+        }
+        else{
+            needToLoad = true;
+        }
     };
 };
 
 document.onmouseup = function(){
+    needToLoad = true;
     $("screen").style.display = "none";
     selectTrue();
     document.onmousemove = function(){};
