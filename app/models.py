@@ -122,6 +122,29 @@ class Share(db.Model):
         self.timestamp = datetime.now()
 
 
+    @property
+    def comments_num(self):
+        return len(self.comments.all())
+
+
+    def previous(self):
+        shares = Share.query.all();
+        try:
+            index = shares.index(self)
+        except ValueError:
+            return None
+        return shares.pop(index - 1)
+
+
+    def after(self):
+        shares = Share.query.all()
+        try:
+            index = shares.index(self)
+        except ValueError:
+            return None
+        return shares.pop(index + 1)
+
+
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key = True, nullable = False)
