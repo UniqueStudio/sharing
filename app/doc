@@ -66,6 +66,20 @@
     返回值: 无
 
 
+    **前进/后退**
+    方法: POST
+    接口: /share/next
+    参数: method(str, 必须，可选的值为previous和after)
+          id(int, 必须)
+    返回值: url
+
+    **随机**
+    方法: POST
+    接口: /share/shuffle
+    参数: 无
+    返回值: url
+
+
 评论: 
     **添加评论**
     方法: POST

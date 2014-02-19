@@ -1,7 +1,7 @@
 # encoding: utf-8
 import json
 from flask import request, g, render_template, Blueprint
-import pickle
+import random
 
 # import error
 from ..error import OutputError
@@ -67,6 +67,7 @@ def list():
                         'explain': item.explain, 
                         'url': item.url, 
                         'likes': item.likes, 
+                        'comments': item.comments_num, 
                         'timestamp': str(item.timestamp), 
                         'author_name': item.author.nickname, 
                         'author_image': item.author.image or '../static/img/default.jpg',  
@@ -99,13 +100,45 @@ def toggleLikes():
         result['status'] = True
 
     else:
-        result['status'] = False
-        result['msg'] = ['参数错误']
+        raise OutputError('参数错误')
 
     return json.dumps(result)
 
 
-@share.route('/detail', methods=['GET'])
+@share.route('/next', methods=['POST'])
 def detail():
-    # TODO
-    pass
+    args = request.form
+    try:
+        method = args.get('method')
+        id = args.get('id', type=int)
+    except ValueError:
+        raise OutputError('参数错误')
+
+    cur_share = Share.query.get(id) or None
+
+    result = {}
+    if method == 'previous':
+        next_share = cur_share.previous()
+    elif method == 'after':
+        next_share = cur_share.after()
+
+    if next_share is not None:
+        result['status'] = True
+        result['url'] = next_share.url
+    else:
+        result['status'] = False
+        result['msg'] = '未找到前一项'
+
+    return json.dumps(result)
+        
+
+
+@share.route('/shuffle', methods=['POST'])
+def shuffle():
+    shares = Share.query.all()
+    r_index = random.randint(0, len(shares) - 1)
+    result = {}
+    result['status'] = True
+    result['url'] = shares[r_index]
+    return json.dumps(result)
+
