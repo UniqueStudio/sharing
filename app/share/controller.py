@@ -139,6 +139,9 @@ def shuffle():
     r_index = random.randint(0, len(shares) - 1)
     result = {}
     result['status'] = True
-    result['url'] = shares[r_index]
+    result['result'] = {
+            'url': result[r_index].url, 
+            'id': result[r_index].id
+            }
     return json.dumps(result)
 
