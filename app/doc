@@ -92,7 +92,11 @@
     方法: POST
     接口: /comment/list
     参数: start(int, 表示当前页码, 从1开始计数), share_id(int)
-    返回值: 根据模板渲染过的html代码片段, 通过返回的json对象的result键访问 
+    返回值: id: 评论的id,
+            body: 评论的内容, 
+            timestamp: 评论发表的时间, 
+            author_name: 评论作者, 
+            author_image: 评论用户的图片链接
 
 
 

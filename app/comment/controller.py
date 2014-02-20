@@ -31,9 +31,9 @@ def add():
         raise OutputError('参数错误')
 
     
-@comment.route('/list', methods = ['GET'])
+@comment.route('/list', methods = ['POST'])
 def list():
-    args = request.args
+    args = request.form
     if args.has_key('start') and args.has_key('share_id'):
         try:
             start = args.get('start', 1, type=int)
@@ -46,7 +46,18 @@ def list():
         comments = Comment.query.filter(Comment.share_id == share_id).order_by(Comment.timestamp.desc()).paginate(start, per_page, False)
         result = {}
         result['status'] = True
-        result['result'] = render_template('comment_snippet', comments = comments)
+        result['result'] = []
+
+        for c in comments.items:
+            c.get_author()
+            result['result'].append({
+                    'id': c.id, 
+                    'body': c.body, 
+                    'timestamp': str(c.timestamp), 
+                    'author_name': c.author.nickname, 
+                    'author_image': c.author.image
+                    })
+
         return json.dumps(result)
     else:
         raise OutputError('参数错误')
