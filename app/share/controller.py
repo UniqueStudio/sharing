@@ -140,8 +140,8 @@ def shuffle():
     result = {}
     result['status'] = True
     result['result'] = {
-            'url': result[r_index].url, 
-            'id': result[r_index].id
+            'url': shares[r_index].url, 
+            'id': shares[r_index].id
             }
     return json.dumps(result)
 
