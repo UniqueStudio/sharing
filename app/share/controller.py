@@ -114,6 +114,9 @@ def detail():
     except ValueError:
         raise OutputError('参数错误')
 
+    if method not in ('previous', 'after'):
+        raise OutputError('参数错误')
+
     cur_share = Share.query.get(id) or None
 
     result = {}

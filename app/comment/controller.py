@@ -22,10 +22,11 @@ def add():
         except ValueError:
             raise OutputError('参数错误')
         # 添加评论
-        comment = Comment(content, g.current_user.id, share_id)
+        # comment = Comment(content, g.current_user.id, share_id)
+        comment = Comment(content, 1, share_id)
         db.session.add(comment)
         db.session.commit()
-        return json.dumps({'status', True})
+        return json.dumps({'status':  True})
     else:
         raise OutputError('参数错误')
 
