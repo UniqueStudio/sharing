@@ -7,6 +7,8 @@
     var contentId = 1;
     var ctLShowJudge = true;
     var needToLoad = true;
+    var username;
+    var userImgUrl;
 
     var $ = function(className){
         return document.getElementsByClassName(className)[0];
@@ -95,53 +97,57 @@
     };
 
     var changeScrollBarTop = function(scrollHeight,contentHeight,marginTopNow){
-        var contentHeight =  parseFloat(getCss("ctLMain").height);
-        var scrollHeight  = parseFloat(getCss("ctLMain"+point).height) - contentHeight;
-        var marginTopNow  = 0 - parseFloat(getCss("ctLMain"+point).marginTop);
-        var scrollBarHeiht = parseFloat(getCss("ctLScrollBar").height);
-        var scrollTop     = marginTopNow/scrollHeight*(contentHeight - scrollBarHeiht);
+        var ctLMainHeight        = parseFloat(getCss("ctLMain").height);
+        var ctLMainShowDivHeight = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
+        var scrollHeight         = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom) - ctLMainShowDivHeight;
+        var marginTopNow         = 0 - parseFloat(getCss("ctLMain"+point+"Show").marginTop);
+        var scrollBarHeiht       = parseFloat(getCss("ctLScrollBar").height);
+        var scrollTop            = marginTopNow/scrollHeight*(ctLMainHeight - scrollBarHeiht);
         $("ctLScrollBar").style.top = scrollTop +"px";
     };
 
     var changeScrollBarHeight = function(){
-        var contentHeight = parseFloat(getCss("ctLMain").height);
-        var mainNowHeight = parseFloat(getCss("ctLMain"+point).height);
-        var hasMainNow    = mainNowHeight - contentHeight;
+        var ctLMainHeight        = parseFloat(getCss("ctLMain").height);
+        var ctLMainShowDivHeight = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
+        var mainNowHeight        = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
+        var hasMainNow           = mainNowHeight - ctLMainShowDivHeight;
         if(hasMainNow <= 0 ){
             $("ctLScrollBar").style.height = 0 +"px";
         }
         else{
-            $("ctLScrollBar").style.height = contentHeight*contentHeight/mainNowHeight +"px";
+            $("ctLScrollBar").style.height = ctLMainHeight*ctLMainShowDivHeight/mainNowHeight +"px";
         }
         changeScrollBarTop();
     };
 
     var ctLMainScroll = function(theScroll){
-        var marginTopNow  =  parseFloat(getCss("ctLMain"+point).marginTop);
-        var contentHeight = parseFloat(getCss("ctLMain").height);
-        var mainNowHeight = parseFloat(getCss("ctLMain"+point).height);
-        if((mainNowHeight - contentHeight)>0){
-            var hasOverBottom  = marginTopNow + mainNowHeight - contentHeight;
+        var marginTopNow         =  parseFloat(getCss("ctLMain"+point+"Show").marginTop);
+        var ctLMainShowDivHeight = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
+        var mainNowHeight        = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
+        if((mainNowHeight - ctLMainShowDivHeight)>0){
+            var hasOverBottom  = marginTopNow + mainNowHeight - ctLMainShowDivHeight;
             if(theScroll < 0){//主体内容上滚
                 if(hasOverBottom > 55){
-                    $("ctLMain"+point).style.marginTop = (marginTopNow-55) +"px";
+                    $("ctLMain"+point+"Show").style.marginTop = (marginTopNow-55) +"px";
                     changeScrollBarTop();
                 }
                 else if(hasOverBottom > 0){
-                    $("ctLMain"+point).style.marginTop = (contentHeight - mainNowHeight) + "px";
+                    $("ctLMain"+point+"Show").style.marginTop = (ctLMainShowDivHeight - mainNowHeight) + "px";
                     changeScrollBarTop();
                 };
-                if(parseFloat($("ctLMain"+point).style.marginTop) <= (contentHeight - mainNowHeight + 70)){
-                    linkContentLoad("timestamp");
-                };            
+                if(point === 1){
+                    if(parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
+                        linkContentLoad("timestamp");
+                    };
+                };          
             }
             else if(theScroll > 0){//主体内容下滚
                 if(marginTopNow < -55){
-                    $("ctLMain"+point).style.marginTop = (marginTopNow+55) + "px";
+                    $("ctLMain"+point+"Show").style.marginTop = (marginTopNow+55) + "px";
                     changeScrollBarTop();
                 }
                 else if(marginTopNow < 0){
-                    $("ctLMain"+point).style.marginTop = 0;
+                    $("ctLMain"+point+"Show").style.marginTop = 0;
                     changeScrollBarTop();
                 };
                 
@@ -167,7 +173,7 @@
                     }
                     for (var i = 0;i < json.length;++i){
                         content = json.result[i];
-                        $("ctLMain1").innerHTML = $("ctLMain1").innerHTML 
+                        $("ctLMain1Show").innerHTML = $("ctLMain1Show").innerHTML 
                                             + "<a href='"+content.url
                                             +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
                                             +"'><div class='eachLeft'><div class='ELShareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
@@ -213,13 +219,19 @@
 
     var sendComment = function(){
         var xmlhttp = new XMLHttpRequest();
-        var commentText = $("commentText").value;
+        var commentText = username + ": " + $("commentText").value;
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
-                    console.log("add comment ok");
-                }
+                    var newCommentText = "<div class='eachComment'><div class='eCmShareImg' style='background-image:" + userImgUrl
+                                        +";'></div><div class='eCmCommentText'><span>"+ commentText
+                                        +"</span></div></div><hr>"
+                    $("ctLMain2Show").innerHTML = newCommentText + $("ctLMain2Show").innerHTML;
+                    $("commentText").value = "";
+                    $("commentSubmit").style.backgroundColor = "#E0E0E0";
+                    $("commentSubmit").children[0].style.color = "#C5C5C5";
+                };
             };
         };
         xmlhttp.open("POST","/comment/add",true);
@@ -227,7 +239,7 @@
         xmlhttp.send("content="+commentText +"&share_id="+contentId);
     };
 
-    var ecCilck = function(obj){
+    window.ecCilck = function(obj){
         contentId = obj.id;
         $("ctRMain").src = obj.href;
         return false;
@@ -335,10 +347,12 @@
         $("contentRight").style.width = ctRMainWidth + "px";
         linkContentLoad("timestamp");
         shuffleLoad();  
+        username = $("username").innerHTML;
+        userImgUrl = $("userImg").style.backgroundImage;
     }; 
 
     window.onresize = function(){
-        var ctRMainWidth
+        var ctRMainWidth;
         changeScrollBarHeight();
         if(ctLShowJudge){
             ctRMainWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width) - parseFloat(getCss("headerLeft").width);  
@@ -453,12 +467,13 @@
     $("ctLScrollBar").onmousedown =function(event){
         event               = event || window.event;
         var mouseStartY     = event.pageY; 
-        var contentHeight   = parseFloat(getCss("ctLMain").height);
+        var ctLMainHeight   = parseFloat(getCss("ctLMain").height);
+        var showDivHeight   = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
         var scrollBartopNow = parseFloat(getCss("ctLScrollBar").top);
-        var mainNowHeight   = parseFloat(getCss("ctLMain"+point).height);
+        var mainNowHeight   = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
         var scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
-        var scrollHeight    = contentHeight - mainNowHeight;
-        var barMoveHeight   = contentHeight - scrollBarHeight;
+        var scrollHeight    = showDivHeight - mainNowHeight;
+        var barMoveHeight   = ctLMainHeight  - scrollBarHeight;
         var ctLMainMarginTop;
         $("screen").style.display = "block";
         selectFalse();
@@ -468,33 +483,46 @@
             if(moveY >= 0 && moveY <= barMoveHeight){
                 $("ctLScrollBar").style.top = moveY + "px";
                 ctLMainMarginTop = parseFloat(getCss("ctLScrollBar").top)/barMoveHeight*scrollHeight;
-                $("ctLMain"+point).style.marginTop = ctLMainMarginTop +"px";
+                $("ctLMain"+point+"Show").style.marginTop = ctLMainMarginTop +"px";
             }
             else if(moveY < 0){
                     $("ctLScrollBar").style.top = 0;                    
-                    $("ctLMain"+point).style.marginTop = 0;
+                    $("ctLMain"+point+"Show").style.marginTop = 0;
                 }
                 else if(moveY >= barMoveHeight){
                         $("ctLScrollBar").top = barMoveHeight + "px";                    
-                        $("ctLMain"+point).marginTop = scrollHeight + "px";
-                    }
-            if(parseFloat($("ctLMain"+point).style.marginTop) <= (contentHeight - mainNowHeight + 70)){
-                if(needToLoad){
-                    needToLoad = false;
-                    scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
-                    barMoveHeight   = contentHeight - scrollBarHeight;
-                    linkContentLoad("timestamp");
-                };            
-            }
-            else{
-                needToLoad = true;
-            }
+                        $("ctLMain"+point+"Show").marginTop = scrollHeight + "px";
+                    };
+            if(point === 1){
+                if(parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (showDivHeight - mainNowHeight + 70)){
+                    if(needToLoad){
+                        needToLoad = false;
+                        scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
+                        barMoveHeight   = contentHeight - scrollBarHeight;
+                        linkContentLoad("timestamp");
+                    };            
+                }
+                else{
+                    needToLoad = true;
+                };
+            };
         };
     };
 
     $("addComment").onclick = function(){
-        if($("commentText").value !== ""){
+        if($("commentText").value.length !== 0){
             sendComment();
+        };
+    };
+
+    $("commentText").onkeydown = function(){
+        if(this.value.length !== 0){
+            $("commentSubmit").style.backgroundColor = "#fff";
+            $("commentSubmit").children[0].style.color = "#727272";
+        }
+        else{
+            $("commentSubmit").style.backgroundColor = "#E0E0E0";
+            $("commentSubmit").children[0].style.color = "#C5C5C5";
         };
     };
 })()
