@@ -162,5 +162,8 @@ class Comment(db.Model):
     def __repr__(self):
         return '<Comment %r: %s\nAuthored by %s>' % (self.id, self.body, self.author)
 
+    def get_author(self):
+        self.author = User.query.get(self.user_id)        
+
 #将comment的body以及share的explain字段长度改为1024 by@Yang
     

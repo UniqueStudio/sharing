@@ -9,4 +9,4 @@ def before():
         raise OutputError('您还未登陆，请登陆后重试')
 
 
-comment.before_request(before)
+# comment.before_request(before)
