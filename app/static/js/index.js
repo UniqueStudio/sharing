@@ -509,7 +509,7 @@
         };
     };
 
-    $("addComment").onclick = function(){
+    $("commentSubmit").onclick = function(){
         if($("commentText").value.length !== 0){
             sendComment();
         };
