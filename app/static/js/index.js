@@ -5,6 +5,7 @@
     var contentIdLoadBefore = 1;
     var contentLengthNow = 0;
     var contentId = 1;
+    var commentID = 1;
     var ctLShowJudge = true;
     var needToLoad = true;
     var username;
@@ -135,10 +136,17 @@
                     $("ctLMain"+point+"Show").style.marginTop = (ctLMainShowDivHeight - mainNowHeight) + "px";
                     changeScrollBarTop();
                 };
-                if(point === 1){
-                    if(parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
-                        linkContentLoad("timestamp");
-                    };
+                switch(point){
+                    case 1:
+                        if(parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
+                            linkContentLoad("timestamp");
+                        };
+                        break;
+                    case 2:
+                        if(parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
+                            commentLoad();
+                        };
+                        break;
                 };          
             }
             else if(theScroll > 0){//主体内容下滚
@@ -209,12 +217,40 @@
                 if(json.status){
                     $("ctRMain").src = json.result.url;
                     contentId = json.result.id;
+                    commentID = 1;
+                    if(point === 2){
+                        $("ctLMain2Show").innerHTML = "";
+                        commentLoad();
+                    };
                 }
             };
         };
         xmlhttp.open("POST","/share/shuffle",true);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
         xmlhttp.send();
+    };
+
+    var commentLoad = function(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
+                var json  = JSON.parse(xmlhttp.responseText);
+                if(json.status){
+                    ++commentID;
+                    var commentLength = json.result.length;
+                    for(var i = 0;i < commentLength;++i){
+                        var newCommentText = "<div class='eachComment'><div class='eCmShareImg' style='background-image:url(" + json.result[i].author_image
+                                            +");'></div><div class='eCmCommentText'><span>"+ json.result[i].body
+                                            +"</span></div></div><hr>"
+                        $("ctLMain2Show").innerHTML = $("ctLMain2Show").innerHTML + newCommentText;
+                    };
+                    changeScrollBarHeight();
+                };
+            };
+        };
+        xmlhttp.open("POST","/comment/list",true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("start="+commentID+"&share_id="+contentId);
     };
 
     var sendComment = function(){
@@ -241,6 +277,7 @@
 
     window.ecCilck = function(obj){
         contentId = obj.id;
+        commentID = 1;
         $("ctRMain").src = obj.href;
         return false;
     };
@@ -396,6 +433,10 @@
             ctLMainMove(30,2);
             point = 2;      
             changeScrollBarHeight();  
+            if(commentID === 1){
+                $("ctLMain2Show").innerHTML = "";
+                commentLoad();
+            }
         };
     };
 
@@ -420,6 +461,11 @@
                 if(json.status){
                     $("ctRMain").src = json.url;
                     contentId = json.result.id;
+                    commentID = 1;
+                    if(point === 2){
+                        $("ctLMain2Show").innerHTML = "";
+                        commentLoad();
+                    };
                 }
             };
         };
@@ -436,6 +482,11 @@
                 if(json.status){
                     $("ctRMain").src = json.url;
                     contentId = json.result.id;
+                    commentID = 1;
+                    if(point === 2){
+                        $("ctLMain2Show").innerHTML = "";
+                        commentLoad();
+                    };
                 }
             };
         };
