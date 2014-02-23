@@ -369,17 +369,13 @@ p,a,span{
 }
 
 .eachConnection{
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
+    display:none;
 
     -webkit-flex-direction:row;
     -moz-flex-direction:row;
     flex-direction:row;
     width: 200%;
-    height: 70px;
+    height:70px;
 
     -moz-transition: margin-left 0.1s ease-in-out;
     -webkit-transition: margin-left 0.1s ease-in-out ;
@@ -387,6 +383,7 @@ p,a,span{
     margin-left: 0px;
     border:0px;
     text-decoration: none;
+    border-bottom: 1px solid rgba(200, 241, 233, 0.77);
 }
 
 .eachConnection:hover{
@@ -473,7 +470,6 @@ p,a,span{
 }
 
 .ctLMain1{
-    padding-bottom: 30px;
     height: 100%;
 }
 
@@ -485,17 +481,33 @@ p,a,span{
 }
 
 .ctLMain1Show{
+    position: relative;
     display: inline-block;
     width: 100%;
-    padding-bottom: 30px;
+    padding-bottom: 40px;
 }
 
-.ctLMain1Show>hr{
-    background-color: rgba(200, 241, 233, 0.77);
-    border:0px;
+.ctLMain1WaitBox{
+    position: absolute;
+    bottom: 0px;
+    display:inline-block;
     width: 100%;
-    height: 1px;
-    margin: 0px;
+    height: 40px;
+}
+
+.ctLMain1WaitBox>div{
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 100px;
+    margin:auto 0px;
+
+    position: absolute;
+    bottom: 0px;
+    top: 0px;
+    left: -10px;
+    opacity: 0;
+    background-color: rgb(255, 0, 20);
 }
 
 .logout{
@@ -559,6 +571,7 @@ p,a,span{
 }
 
 .ctLMain2Show{
+    position: relative;
     display: inline-block;
     width: 100%;
     padding-bottom: 30px;
@@ -624,11 +637,7 @@ p,a,span{
 }
 
 .eachComment{
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
+    display: none;
 
     -webkit-flex-direction:row;
     -moz-flex-direction:row;
@@ -636,14 +645,7 @@ p,a,span{
 
     width: 100%;
     height: auto;  
-}
-
-.ctLMain2Show>hr{
-    background-color: rgba(200, 241, 233, 0.77);
-    border:0px;
-    width: 100%;
-    height: 1px;
-    margin: 0px;
+    border-bottom: 1px solid rgba(200, 241, 233, 0.77);
 }
 
 .eCmShareImg{
@@ -679,6 +681,45 @@ p,a,span{
 .eCmCommentText>span:after{
     content: "";
     padding-left:10px; 
+}
+
+.contentShow{
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.commentShow{
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.ctLMain2WaitBox{
+    position: absolute;
+    bottom: 0px;
+    display:inline-block;
+    width: 100%;
+    height: 30px;
+}
+
+.ctLMain2WaitBox>div{
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 100px;
+    margin:auto 0px;
+
+    position: absolute;
+    bottom: 0px;
+    top: 0px;
+    left: -10px;
+    opacity: 0;
+    background-color: rgb(255, 0, 20);
 }
 
 

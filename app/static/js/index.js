@@ -1,4 +1,134 @@
 (function(){
+    //等待效果类
+    var waitingDot = function(waitBoxName){
+        this.$ = function(className){
+            return document.getElementsByClassName(className)[0];
+        };
+
+        this.getCss = function(obj){
+            return window.getComputedStyle(obj,false);
+        };
+        this.waitingDot = this;
+        this.waitingTime;
+        this.eachTime = 4;
+        this.waitBoxWidth = parseFloat(this.getCss(this.$(waitBoxName)).width);
+        this.waitDotWidth = parseFloat(this.getCss(this.$(waitBoxName).children[0]).width);
+        this.Vstart = 15;
+        this.Vconst = 3;
+        this.speedChangeDis = (this.waitBoxWidth + this.waitDotWidth*2 - 5*this.Vconst*this.eachTime)/2.0;
+        this.a = (this.Vconst*this.Vconst - this.Vstart*this.Vstart)/(2.0*this.speedChangeDis);
+        this.decTime = (this.Vconst - this.Vstart)/this.a;
+        this.conTime = this.eachTime*5;
+        this.accTime = this.decTime;
+        this.constBegin = this.Vstart*this.decTime + 0.5*this.a*this.decTime*this.decTime;
+        this.accBegin = this.constBegin + this.Vconst*this.conTime;
+        this.status =  new Array(8);
+        this.timeNow = new Array(8);
+        this.waitDotColor = new Array("rgb(255, 0, 20)","rgb(255, 0, 122)","rgb(194, 0, 255)","rgb(0, 20, 255)","rgb(0, 214, 255)","rgb(0, 255, 31)","rgb(194, 255, 0)","rgb(255, 92, 0)")
+        this.countColor = 0;
+        this.Obj = this.$(waitBoxName).children;
+        this.waitDotLength = this.Obj.length;
+
+        this.waitingShow = function(){
+            this.waitDotMove();
+        };
+        
+        this.waitDotMove = function(){
+            for(var i = 0;i < this.waitDotLength;++i){
+                this.status[i] = 0;
+                this.timeNow[i] = 0 - this.eachTime*i;
+            };
+            var loopObj = this.waitingDot;
+            this.setWaitDotColor();
+            this.waitingTime = setInterval(function(){
+                    var waitDot = loopObj.$(waitBoxName).children;
+                    for(var i = 0;i < loopObj.waitDotLength;++i){
+                        switch(loopObj.status[i]){
+                            case 0:
+                                if(loopObj.timeNow[i] >= 0){
+                                    if(loopObj.timeNow[i] < loopObj.decTime){
+                                        waitDot[i].style.left = (0 - loopObj.waitDotWidth + loopObj.Vstart*loopObj.timeNow[i] + 0.5*loopObj.a*loopObj.timeNow[i]*loopObj.timeNow[i]) + "px";
+                                        waitDot[i].style.opacity = loopObj.timeNow[i]/loopObj.decTime;
+                                        loopObj.timeNow[i] += 1;
+                                        break;
+                                    }
+                                    else{
+                                        loopObj.timeNow[i] = 0;
+                                        loopObj.status[i] = 1;
+                                    };
+                                }
+                                else{
+                                    ++loopObj.timeNow[i];
+                                    break;
+                                };
+                            case 1:
+                                if(loopObj.timeNow[i] < loopObj.conTime){
+                                    waitDot[i].style.left = (0 - loopObj.waitDotWidth + loopObj.constBegin + loopObj.Vconst*loopObj.timeNow[i]) + "px";
+                                    loopObj.timeNow[i] += 1;
+                                    break;
+                                }
+                                else{
+                                    loopObj.timeNow[i] = 0;
+                                    loopObj.status[i] = 2;
+                                };
+                            case 2:
+                                if(loopObj.timeNow[i] < loopObj.accTime){
+                                    waitDot[i].style.left = (0 - loopObj.waitDotWidth + loopObj.accBegin + loopObj.Vconst*loopObj.timeNow[i] - 0.5*loopObj.a*loopObj.timeNow[i]*loopObj.timeNow[i]) + "px";
+                                    waitDot[i].style.opacity = 1 - loopObj.timeNow[i]/loopObj.accTime;
+                                    loopObj.timeNow[i] += 1;
+                                    break;
+                                }
+                                else{
+                                    if(i === (loopObj.waitDotLength - 1)){
+                                        clearInterval(loopObj.waitingTime);
+                                        setTimeout(loopObj.waitDotMove(),500);
+                                    };
+                                };
+                        };
+                    };
+                },30);
+        };
+
+        this.setWaitDotLeft = function(){
+            var obj = $(waitBoxName).children;
+            for(var i = 0;i < this.waitDotLength;++i){
+                obj[i].style.left = (0 - this.waitDotWidth) + "px";
+            };
+        };
+
+        this.setWaitDotOpacity = function(){
+            var obj = $(waitBoxName).children;
+            for(var i = 0;i < this.waitDotLength;++i){
+                obj[i].style.opacity = 0;
+            };
+        };
+
+        this.setWaitDotColor = function(){
+            var obj = $(waitBoxName).children;
+            for(var i = 0;i < this.waitDotLength;++i){
+                obj[i].style.backgroundColor = this.waitDotColor[this.countColor];
+            };
+            if(this.countColor < 7){
+                ++this.countColor
+            }
+            else{
+                this.countColor = 0;
+            };
+        };
+
+        this.waitingStop = function(){
+            var obj = $(waitBoxName).children;
+            clearInterval(this.waitingTime);
+            this.setWaitDotLeft();
+            this.setWaitDotOpacity();
+            for(var i = 0;i < this.waitDotLength;++i){
+                obj[i].style.backgroundColor = this.waitDotColor[0];
+            };
+        };
+    };
+
+    var ctLMain1Wait;
+    var ctLMain2Wait;
     var point = 1;
     var timestampNum = 1;
     var likesNum = 1;
@@ -8,6 +138,7 @@
     var commentID = 1;
     var ctLShowJudge = true;
     var needToLoad = true;
+    var canScroll = true;
     var username;
     var userImgUrl;
 
@@ -122,6 +253,7 @@
     };
 
     var ctLMainScroll = function(theScroll){
+        canScroll = true;
         var marginTopNow         =  parseFloat(getCss("ctLMain"+point+"Show").marginTop);
         var ctLMainShowDivHeight = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
         var mainNowHeight        = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
@@ -138,7 +270,8 @@
                 };
                 switch(point){
                     case 1:
-                        if(parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
+                        if(needToLoad&&parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
+                            needToLoad = false;
                             linkContentLoad("timestamp");
                         };
                         break;
@@ -167,8 +300,10 @@
         var json;
         var content;
         var contentJson;
-        var xmlhttp=new XMLHttpRequest();
-
+        var contentObj       = $("ctLMain1Show").children;
+        var lengthLoadBefore = contentObj.length;
+        var xmlhttp          =new XMLHttpRequest();
+        ctLMain1Wait.waitingShow();
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
@@ -192,11 +327,25 @@
                                             +"</span></div></div><div class='eachRight'><div class='ERSharemanImg' style='background:url("+content.author_image
                                             +")'></div><div class='ERShareReason'><span class='shareName'>"+content.author_name
                                             +"</span><span class='shareReason'>"+content.explain
-                                            +"</span></div></div></a><hr/>";
-                        changeScrollBarHeight();
+                                            +"</span></div></div></a>";
                     };
+                    var lengthNow = contentObj.length;
+                    var i = lengthLoadBefore;
+                    var loopTime = setInterval(function(){
+                        if(i < lengthNow){
+                            contentObj[i].className += " contentShow";
+                            changeScrollBarHeight();
+
+                            ++i;
+                        }
+                        else{
+                            needToLoad = true;
+                            clearInterval(loopTime);
+                        };  
+                    },20);
                 };
             };
+            ctLMain1Wait.waitingStop();
         };
         xmlhttp.open("POST","/share/list",true);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -219,7 +368,7 @@
                     contentId = json.result.id;
                     commentID = 1;
                     if(point === 2){
-                        $("ctLMain2Show").innerHTML = "";
+                        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
                         commentLoad();
                     };
                 }
@@ -231,7 +380,10 @@
     };
 
     var commentLoad = function(){
-        var xmlhttp=new XMLHttpRequest();
+        var contentObj       = $("ctLMain2Show").children;
+        var lengthLoadBefore = contentObj.length;
+        var xmlhttp          = new XMLHttpRequest();
+        ctLMain2Wait.waitingShow();
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
@@ -241,12 +393,25 @@
                     for(var i = 0;i < commentLength;++i){
                         var newCommentText = "<div class='eachComment'><div class='eCmShareImg' style='background-image:url(" + json.result[i].author_image
                                             +");'></div><div class='eCmCommentText'><span>"+ json.result[i].body
-                                            +"</span></div></div><hr>"
+                                            +"</span></div></div>"
                         $("ctLMain2Show").innerHTML = $("ctLMain2Show").innerHTML + newCommentText;
                     };
-                    changeScrollBarHeight();
+
+                    var lengthNow = contentObj.length;
+                    var i = lengthLoadBefore;
+                    var loopTime = setInterval(function(){
+                        if(i < lengthNow){
+                            contentObj[i].className += " commentShow";
+                            changeScrollBarHeight();
+                            ++i;
+                        }
+                        else{
+                            clearInterval(loopTime);
+                        };  
+                    },20);
                 };
             };
+            ctLMain2Wait.waitingStop();
         };
         xmlhttp.open("POST","/comment/list",true);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -376,6 +541,8 @@
     };
 
     window.onload = function(){
+        ctLMain1Wait = new waitingDot("ctLMain1WaitBox");
+        ctLMain2Wait = new waitingDot("ctLMain2WaitBox");
         var ctRMainWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width) - parseFloat(getCss("headerLeft").width);
         $("arrowLeft").style.width = (point*25) + "%";
         $("arrowRight").style.width = (3-point)*25 + "%";
@@ -434,7 +601,7 @@
             point = 2;      
             changeScrollBarHeight();  
             if(commentID === 1){
-                $("ctLMain2Show").innerHTML = "";
+                $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
                 commentLoad();
             }
         };
@@ -463,7 +630,7 @@
                     contentId = json.result.id;
                     commentID = 1;
                     if(point === 2){
-                        $("ctLMain2Show").innerHTML = "";
+                        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
                         commentLoad();
                     };
                 }
@@ -484,7 +651,7 @@
                     contentId = json.result.id;
                     commentID = 1;
                     if(point === 2){
-                        $("ctLMain2Show").innerHTML = "";
+                        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
                         commentLoad();
                     };
                 }
@@ -508,11 +675,17 @@
     };
 
     $("ctLMain").onmousewheel = function(event) {
-        event = event || window.event; 
-        ctLMainScroll(event.wheelDelta/120);
+        if(canScroll){
+            canScroll = false;
+            event = event || window.event; 
+            ctLMainScroll(event.wheelDelta/120);
+        };
     };
     $("ctLMain").addEventListener("DOMMouseScroll", function(event) {
-        ctLMainScroll(event.detail/-3);
+        if(canScroll){
+            canScroll = false;
+            ctLMainScroll(event.detail/-3);
+        };
     });
 
     $("ctLScrollBar").onmousedown =function(event){
@@ -549,7 +722,7 @@
                     if(needToLoad){
                         needToLoad = false;
                         scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
-                        barMoveHeight   = contentHeight - scrollBarHeight;
+                        barMoveHeight   = ctLMainHeight - scrollBarHeight;
                         linkContentLoad("timestamp");
                     };            
                 }
