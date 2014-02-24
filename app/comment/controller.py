@@ -55,7 +55,7 @@ def list():
                     'body': c.body, 
                     'timestamp': str(c.timestamp), 
                     'author_name': c.author.nickname, 
-                    'author_image': c.author.image
+                    'author_image': c.author.image or '../static/img/default.jpg'
                     })
 
         return json.dumps(result)

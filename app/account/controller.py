@@ -101,7 +101,6 @@ def login():
             if user is not None and user.check_password(login_form.password):
                 session['user_id'] = user.id
                 session['email'] = user.email
-                print user.email, type(user.id)
                 response = make_response(redirect(url_for('share.list')))
                 if login_form.remember_me is True:
                     delta = datetime.now() + timedelta(days=7)
