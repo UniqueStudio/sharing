@@ -137,7 +137,7 @@
     var contentId = 1;
     var commentID = 1;
     var ctLShowJudge = true;
-    var needToLoad = true;
+    var needToLoad = new Array(true,true,true,true); 
     var canScroll = true;
     var username;
     var userImgUrl;
@@ -218,7 +218,6 @@
             };
             $("arrowLeft").style.width = (arrowLeftNow - moveDistance) +"%";
             $("arrowRight").style.width = (arrowRightNow + moveDistance) +"%";
-            console.log(arrowLeftNow);
             if(countTime < T){
                 ++countTime;
             }
@@ -247,7 +246,7 @@
             $("ctLScrollBar").style.height = 0 +"px";
         }
         else{
-            $("ctLScrollBar").style.height = ctLMainHeight*ctLMainShowDivHeight/mainNowHeight +"px";
+            $("ctLScrollBar").style.height = (ctLMainHeight*ctLMainShowDivHeight/mainNowHeight + 13) +"px";
         }
         changeScrollBarTop();
     };
@@ -270,13 +269,14 @@
                 };
                 switch(point){
                     case 1:
-                        if(needToLoad&&parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
-                            needToLoad = false;
+                        if(needToLoad[1]&&parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
+                            needToLoad[1] = false;
                             linkContentLoad("timestamp");
                         };
                         break;
                     case 2:
-                        if(parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
+                        if(needToLoad[2]&&parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
+                            needToLoad[2] = false;
                             commentLoad();
                         };
                         break;
@@ -319,14 +319,11 @@
                         $("ctLMain1Show").innerHTML = $("ctLMain1Show").innerHTML 
                                             + "<a href='"+content.url
                                             +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
-                                            +"'><div class='eachLeft'><div class='ELShareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
-                                            +")'></div><div class='ELShareTitle'><div class='shareTitle'>"+content.title
+                                            +"'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
+                                            +")'></div><div class='shareTitleBlock'><div class='shareTitle'>"+content.title
                                             +"</div><span class='shareDetail'>赞("+content.likes
                                             +")  评论("+ content.comments
                                             +")  " + content.timestamp
-                                            +"</span></div></div><div class='eachRight'><div class='ERSharemanImg' style='background:url("+content.author_image
-                                            +")'></div><div class='ERShareReason'><span class='shareName'>"+content.author_name
-                                            +"</span><span class='shareReason'>"+content.explain
                                             +"</span></div></div></a>";
                     };
                     var lengthNow = contentObj.length;
@@ -339,7 +336,7 @@
                             ++i;
                         }
                         else{
-                            needToLoad = true;
+                            needToLoad[1] = true;
                             clearInterval(loopTime);
                         };  
                     },20);
@@ -365,6 +362,7 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     $("ctRMain").src = json.result.url;
+                    $("hdR0").href = json.result.url;
                     contentId = json.result.id;
                     commentID = 1;
                     if(point === 2){
@@ -406,6 +404,7 @@
                             ++i;
                         }
                         else{
+                            needToLoad[2] = true;
                             clearInterval(loopTime);
                         };  
                     },20);
@@ -425,10 +424,11 @@
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
-                    var newCommentText = "<div class='eachComment'><div class='eCmShareImg' style='background-image:" + userImgUrl
+                    var newCommentText = "<div class='eachComment commentShow'><div class='eCmShareImg' style='background-image:" + userImgUrl
                                         +";'></div><div class='eCmCommentText'><span>"+ commentText
-                                        +"</span></div></div><hr>"
+                                        +"</span></div></div>"
                     $("ctLMain2Show").innerHTML = newCommentText + $("ctLMain2Show").innerHTML;
+                    changeScrollBarHeight();
                     $("commentText").value = "";
                     $("commentSubmit").style.backgroundColor = "#E0E0E0";
                     $("commentSubmit").children[0].style.color = "#C5C5C5";
@@ -444,6 +444,7 @@
         contentId = obj.id;
         commentID = 1;
         $("ctRMain").src = obj.href;
+        $("hdR0").href = obj.href;
         return false;
     };
 
@@ -549,6 +550,8 @@
         $("ctLMain"+point).style.left = "0%";
         $("headerRight").style.width = ctRMainWidth + "px";
         $("contentRight").style.width = ctRMainWidth + "px";
+        $("hdL"+point).style.backgroundColor = "rgba(68, 128, 189, 0.36)";
+        $("hdL"+point).style.cursor = "default";
         linkContentLoad("timestamp");
         shuffleLoad();  
         username = $("username").innerHTML;
@@ -566,7 +569,6 @@
     };
 
     document.onmouseup = function(){
-        needToLoad = true;
         $("screen").style.display = "none";
         selectTrue();
         document.onmousemove = function(){};
@@ -576,43 +578,60 @@
         return "确定离开当前页面吗？"
     }
 
-    $("hdL0").children[0].onclick = function(){
+    $("hdL0").onclick = function(){
         if(point !== 0){
+            $("hdL"+point).style.backgroundColor = "";
+            $("hdL"+point).style.cursor = "pointer";
             arrowMove(30,point - 0);
             ctLMainMove(30,0);
             point = 0;
             changeScrollBarHeight();
+            $("hdL0").style.backgroundColor = "rgba(68, 128, 189, 0.36)";  
+            $("hdL0").style.cursor = "default";
         };
     };
 
-    $("hdL1").children[0].onclick = function(){
+    $("hdL1").onclick = function(){
         if(point !== 1){
+            $("hdL"+point).style.backgroundColor = "";
+            $("hdL"+point).style.cursor = "pointer";
             arrowMove(30,point - 1);
             ctLMainMove(30,1);
             point = 1;
             changeScrollBarHeight();
+            $("hdL1").style.backgroundColor = "rgba(68, 128, 189, 0.36)";  
+            $("hdL1").style.cursor = "default";
         };
     };
 
-    $("hdL2").children[0].onclick = function(){
+    $("hdL2").onclick = function(){
         if(point !== 2){
+            $("hdL"+point).style.backgroundColor = "";
+            $("hdL"+point).style.cursor = "pointer";
             arrowMove(30,point - 2);
             ctLMainMove(30,2);
             point = 2;      
             changeScrollBarHeight();  
             if(commentID === 1){
+                $("ctLMain2Show").style.marginTop = "0px"
                 $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
                 commentLoad();
             }
+            $("hdL2").style.backgroundColor = "rgba(68, 128, 189, 0.36)";  
+            $("hdL2").style.cursor = "default";
         };
     };
 
-    $("hdL3").children[0].onclick = function(){
+    $("hdL3").onclick = function(){
         if(point !== 3){
+            $("hdL"+point).style.backgroundColor = "";
+            $("hdL"+point).style.cursor = "pointer";
             arrowMove(30,point - 3);
             ctLMainMove(30,3);
             point = 3;     
-            changeScrollBarHeight();   
+            changeScrollBarHeight(); 
+            $("hdL3").style.backgroundColor = "rgba(68, 128, 189, 0.36)";  
+            $("hdL3").style.cursor = "default";
         };
     };
 
@@ -627,7 +646,9 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     $("ctRMain").src = json.url;
-                    contentId = json.result.id;
+                    $("hdR0").href = json.url;
+                    --contentId;
+                    console.log(contentId);
                     commentID = 1;
                     if(point === 2){
                         $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
@@ -638,7 +659,7 @@
         };
         xmlhttp.open("POST","/share/next",true);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-        xmlhttp.send("method=previous");
+        xmlhttp.send("method=previous"+"&id="+contentId);
     };
 
     $("hdR3").onclick = function(){
@@ -648,7 +669,10 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     $("ctRMain").src = json.url;
-                    contentId = json.result.id;
+                    $("hdR0").href = json.url;
+                    ++contentId;
+                    console.log(contentId);
+                    console.log(json)
                     commentID = 1;
                     if(point === 2){
                         $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
@@ -659,18 +683,17 @@
         };
         xmlhttp.open("POST","/share/next",true);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-        xmlhttp.send("method=after");
+        xmlhttp.send("method=after"+"&id="+contentId);
     };
 
     $("moreButton").onclick = function(){
-        console.log(1);
         if(ctLShowJudge){
             ctLMainHide(20);
-            console.log(2);
+            $("moreButton").children[0].style.backgroundImage = "url(../static/img/toRight.png)";
         }
         else{
             ctLMainShow(20);
-            console.log(3);
+            $("moreButton").children[0].style.backgroundImage = "url(../static/img/toLeft.png)";
         };
     };
 
@@ -717,18 +740,32 @@
                         $("ctLScrollBar").top = barMoveHeight + "px";                    
                         $("ctLMain"+point+"Show").marginTop = scrollHeight + "px";
                     };
-            if(point === 1){
-                if(parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (showDivHeight - mainNowHeight + 70)){
-                    if(needToLoad){
-                        needToLoad = false;
+            //滚动条拉到底加载
+            switch(point){
+                case 1:
+                    if(parseFloat($("ctLMain1Show").style.marginTop) <= (showDivHeight - mainNowHeight + 70)){
+                        if(needToLoad[1]){
+                            needToLoad[1] = false;
+                            scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
+                            barMoveHeight   = ctLMainHeight - scrollBarHeight;
+                            linkContentLoad("timestamp");
+                        };            
+                    }
+                    else{
+                        needToLoad[1] = true;
+                    };
+                    break;
+
+                case 2:
+                    if(parseFloat($("ctLMain2Show").style.marginTop) <= (showDivHeight - mainNowHeight + 70)){
                         scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
                         barMoveHeight   = ctLMainHeight - scrollBarHeight;
-                        linkContentLoad("timestamp");
-                    };            
-                }
-                else{
-                    needToLoad = true;
-                };
+                        commentLoad();            
+                    }
+                    else{
+                        needToLoad[2] = true;
+                    };
+                    break;
             };
         };
     };
