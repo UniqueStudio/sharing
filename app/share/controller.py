@@ -110,7 +110,7 @@ def detail():
     args = request.form
     try:
         method = args.get('method')
-        id = args.get('id', type=int)
+        id = args.get('id', 1, type=int)
     except ValueError:
         raise OutputError('参数错误')
 
