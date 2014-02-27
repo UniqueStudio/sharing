@@ -43,6 +43,7 @@
             <div class="hdR1"><div></div></div>
             <div class="hdR2"><div></div></div>
             <div class="hdR3"><div></div></div>
+            <div class="hdRShareTitle"><p></p></div>
         </div>
     </div>
     <div class="content">
@@ -103,11 +104,12 @@
                 </div>
             </div>
             <div class="ctLBottom">
-                <div class="ctLBottomBg"></div>
-                <a href="{{ url_for('account.logout') }}" class="logout">注销</a>
-                <p class="username">{{ current_user.nickname }}</p>
-                <div class="userImg" style="background-image:url('{{ current_user.image or '../static/img/default.jpg'
-                }}');"></div>
+                <div class="ctLBottomBg">
+                    <a href="{{ url_for('account.logout') }}" class="logout">注销</a>
+                    <p class="username">{{ current_user.nickname }}</p>
+                    <div class="userImg" style="background-image:url('{{ current_user.image or '../static/img/default.jpg'
+                    }}');"></div>
+                </div>
             </div>
         </div>
         <div class="contentRight">

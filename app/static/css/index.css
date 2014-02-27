@@ -8,7 +8,6 @@ html,body{
     height: 100%;
 
     font-size: 0px;
-     -moz-user-select: none;
 }
 
 body{
@@ -18,10 +17,12 @@ body{
 
 div{
     font-size: 0px;
+     -moz-user-select: none;
+     -webkit-user-select: none;
 }
 
 p,a,span{
-    font-family: arial,Times New Roman,sans-serif;
+    font-family: 'Open Sans','Helvetica Neue',Arial,'Hiragino Sans GB','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif;
 }
 
 
@@ -177,10 +178,10 @@ p,a,span{
 }
 
 .ACLeft{
-    border-right: 10px solid #eeeeee;
+    border-right: 10px solid rgb(238, 238, 238);
 }
 .ACRight{
-    border-left: 10px solid #eeeeee;
+    border-left: 10px solid rgb(238, 238, 238);
 }
 
 .moreButton{
@@ -229,6 +230,7 @@ p,a,span{
 }
 
 .headerRight{
+    position: relative;
     height: 45px;
 }
 
@@ -239,6 +241,36 @@ p,a,span{
     width: 40px;
     height: 45px;
     cursor: pointer;
+}
+
+.hdRShareTitle{
+    position: absolute;
+    right: 180px;
+    left:60px;
+    
+    display: inline-block;
+    height: 100%;
+    overflow: hidden;
+
+    -moz-user-select: text;
+    -webkit-user-select: text;
+}
+
+.hdRShareTitle:hover{
+    background-color: rgba(0,0,0,0)!important;
+}
+
+.hdRShareTitle>p{
+    margin:0px;
+
+    height: 100%;
+    text-align: center;
+    font: 16px/45px arial;
+    color:rgba(237, 241, 247, 0.87);
+
+    overflow:hidden;
+    text-overflow : ellipsis ; 
+    white-space:nowrap;
 }
 
 .hdR0>div,.hdR1>div,.hdR2>div,.hdR3>div{
@@ -326,7 +358,7 @@ p,a,span{
     
     display: inline-block;
     width: 100%;
-    background-color: rgba(238, 238, 238, 0.4);
+    background-color: rgba(238, 238, 238, 0.6);
 }
 
 .ctLMain{
@@ -361,20 +393,18 @@ p,a,span{
 
     width: 100%;
     height: 35px;
-
-    background-color: rgba(13, 16, 17, 0.19)!important;
+    background-image: url(../img/bgImgBlue.png);
+    background-size: 370px 60px;
 }
 
 .ctLBottomBg{
     position: absolute;
     top: 0px;
-    z-index: -100;
 
     display: inline-block;
     width: 100%;
     height: 100%;
-    background-image: url(../img/bgImgBlue.png);
-    background-size: 370px 60px;
+    background-color: rgba(13, 16, 17, 0.19)!important;
 }
 
 .ctLScroll{
@@ -395,7 +425,7 @@ p,a,span{
     width: 100%;
     height: 50px;
     border-radius: 100px;
-    background-color:rgba(221, 221, 221, 0.7);
+    background-color:rgba(211, 211, 211, 0.8);
 }
 
 .ctLMain>div{
@@ -419,8 +449,9 @@ p,a,span{
     transition: margin-left 0.1s ease-in-out;
     margin-left: 0px;
     border:0px;
+    outline: 0px!important;
     text-decoration: none;
-    border-bottom: 1px solid rgba(200, 241, 233, 0.77);
+    border-bottom:1px solid rgba(228, 228, 228, 0.54);
 }
 
 .briefShow{
@@ -440,6 +471,7 @@ p,a,span{
     margin: 7px 15px 7px 22px;
     -webkit-background-size: 100% 100%!important;
     background-size: 100% 100%!important;
+    box-shadow: 1px 1px 3px #ACACAC;
     border-radius: 4px;
 }
 
@@ -455,15 +487,22 @@ p,a,span{
 }
 
 .shareTitle{
-    font-size: 16px;
-    word-wrap: break-word;
-    color: #475e81;
-    margin: 0px;
-
     display: inline-block;
     width: 100%;
     height: 40px;
     overflow: hidden;
+}
+
+.shareTitle>span{
+    font-size: 15px;
+    line-height: 19px;
+    word-wrap: break-word;
+    font-weight: 200;
+    color: rgba(71, 94, 129, 0.95);
+    margin: 0px;
+
+    width: 100%;
+    height:40px;
 }
 
 .shareDetail{
@@ -474,7 +513,7 @@ p,a,span{
     padding-top: 4px;
     text-align: right;
     font-size: 13px;
-    color: #475e81;
+    color: #8ea0bb;
 }
 
 .shareReason{
@@ -603,22 +642,35 @@ p,a,span{
     padding: 5px;
     
     border-radius: 6px;
-    border: 0px;
+    border: 1px solid #E0E0E0;
     font-size: 14px;
-    color: #FFFFFF;
+    color: rgba(172, 172, 172, 0.9);
     outline: 0px;
     resize: none;
 
     -moz-transition: background-color 0.08s ease-in-out;
     -webkit-transition: background-color 0.08s ease-in-out;
-    background-color: rgba(255, 255, 255, 0.28);
+    background-color: rgba(255, 255, 255, 0.54);
 }
 
 .commentText:focus{
     -moz-transition: background-color 0.1s ease-in-out;
     -webkit-transition: background-color 0.1s ease-in-out;
     color: #797979;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.commentText::-webkit-scrollbar {
+    background-color: rgb(206, 206, 206);
+    width: 8px;
+    border-radius: 8px;
+    border: 1px solid rgb(165, 165, 165);
+}
+
+.commentText::-webkit-scrollbar-thumb  {
+    background-color: rgb(170, 170, 170);
+    border: 1px solid rgb(156, 156, 156);
+    border-radius: 8px;
 }
 
 .commentSubmit{
@@ -629,9 +681,11 @@ p,a,span{
     float: right;
     margin-right: 18px;
 
-    background-color: #E0E0E0;
+    background-color: #DFDFDF;
     cursor: pointer;
     overflow: hidden;
+    border-radius: 3px;
+    border: 1px solid #BBB;
 }
 
 .commentSubmit>p{
@@ -640,8 +694,9 @@ p,a,span{
     margin: 0px;
     height: 100%;
     width: 100%;
-    color: #C5C5C5;
+    color: #BDBDBD;
     font:16px/25px arial;
+     font-family: 'Open Sans','Helvetica Neue',Arial,'Hiragino Sans GB','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif;
 }
 
 .eachComment{
@@ -655,7 +710,7 @@ p,a,span{
     padding-right: 13px;
     margin-left: -13px;
     height: auto;  
-    border-bottom: 1px solid rgba(200, 241, 233, 0.77);
+    border-bottom:1px solid rgba(228, 228, 228, 0.54);
 }
 
 .eCmShareImg{
@@ -663,35 +718,78 @@ p,a,span{
     width: 65px;
     min-width: 65px;
     height: 65px;
-    margin: 10px 15px 0px 10px;
+    margin: 10px 15px 0px 20px;
     -webkit-background-size: 100% 100%;
     background-size: 100% 100%;
     border-radius: 4px;
+    box-shadow: 1px 1px 3px #ACACAC;
 }
 
 .eCmCommentText{
+    position: relative;
     display: inline-block;
-    min-height: 65px;
+    min-height: 65px;m
     width: 100%;
     height: auto;
     margin: 10px 10px 10px 0px;
 
     font-size: 16px;
     color: #fff;
-    border-radius: 4px;
     padding-left: 4px;
-    background-color:rgba(255, 255, 255, 0.22);
+    background-color:rgba(255, 255, 255, 0.7);
+    overflow: hidden;
 }
 
 .eCmCommentText>span{
     font-size: 15px;
-    color: #fff;
+    word-wrap: break-word;
+    color: #858585;
 }
 
 .eCmCommentText>span:after{
     content: "";
-    padding-left:10px; 
+    padding-left:15px; 
 }
+
+.replyButton{
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+
+    background-color: rgba(148, 148, 148, 0.47);
+    border-radius: 100px 0px 0px 0px;
+    cursor: pointer;
+
+    -moz-transition: width 0.03s ease-in-out,
+                    height 0.03s ease-in-out,
+                    background-color 0.03s ease-in-out;
+    -webkit-transition: width 0.03s ease-in-out,
+                    height 0.03s ease-in-out ,
+                    background-color 0.1s ease-in-out;
+    transition: width 0.03s ease-in-out,
+                    height 0.03s ease-in-out,
+                    background-color 0.03s ease-in-out;
+}
+
+.replyButton:hover{
+    width: 30px;
+    height: 30px;
+    background-color:rgba(31, 53, 212, 1);
+    -moz-transition: width 0.1s ease-in-out,
+                    height 0.1s ease-in-out,
+                    background-color 0.1s ease-in-out;
+    -webkit-transition: width 0.1s ease-in-out,
+                    height 0.1s ease-in-out ,
+                    background-color 0.1s ease-in-out;
+    transition: width 0.1s ease-in-out,
+                    height 0.1s ease-in-out,
+                    background-color 0.1s ease-in-out;
+}
+
 
 .contentShow{
     display: -webkit-box;

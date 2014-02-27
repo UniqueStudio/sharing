@@ -138,6 +138,7 @@
     var commentID = 1;
     var ctLShowJudge = true;
     var needToLoad = new Array(true,true,true,true); 
+    var canLoad = new Array(true,true,true,true)
     var canScroll = true;
     var username;
     var userImgUrl;
@@ -148,28 +149,6 @@
 
     var getCss = function(className){
         return window.getComputedStyle(document.getElementsByClassName(className)[0],false);
-    };
-
-    var selectFalse = function(){
-        document.onselectstart = function(){return false;};
-        if(navigator.userAgent.indexOf('Firefox') >= 0){
-            var divElement = document.getElementsByTagName("div")
-            var divlength = divElement.length;
-            for (var i = 0; i < divlength; ++i) {
-                divElement[i].style.mozUserSelect = "none";
-            };
-        };
-    };
-
-    var selectTrue = function(){
-        document.onselectstart = function(){return true;};
-        if(navigator.userAgent.indexOf('Firefox') >= 0){
-            var divElement = document.getElementsByTagName("div")
-            var divlength = divElement.length;
-            for (var i = 0; i < divlength; ++i) {
-                divElement[i].style.mozUserSelect = "text";
-            };
-        };
     };
 
     var ctLMainMove = function(T,thePoint){
@@ -307,7 +286,8 @@
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
-                if(json.status){
+                if(json.status&&json.length>0){
+                    document.onmousemove = function(){};
                     if(type === "timestamp"){
                         ++timestampNum;
                     }
@@ -320,8 +300,8 @@
                                             + "<a href='"+content.url
                                             +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
                                             +"'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
-                                            +")'></div><div class='shareTitleBlock'><div class='shareTitle'>"+content.title
-                                            +"</div><span class='shareDetail'>赞("+content.likes
+                                            +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
+                                            +"</span></div><span class='shareDetail'>赞("+content.likes
                                             +")  评论("+ content.comments
                                             +")  " + content.timestamp
                                             +"</span></div></div></a>";
@@ -340,7 +320,10 @@
                             clearInterval(loopTime);
                         };  
                     },20);
-                };
+                }
+                else{
+                    needToLoad[1] = true;
+                }
             };
             ctLMain1Wait.waitingStop();
         };
@@ -352,13 +335,13 @@
         else if(type === "likes"){
             xmlhttp.send("start="+likesNum+"&sortby=likes");
         };
-        
     };
 
     var shuffleLoad = function(){
         var xmlhttp=new XMLHttpRequest();
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
+                canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     $("ctRMain").src = json.result.url;
@@ -366,6 +349,7 @@
                     contentId = json.result.id;
                     commentID = 1;
                     if(point === 2){
+                        $("ctLMain2Show").style.marginTop = "0px"
                         $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
                         commentLoad();
                     };
@@ -385,13 +369,14 @@
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
-                if(json.status){
+                if(json.status&&json.result.length>0){
+                    document.onmousemove = function(){};
                     ++commentID;
                     var commentLength = json.result.length;
                     for(var i = 0;i < commentLength;++i){
                         var newCommentText = "<div class='eachComment'><div class='eCmShareImg' style='background-image:url(" + json.result[i].author_image
                                             +");'></div><div class='eCmCommentText'><span>"+ json.result[i].body
-                                            +"</span></div></div>"
+                                            +"</span><div class='replyButton'><div></div></div></div></div>"
                         $("ctLMain2Show").innerHTML = $("ctLMain2Show").innerHTML + newCommentText;
                     };
 
@@ -408,7 +393,10 @@
                             clearInterval(loopTime);
                         };  
                     },20);
-                };
+                }
+                else{
+                    needToLoad[2] = true;
+                }
             };
             ctLMain2Wait.waitingStop();
         };
@@ -445,6 +433,7 @@
         commentID = 1;
         $("ctRMain").src = obj.href;
         $("hdR0").href = obj.href;
+        $("hdRShareTitle").children[0].innerHTML = obj.children[0].children[1].children[0].children[0].innerHTML
         return false;
     };
 
@@ -525,7 +514,6 @@
             };
             $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";
             $("contentRight").style.width = (bodyWidth - moveDistance) +"px";
-            $("contentRight").style.width = (bodyWidth - moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
@@ -560,16 +548,12 @@
             };
             $("headerLeft").style.marginLeft = (0 - moveDistance) +"px";
             $("headerRight").style.width  = (ctRMainWidth + moveDistance) +"px";
-            $("contentLeft").style.marginLeft  = (0 - moveDistance) +"px";
-            $("contentRight").style.width = (ctRMainWidth + moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
             else{
                 $("headerLeft").style.display = "none";
-                $("contentLeft").style.display  ="none";
                 $("headerRight").style.width  = "100%"
-                $("contentRight").style.width = "100%"
                 clearInterval(moveTime);
             }
         },1);
@@ -667,7 +651,6 @@
 
     document.onmouseup = function(){
         $("screen").style.display = "none";
-        selectTrue();
         document.onmousemove = function(){};
     };
 
@@ -732,14 +715,15 @@
         var xmlhttp=new XMLHttpRequest();
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){//成功发送请求
+                canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     $("ctRMain").src = json.url;
                     $("hdR0").href = json.url;
                     --contentId;
-                    console.log(contentId);
                     commentID = 1;
                     if(point === 2){
+                        $("ctLMain2Show").style.marginTop = "0px"
                         $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
                         commentLoad();
                     };
@@ -755,15 +739,15 @@
         var xmlhttp=new XMLHttpRequest();
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){//成功发送请求
+                canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     $("ctRMain").src = json.url;
                     $("hdR0").href = json.url;
                     ++contentId;
-                    console.log(contentId);
-                    console.log(json)
                     commentID = 1;
                     if(point === 2){
+                        $("ctLMain2Show").style.marginTop = "0px"
                         $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
                         commentLoad();
                     };
@@ -819,7 +803,6 @@
         var barMoveHeight   = ctLMainHeight  - scrollBarHeight;
         var ctLMainMarginTop;
         $("screen").style.display = "block";
-        selectFalse();
         document.onmousemove = function(event){
             var moveY = event.pageY - mouseStartY + scrollBartopNow;
             
@@ -839,27 +822,30 @@
             //滚动条拉到底加载
             switch(point){
                 case 1:
-                    if(parseFloat($("ctLMain1Show").style.marginTop) <= (showDivHeight - mainNowHeight + 70)){
+                    if(needToLoad[1]&&canLoad[1]&&(parseFloat($("ctLMain1Show").style.marginTop) <= (showDivHeight - mainNowHeight + 70))){
                         if(needToLoad[1]){
                             needToLoad[1] = false;
+                            canLoad[1] = false;
                             scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
                             barMoveHeight   = ctLMainHeight - scrollBarHeight;
                             linkContentLoad("timestamp");
                         };            
                     }
-                    else{
-                        needToLoad[1] = true;
+                    else if((parseFloat($("ctLMain1Show").style.marginTop) > (showDivHeight - mainNowHeight + 70))){
+                        canLoad[1] = true;
                     };
                     break;
 
                 case 2:
-                    if(parseFloat($("ctLMain2Show").style.marginTop) <= (showDivHeight - mainNowHeight + 70)){
+                    if(needToLoad[2]&&canLoad[2]&&(parseFloat($("ctLMain2Show").style.marginTop) <= (showDivHeight - mainNowHeight + 70))){
+                        needToLoad[2] = false;
+                        canLoad[2] = false;
                         scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
                         barMoveHeight   = ctLMainHeight - scrollBarHeight;
                         commentLoad();            
                     }
-                    else{
-                        needToLoad[2] = true;
+                    else if((parseFloat($("ctLMain2Show").style.marginTop) > (showDivHeight - mainNowHeight + 70))){
+                        canLoad[2] = true;
                     };
                     break;
             };
@@ -872,14 +858,14 @@
         };
     };
 
-    $("commentText").onkeydown = function(){
+    $("commentText").onkeyup = function(){
         if(this.value.length !== 0){
-            $("commentSubmit").style.backgroundColor = "#fff";
-            $("commentSubmit").children[0].style.color = "#727272";
+            $("commentSubmit").style.backgroundColor = "rgb(226, 226, 226)";
+            $("commentSubmit").children[0].style.color = "rgb(119, 119, 119)";
         }
         else{
-            $("commentSubmit").style.backgroundColor = "#E0E0E0";
-            $("commentSubmit").children[0].style.color = "#C5C5C5";
+            $("commentSubmit").style.backgroundColor = "#DFDFDF";
+            $("commentSubmit").children[0].style.color = "#BDBDBD";
         };
     };
 })()
