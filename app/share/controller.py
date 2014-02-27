@@ -127,7 +127,11 @@ def detail():
 
     if next_share is not None:
         result['status'] = True
-        result['url'] = next_share.url
+        result['result'] = {
+                'url': next_share.url, 
+                'id': next_share.id, 
+                'title': next_share.title
+                }
     else:
         result['status'] = False
         result['msg'] = '未找到前一项'
@@ -144,7 +148,8 @@ def shuffle():
     result['status'] = True
     result['result'] = {
             'url': shares[r_index].url, 
-            'id': shares[r_index].id
+            'id': shares[r_index].id, 
+            'title': shares[r_index].title
             }
     return json.dumps(result)
 
