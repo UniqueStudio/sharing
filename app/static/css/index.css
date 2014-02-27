@@ -373,6 +373,16 @@ p,a,span{
     position: absolute;
     bottom: 0px;
 
+    width: 100%;
+    height: 35px;
+    background-image: url(../img/bgImgBlue.png);
+    background-size: 370px 60px;
+}
+
+.ctLBottomBg{
+    position: absolute;
+    top: 0px;
+
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
@@ -390,18 +400,7 @@ p,a,span{
     -webkit-align-items: center;
     -moz-align-items: center;
     align-items: center;
-
-    width: 100%;
-    height: 35px;
-    background-image: url(../img/bgImgBlue.png);
-    background-size: 370px 60px;
-}
-
-.ctLBottomBg{
-    position: absolute;
-    top: 0px;
-
-    display: inline-block;
+    
     width: 100%;
     height: 100%;
     background-color: rgba(13, 16, 17, 0.19)!important;
@@ -571,7 +570,7 @@ p,a,span{
 
 }
 
-.ctLBottom>.username{
+.ctLBottomBg>.username{
     display: inline-block;
     height: 35px;
     width: auto;
@@ -584,7 +583,7 @@ p,a,span{
     padding-right: 10px;
 }
 
-.ctLBottom>.userImg{
+.ctLBottomBg>.userImg{
     display: inline-block;
     height:30px;
     width:30px;
