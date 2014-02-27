@@ -448,7 +448,7 @@
         return false;
     };
 
-    var ctLMainHide = function(T){
+    var contentLeftHide = function(T){
         var countTime = 1;
         var moveDistance;
         const a1 = 500/(T*T);
@@ -460,6 +460,97 @@
         const ctRMainWidth = parseFloat(getCss("headerRight").width);
         const length = ctLMainWidth;
         ctLShowJudge = false;
+
+        $("toLeft").style.display = "none";
+        $("toRight").style.display = "inline-block";
+
+        var moveTime = setInterval(function(){  
+            if(countTime <= t1){
+                moveDistance = (0.5*a1*countTime*countTime)*length/100;
+            }
+            else{
+                moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
+            };
+            $("contentLeft").style.marginLeft  = (0 - moveDistance) +"px";
+            $("contentRight").style.width = (ctRMainWidth + moveDistance) +"px";
+            if(countTime < T){
+                ++countTime;
+            }
+            else{
+                $("contentLeft").style.display  ="none";
+                $("contentRight").style.width = "100%"
+                clearInterval(moveTime);
+            }
+        },1);
+    };
+
+    var contentLeftShow = function(T){
+        var bodyWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
+        var countTime = 1;
+        var moveDistance;
+        var ctLMainWidth;
+        var length;
+        const a1 = 500/(T*T);
+        const a2 = 1000/(3*T*T);
+        const t1 = 0.4*T;//加速时间
+        const t2 = 0.6*T;//减速时间
+        const v  = 200/T;
+
+        $("moreButtomCover").onmouseout = function(){};
+
+        $("toLeft").style.display = "inline-block";
+        $("toRight").style.display = "none";
+
+        if(bodyWidth <= 1117){
+            ctLMainWidth = 335;
+            length = 335;
+        }
+        else{
+            ctLMainWidth = bodyWidth*0.3;
+            length = bodyWidth*0.3;
+        };
+
+        ctLShowJudge = true;
+        $("contentLeft").style.marginLeft  = (0 - ctLMainWidth) +"px";
+        $("contentLeft").style.width  = (ctLMainWidth) +"px";
+        $("contentLeft").style.minWidth  = "0px";
+        $("contentLeft").style.display  ="inline-block";
+
+        var moveTime = setInterval(function(){  
+            if(countTime <= t1){
+                moveDistance = (0.5*a1*countTime*countTime)*length/100;
+            }
+            else{
+                moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
+            };
+            $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";
+            $("contentRight").style.width = (bodyWidth - moveDistance) +"px";
+            $("contentRight").style.width = (bodyWidth - moveDistance) +"px";
+            if(countTime < T){
+                ++countTime;
+            }
+            else{
+                $("contentLeft").style.width  = "30%";
+                $("contentLeft").style.minWidth  = "335px";
+                $("contentRight").style.width  = (bodyWidth - ctLMainWidth) + "px";
+                clearInterval(moveTime);
+            }
+        },1);
+    };
+
+    var headerLeftHide = function(T){
+        var countTime = 1;
+        var moveDistance;
+        const a1 = 500/(T*T);
+        const a2 = 1000/(3*T*T);
+        const t1 = 0.4*T;//加速时间
+        const t2 = 0.6*T;//减速时间
+        const v  = 200/T;
+        const ctLMainWidth = parseFloat(getCss("headerLeft").width);
+        const ctRMainWidth = parseFloat(getCss("headerRight").width);
+        const length = ctLMainWidth;
+        ctLShowJudge = false;
+
         var moveTime = setInterval(function(){  
             if(countTime <= t1){
                 moveDistance = (0.5*a1*countTime*countTime)*length/100;
@@ -495,6 +586,9 @@
         const t1 = 0.4*T;//加速时间
         const t2 = 0.6*T;//减速时间
         const v  = 200/T;
+
+        $("toLeft").style.display = "inline-block";
+        $("toRight").style.display = "none";
 
         if(bodyWidth <= 1117){
             ctLMainWidth = 335;
@@ -541,6 +635,10 @@
         },1);
     };
 
+    var hasHeaderLeftHide = function(){
+        return (getCss("headerLeft").display === "none")
+    };
+
     window.onload = function(){
         ctLMain1Wait = new waitingDot("ctLMain1WaitBox");
         ctLMain2Wait = new waitingDot("ctLMain2WaitBox");
@@ -550,7 +648,6 @@
         $("ctLMain"+point).style.left = "0%";
         $("headerRight").style.width = ctRMainWidth + "px";
         $("contentRight").style.width = ctRMainWidth + "px";
-        $("hdL"+point).style.backgroundColor = "rgba(68, 128, 189, 0.36)";
         $("hdL"+point).style.cursor = "default";
         linkContentLoad("timestamp");
         shuffleLoad();  
@@ -580,33 +677,28 @@
 
     $("hdL0").onclick = function(){
         if(point !== 0){
-            $("hdL"+point).style.backgroundColor = "";
             $("hdL"+point).style.cursor = "pointer";
             arrowMove(30,point - 0);
             ctLMainMove(30,0);
             point = 0;
-            changeScrollBarHeight();
-            $("hdL0").style.backgroundColor = "rgba(68, 128, 189, 0.36)";  
+            changeScrollBarHeight(); 
             $("hdL0").style.cursor = "default";
         };
     };
 
     $("hdL1").onclick = function(){
         if(point !== 1){
-            $("hdL"+point).style.backgroundColor = "";
             $("hdL"+point).style.cursor = "pointer";
             arrowMove(30,point - 1);
             ctLMainMove(30,1);
             point = 1;
             changeScrollBarHeight();
-            $("hdL1").style.backgroundColor = "rgba(68, 128, 189, 0.36)";  
             $("hdL1").style.cursor = "default";
         };
     };
 
     $("hdL2").onclick = function(){
         if(point !== 2){
-            $("hdL"+point).style.backgroundColor = "";
             $("hdL"+point).style.cursor = "pointer";
             arrowMove(30,point - 2);
             ctLMainMove(30,2);
@@ -617,20 +709,17 @@
                 $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
                 commentLoad();
             }
-            $("hdL2").style.backgroundColor = "rgba(68, 128, 189, 0.36)";  
             $("hdL2").style.cursor = "default";
         };
     };
 
     $("hdL3").onclick = function(){
         if(point !== 3){
-            $("hdL"+point).style.backgroundColor = "";
             $("hdL"+point).style.cursor = "pointer";
             arrowMove(30,point - 3);
             ctLMainMove(30,3);
             point = 3;     
-            changeScrollBarHeight(); 
-            $("hdL3").style.backgroundColor = "rgba(68, 128, 189, 0.36)";  
+            changeScrollBarHeight();  
             $("hdL3").style.cursor = "default";
         };
     };
@@ -688,12 +777,19 @@
 
     $("moreButton").onclick = function(){
         if(ctLShowJudge){
-            ctLMainHide(20);
-            $("moreButton").children[0].style.backgroundImage = "url(../static/img/toRight.png)";
+            contentLeftHide(20);
+            $("moreButtomCover").onmouseout = function(){
+                headerLeftHide(20);
+            };
         }
         else{
-            ctLMainShow(20);
-            $("moreButton").children[0].style.backgroundImage = "url(../static/img/toLeft.png)";
+            $("moreButtomCover").onmouseout = function(){};
+            if(hasHeaderLeftHide()){
+                ctLMainShow(20);
+            }
+            else{
+                contentLeftShow(20);
+            }
         };
     };
 
