@@ -71,10 +71,12 @@ def list():
                         'timestamp': str(item.timestamp), 
                         'author_name': item.author.nickname, 
                         'author_image': item.author.image or '../static/img/default.jpg',  
-                        'author_id': item.author.id
+                        'author_id': item.author.id, 
+                        'is_collection': False
                         }
+                if g.current_user.is_in_the_collections(item):
+                    tmp['is_collection'] = True
                 items.append(tmp)
-                
 
         # 返回结果
         result = {}
