@@ -119,3 +119,17 @@
     返回值：json['status']
     表示操作状态，如果成功，则json['user_groups']表示用户关注的群组。
     json['diff_groups'] 表示用户尚未关注的群组。如果出错,json['msg']记录错误信息
+
+
+收藏：
+    添加/删除收藏
+    方法：POST
+    接口： /collection/toggleCollection
+    参数： share_id
+    返回值：无
+
+    列出当前登陆用户的收藏
+    方法：POST
+    接口：/collection/list
+    参数：同/share/list接口
+    返回值：同/share/list接口

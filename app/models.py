@@ -15,6 +15,11 @@ user_likes = db.Table('user_likes',
             db.Column('share_id', db.Integer, db.ForeignKey('share.id')),
         )
 
+collections = db.Table('collections', 
+            db.Column('user_id', db.Integer, db.ForeignKey('user.id')), 
+            db.Column('share_id', db.Integer, db.ForeignKey('share.id')), 
+        )
+
 
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -44,6 +49,7 @@ class User(db.Model):
     comments = db.relationship('Comment', lazy='dynamic',
             backref=db.backref('author', lazy='select'))
     like_shares = db.relationship('Share', lazy='dynamic', secondary=user_likes)
+    collections = db.relationship('Share', lazy='dynamic', secondary=collections)
     groups = db.relationship('Group', lazy='dynamic', backref=db.backref('users', lazy='dynamic'),  secondary=group_users)
 
     def __init__(self, email, password, nickname, image = None):
@@ -93,14 +99,26 @@ class User(db.Model):
         if self.is_in_the_group(group):
             self.groups.remove(group)
 
-    def avatar(self, size):
-        return 'http://www.gravatar.com/avatar/' + md5.new(self.email).hexdigest() + '?d=mm&s=' + str(size)
-
     def get_group_first_id(self):
         group = self.groups.first()
         if group is None:
             return None
         return group.id
+
+    # collections
+    def is_in_the_collections(self, share):
+        return share in self.collections.all()
+
+    def add_to_collections(self, share):
+        if not self.is_in_the_collections(share):
+            self.collections.append(share)
+
+    def remove_from_collections(self, share):
+        if self.is_in_the_collections(share):
+            self.collections.remove(share)
+
+
+    
 
 
 class Share(db.Model):
