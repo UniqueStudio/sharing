@@ -400,7 +400,7 @@ p,a,span{
     -webkit-align-items: center;
     -moz-align-items: center;
     align-items: center;
-    
+
     width: 100%;
     height: 100%;
     background-color: rgba(13, 16, 17, 0.19)!important;
@@ -727,7 +727,7 @@ p,a,span{
 .eCmCommentText{
     position: relative;
     display: inline-block;
-    min-height: 65px;m
+    min-height: 65px;
     width: 100%;
     height: auto;
     margin: 10px 10px 10px 0px;
@@ -787,6 +787,24 @@ p,a,span{
     transition: width 0.1s ease-in-out,
                     height 0.1s ease-in-out,
                     background-color 0.1s ease-in-out;
+}
+
+.replyButton>div{
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 11px 0px 0px 10px;
+
+    background-image: url(../img/bubble.png);
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+    opacity: 0;
+}
+.replyButton:hover>div{
+    opacity: 1;
+    -moz-transition: opacity 0.31s ease-in-out 0.04s;
+    -webkit-transition: opacity 0.31s ease-in-out 0.04s;
+    transition: opacity 0.31s ease-in-out 0.04s;
 }
 
 

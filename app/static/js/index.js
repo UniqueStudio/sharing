@@ -346,6 +346,7 @@
                 if(json.status){
                     $("ctRMain").src = json.result.url;
                     $("hdR0").href = json.result.url;
+                    $("hdRShareTitle").children[0].innerHTML = json.result.title;
                     contentId = json.result.id;
                     commentID = 1;
                     if(point === 2){
@@ -376,7 +377,7 @@
                     for(var i = 0;i < commentLength;++i){
                         var newCommentText = "<div class='eachComment'><div class='eCmShareImg' style='background-image:url(" + json.result[i].author_image
                                             +");'></div><div class='eCmCommentText'><span>"+ json.result[i].body
-                                            +"</span><div class='replyButton'><div></div></div></div></div>"
+                                            +"</span><div class='replyButton' onclick='commentReply(this)'><div></div></div></div></div>"
                         $("ctLMain2Show").innerHTML = $("ctLMain2Show").innerHTML + newCommentText;
                     };
 
@@ -407,14 +408,25 @@
 
     var sendComment = function(){
         var xmlhttp = new XMLHttpRequest();
-        var commentText = username + ": " + $("commentText").value;
+        var commentText;
+
+        var objValue = $("commentText").value;
+        var feature1Place = objValue.indexOf("回复@");
+        var feature2Place = objValue.indexOf(":");
+        if((feature1Place === 0) && (feature2Place > feature1Place)){
+            commentText = username + objValue;
+        }
+        else{
+            commentText = username + ": " + objValue;
+        };
+
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     var newCommentText = "<div class='eachComment commentShow'><div class='eCmShareImg' style='background-image:" + userImgUrl
                                         +";'></div><div class='eCmCommentText'><span>"+ commentText
-                                        +"</span></div></div>"
+                                        +"</span><div class='replyButton' onclick='commentReply(this)'><div></div></div></div></div>"
                     $("ctLMain2Show").innerHTML = newCommentText + $("ctLMain2Show").innerHTML;
                     changeScrollBarHeight();
                     $("commentText").value = "";
@@ -426,6 +438,22 @@
         xmlhttp.open("POST","/comment/add",true);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
         xmlhttp.send("content="+commentText +"&share_id="+contentId);
+    };
+
+    window.commentReply = function(obj){
+        var name;
+        var objValue = obj.parentNode.children[0].innerHTML;
+        var feature1Place = objValue.indexOf("回复@");
+        var feature2Place = objValue.indexOf(":");
+        if((feature1Place !== -1) && (feature2Place > feature1Place)){
+            name = objValue.substring(0,feature1Place);
+        }
+        else{
+            name = objValue.substring(0,feature2Place);
+        };
+        console.log(feature1Place,feature2Place,name);
+        $("commentText").focus();
+        $("commentText").value = "回复@" + name + ": ";
     };
 
     window.ecCilck = function(obj){
@@ -484,7 +512,7 @@
         const t1 = 0.4*T;//加速时间
         const t2 = 0.6*T;//减速时间
         const v  = 200/T;
-
+        
         $("moreButtomCover").onmouseout = function(){};
 
         $("toLeft").style.display = "inline-block";
@@ -718,13 +746,14 @@
                 canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
-                    $("ctRMain").src = json.url;
-                    $("hdR0").href = json.url;
+                    $("ctRMain").src = json.result.url;
+                    $("hdR0").href = json.result.url;
+                    $("hdRShareTitle").children[0].innerHTML = json.result.title;
                     --contentId;
                     commentID = 1;
                     if(point === 2){
                         $("ctLMain2Show").style.marginTop = "0px"
-                        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
+                        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
                         commentLoad();
                     };
                 }
@@ -742,8 +771,9 @@
                 canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
-                    $("ctRMain").src = json.url;
-                    $("hdR0").href = json.url;
+                    $("ctRMain").src = json.result.url;
+                    $("hdR0").href = json.result.url;
+                    $("hdRShareTitle").children[0].innerHTML = json.result.title;
                     ++contentId;
                     commentID = 1;
                     if(point === 2){
