@@ -52,7 +52,7 @@ def list():
     else:
         order = Share.likes
 
-    id_list = g.current_user.collections.all()['share_id']
+    id_list = [share.id for share in g.current_user.collections.all()]
 
     shares = Share.query.filter(Share.id in
             id_list).order_by(order.desc()).paginate(start, per_page, False)

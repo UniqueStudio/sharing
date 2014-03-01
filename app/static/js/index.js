@@ -132,6 +132,7 @@
     var point = 1;
     var timestampNum = 1;
     var likesNum = 1;
+    var collectNum = 1;
     var contentIdLoadBefore = 1;
     var contentLengthNow = 0;
     var contentId = 1;
@@ -273,6 +274,58 @@
                 
             };
         };
+    };
+
+    var collectLoad = function(){
+        var json;
+        var content;
+        var contentJson;
+        var contentObj       = $("ctLMain0Show").children;
+        var lengthLoadBefore = contentObj.length;
+        var xmlhttp          =new XMLHttpRequest();
+        ctLMain1Wait.waitingShow();
+        xmlhttp.onreadystatechange=function(){
+            if (xmlhttp.readyState==4 && xmlhttp.status==200){//成功发送请求
+                var json  = JSON.parse(xmlhttp.responseText);
+                if(json.status&&json.length>0){
+                    document.onmousemove = function(){};
+                    ++colllectNum;
+                    for (var i = 0;i < json.length;++i){
+                        content = json.result[i];
+                        $("ctLMain0Show").innerHTML = $("ctLMain0Show").innerHTML 
+                                            + "<a href='"+content.url
+                                            +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
+                                            +"'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
+                                            +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
+                                            +"</span></div><span class='shareDetail'>赞("+content.likes
+                                            +")  评论("+ content.comments
+                                            +")  " + content.timestamp
+                                            +"</span></div></div></a>";
+                    };
+                    var lengthNow = contentObj.length;
+                    var i = lengthLoadBefore;
+                    var loopTime = setInterval(function(){
+                        if(i < lengthNow){
+                            contentObj[i].className += " contentShow";
+                            changeScrollBarHeight();
+
+                            ++i;
+                        }
+                        else{
+                            needToLoad[0] = true;
+                            clearInterval(loopTime);
+                        };  
+                    },20);
+                }
+                else{
+                    needToLoad[0] = true;
+                }
+            };
+            ctLMain1Wait.waitingStop();
+        };
+        xmlhttp.open("POST","/collection/list",true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("start="+collectNum+"&sortby=timestamp");
     };
 
     var linkContentLoad = function(type){
@@ -512,7 +565,7 @@
         const t1 = 0.4*T;//加速时间
         const t2 = 0.6*T;//减速时间
         const v  = 200/T;
-        
+
         $("moreButtomCover").onmouseout = function(){};
 
         $("toLeft").style.display = "inline-block";
@@ -662,6 +715,7 @@
         $("contentRight").style.width = ctRMainWidth + "px";
         $("hdL"+point).style.cursor = "default";
         linkContentLoad("timestamp");
+        collectLoad();
         shuffleLoad();  
         username = $("username").innerHTML;
         userImgUrl = $("userImg").style.backgroundImage;

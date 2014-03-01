@@ -128,7 +128,8 @@ def register():
     try:
         if register_form.validate_on_submit():
             email = register_form.email
-            if User.query.filter(User.email == email) is not None:
+            fk = User.query.filter(User.email == email).first()
+            if fk is not None:
                 raise ValidationError('该邮箱已经被使用')
             password = register_form.password
             nickname = register_form.nickname
