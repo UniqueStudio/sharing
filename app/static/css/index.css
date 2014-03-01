@@ -34,6 +34,7 @@ p,a,span{
 
     z-index: 100;
     display: none;
+    cursor: default
 }
 
 .header{
@@ -232,6 +233,7 @@ p,a,span{
 .headerRight{
     position: relative;
     height: 45px;
+    width: 70%;
 }
 
 .hdR0,.hdR1,.hdR2,.hdR3{
@@ -340,15 +342,17 @@ p,a,span{
     width: 30%;
     min-width: 335px;
     max-width: 480px;
+    z-index: 1;
 
     box-shadow: rgba(44, 44, 44, 0.3) 1px 0px,
                 rgba(97, 97, 97, 0.3) 2px 0px,
-                rgba(138, 138, 138, 0.2) 3px 0px,
-                rgba(182, 182, 182, 0.14) 4px 0px;
+                rgba(138, 138, 138, 0.2) 3px 0px;
 }   
 
 .contentRight{
+    position: relative;
     height: 100%;
+    width: 70%;
 }
 
 .ctLMainDiv{
@@ -425,6 +429,7 @@ p,a,span{
     height: 50px;
     border-radius: 100px;
     background-color:rgba(211, 211, 211, 0.8);
+    cursor: default;
 }
 
 .ctLMain>div{
@@ -641,11 +646,12 @@ p,a,span{
     padding: 5px;
     
     border-radius: 6px;
-    border: 1px solid #E0E0E0;
+    border: 1px solid #C9C9C9;
     font-size: 14px;
     color: rgba(172, 172, 172, 0.9);
     outline: 0px;
     resize: none;
+    overflow-x: hidden; 
 
     -moz-transition: background-color 0.08s ease-in-out;
     -webkit-transition: background-color 0.08s ease-in-out;
@@ -833,6 +839,45 @@ p,a,span{
 }
 
 .ctLMain2WaitBox>div{
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 100px;
+    margin:auto 0px;
+
+    position: absolute;
+    bottom: 0px;
+    top: 0px;
+    left: -10px;
+    opacity: 0;
+    background-color: rgb(255, 0, 20);
+}
+
+.ctRWaitBoxBg{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background-color: rgba(0,0,0,0.8);
+    text-align: center;
+}
+
+.ctRWaitBox{
+    position: absolute;
+    top:0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+
+    margin: auto;
+    display:inline-block;
+    max-width: 450px;
+    width: 450px;
+    height: 40px;
+    overflow: hidden;
+}
+
+.ctRWaitBox>div{
     display: inline-block;
     width: 10px;
     height: 10px;

@@ -15,7 +15,7 @@
         this.waitDotWidth = parseFloat(this.getCss(this.$(waitBoxName).children[0]).width);
         this.Vstart = 15;
         this.Vconst = 3;
-        this.speedChangeDis = (this.waitBoxWidth + this.waitDotWidth*2 - 5*this.Vconst*this.eachTime)/2.0;
+        this.speedChangeDis = (this.waitBoxWidth + this.waitDotWidth*3 - 5*this.Vconst*this.eachTime)/2.0;
         this.a = (this.Vconst*this.Vconst - this.Vstart*this.Vstart)/(2.0*this.speedChangeDis);
         this.decTime = (this.Vconst - this.Vstart)/this.a;
         this.conTime = this.eachTime*5;
@@ -125,10 +125,21 @@
                 obj[i].style.backgroundColor = this.waitDotColor[0];
             };
         };
+
+        this.changeWaitBox = function(){
+            this.waitBoxWidth = parseFloat(this.getCss(this.$(waitBoxName)).width);
+            this.speedChangeDis = (this.waitBoxWidth + this.waitDotWidth*3 - 5*this.Vconst*this.eachTime)/2.0;
+            this.a = (this.Vconst*this.Vconst - this.Vstart*this.Vstart)/(2.0*this.speedChangeDis);
+            this.decTime = (this.Vconst - this.Vstart)/this.a;
+            this.accTime = this.decTime;
+            this.constBegin = this.Vstart*this.decTime + 0.5*this.a*this.decTime*this.decTime;
+            this.accBegin = this.constBegin + this.Vconst*this.conTime;
+        };
     };
 
     var ctLMain1Wait;
     var ctLMain2Wait;
+    var ifameWait;
     var point = 1;
     var timestampNum = 1;
     var likesNum = 1;
@@ -339,11 +350,23 @@
         var showDivHeight   = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
         var mainNowHeight   = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
         var showDivMarginTop = parseFloat(getCss("ctLMain"+point+"Show").marginTop);
-        console.log(showDivHeight,showDivMarginTop,mainNowHeight);
         if((mainNowHeight + showDivMarginTop) < showDivHeight){
             $("ctLMain"+point+"Show").style.marginTop = (showDivHeight -mainNowHeight) +"px";
         };
         changeScrollBarHeight();
+    };
+
+    var ifameWaitShow = function(){
+        ifameWait.waitingStop();
+        $("ctRWaitBoxBg").style.display = "inline-block"
+        ifameWait.waitingShow();
+        var ctRMain = $('ctRMain');
+        ctRMain.onload = ctRMain.onreadystatechange = function(){
+            if (!ctRMain.readyState || ctRMain.readyState == "complete") {  
+                $("ctRWaitBoxBg").style.display = 'none'
+                ifameWait.waitingStop();
+            };
+        };
     };
 
     var collectLoad = function(){
@@ -467,6 +490,7 @@
                 canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
+                    ifameWaitShow();
                     $("ctRMain").src = json.result.url;
                     $("hdR0").href = json.result.url;
                     $("hdRShareTitle").children[0].innerHTML = json.result.title;
@@ -564,24 +588,34 @@
     };
 
     window.commentReply = function(obj){
+        var reg1 = /^回复@\S+:/;
+        var reg2 = /回复@\S+:/;
+        var reg3 = /^\S+回复@\S+:/;
+        var reg4 = /:/;
         var name;
         var objValue = obj.parentNode.children[0].innerHTML;
-        var feature1Place = objValue.indexOf("回复@");
-        var feature2Place = objValue.indexOf(":");
-        if((feature1Place !== -1) && (feature2Place > feature1Place)){
-            name = objValue.substring(0,feature1Place);
+
+        if(reg3.test(objValue)){
+            name = objValue.substring(0,objValue.search(reg2));
         }
         else{
-            name = objValue.substring(0,feature2Place);
+            name = objValue.substring(0,objValue.search(reg4));
         };
-        console.log(feature1Place,feature2Place,name);
+
         $("commentText").focus();
-        $("commentText").value = "回复@" + name + ": ";
+        console.log(reg1.test($("commentText").value),name);
+        if(reg1.test($("commentText").value)){
+            $("commentText").value = $("commentText").value.replace(reg1,"回复@"+ name +":");
+        }
+        else{
+            $("commentText").value = "回复@" + name + ":" + $("commentText").value;
+        };        
     };
 
     window.ecCilck = function(obj){
         contentId = obj.id;
         commentID = 1;
+        ifameWaitShow();
         $("ctRMain").src = obj.href;
         $("hdR0").href = obj.href;
         $("hdRShareTitle").children[0].innerHTML = obj.children[0].children[1].children[0].children[0].innerHTML
@@ -775,14 +809,14 @@
     };
 
     window.onload = function(){
-        ctLMain1Wait = new waitingDot("ctLMain1WaitBox");
-        ctLMain2Wait = new waitingDot("ctLMain2WaitBox");
+        ctLMain1Wait     = new waitingDot("ctLMain1WaitBox");
+        ctLMain2Wait     = new waitingDot("ctLMain2WaitBox");
+        ifameWait        = new  waitingDot("ctRWaitBox");
+        ifameWait.changeWaitBox();
         var ctRMainWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width) - parseFloat(getCss("headerLeft").width);
         $("arrowLeft").style.width = (point*25) + "%";
         $("arrowRight").style.width = (3-point)*25 + "%";
         $("ctLMain"+point).style.left = "0%";
-        $("headerRight").style.width = ctRMainWidth + "px";
-        $("contentRight").style.width = ctRMainWidth + "px";
         $("hdL"+point).style.cursor = "default";
         linkContentLoad("timestamp");
         collectLoad();
@@ -794,6 +828,11 @@
     window.onresize = function(){
         var ctRMainWidth;
         changeCtLMarginTop();
+
+        ctLMain1Wait.changeWaitBox();
+        ctLMain2Wait.changeWaitBox();
+        ifameWait.changeWaitBox();
+
         if(!ctLShowJudge){
             ctRMainWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width) - parseFloat(getCss("headerLeft").width);  
             $("headerRight").style.width = ctRMainWidth + "px";
@@ -870,6 +909,7 @@
                 canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
+                    ifameWaitShow();
                     $("ctRMain").src = json.result.url;
                     $("hdR0").href = json.result.url;
                     $("hdRShareTitle").children[0].innerHTML = json.result.title;
@@ -895,6 +935,7 @@
                 canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
+                    ifameWaitShow();
                     $("ctRMain").src = json.result.url;
                     $("hdR0").href = json.result.url;
                     $("hdRShareTitle").children[0].innerHTML = json.result.title;
@@ -958,7 +999,16 @@
     };
 
     $("commentText").onkeyup = function(){
-        if(this.value.length !== 0){
+        var reg = /^回复@\S+:/;
+        var valueLength;
+        if(this.value.search(reg) === -1){
+            valueLength = 0;
+        }
+        else{
+            valueLength = (reg.exec(this.value))[0].length;
+        }
+        console.log(valueLength)
+        if(this.value.length > valueLength){
             $("commentSubmit").style.backgroundColor = "rgb(226, 226, 226)";
             $("commentSubmit").children[0].style.color = "rgb(119, 119, 119)";
         }
