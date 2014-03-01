@@ -276,6 +276,76 @@
         };
     };
 
+    var controlByScrollBar = function(mouseStartY){
+        var ctLMainHeight   = parseFloat(getCss("ctLMain").height);
+        var showDivHeight   = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
+        var scrollBartopNow = parseFloat(getCss("ctLScrollBar").top);
+        var mainNowHeight   = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
+        var scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
+        var scrollHeight    = showDivHeight - mainNowHeight;
+        var barMoveHeight   = ctLMainHeight  - scrollBarHeight;
+        var ctLMainMarginTop;
+        $("screen").style.display = "block";
+        document.onmousemove = function(event){
+            var moveY = event.pageY - mouseStartY + scrollBartopNow;
+            
+            if(moveY >= 0 && moveY <= barMoveHeight){
+                $("ctLScrollBar").style.top = moveY + "px";
+                ctLMainMarginTop = parseFloat(getCss("ctLScrollBar").top)/barMoveHeight*scrollHeight;
+                $("ctLMain"+point+"Show").style.marginTop = ctLMainMarginTop +"px";
+            }
+            else if(moveY < 0){
+                    $("ctLScrollBar").style.top = 0;                    
+                    $("ctLMain"+point+"Show").style.marginTop = 0;
+                }
+                else if(moveY >= barMoveHeight){
+                        $("ctLScrollBar").style.top = barMoveHeight + "px";                    
+                        $("ctLMain"+point+"Show").style.marginTop = scrollHeight + "px";
+                    };
+            //滚动条拉到底加载
+            switch(point){
+                case 1:
+                    if(needToLoad[1]&&canLoad[1]&&(parseFloat(getCss("ctLMain1Show").marginTop) <= (showDivHeight - mainNowHeight + 70))){
+                        if(needToLoad[1]){
+                            needToLoad[1] = false;
+                            canLoad[1] = false;
+                            scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
+                            barMoveHeight   = ctLMainHeight - scrollBarHeight;
+                            linkContentLoad("timestamp");
+                        };            
+                    }
+                    else if((parseFloat(getCss("ctLMain1Show").marginTop) > (showDivHeight - mainNowHeight + 70))){
+                        canLoad[1] = true;
+                    };
+                    break;
+
+                case 2:
+                    if(needToLoad[2]&&canLoad[2]&&(parseFloat(getCss("ctLMain2Show").marginTop) <= (showDivHeight - mainNowHeight + 70))){
+                        needToLoad[2] = false;
+                        canLoad[2] = false;
+                        scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
+                        barMoveHeight   = ctLMainHeight - scrollBarHeight;
+                        commentLoad();            
+                    }
+                    else if((parseFloat(getCss("ctLMain2Show").marginTop) > (showDivHeight - mainNowHeight + 70))){
+                        canLoad[2] = true;
+                    };
+                    break;
+            };
+        };
+    };
+
+    var changeCtLMarginTop = function(){
+        var showDivHeight   = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
+        var mainNowHeight   = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
+        var showDivMarginTop = parseFloat(getCss("ctLMain"+point+"Show").marginTop);
+        console.log(showDivHeight,showDivMarginTop,mainNowHeight);
+        if((mainNowHeight + showDivMarginTop) < showDivHeight){
+            $("ctLMain"+point+"Show").style.marginTop = (showDivHeight -mainNowHeight) +"px";
+        };
+        changeScrollBarHeight();
+    };
+
     var collectLoad = function(){
         var json;
         var content;
@@ -723,8 +793,8 @@
 
     window.onresize = function(){
         var ctRMainWidth;
-        changeScrollBarHeight();
-        if(ctLShowJudge){
+        changeCtLMarginTop();
+        if(!ctLShowJudge){
             ctRMainWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width) - parseFloat(getCss("headerLeft").width);  
             $("headerRight").style.width = ctRMainWidth + "px";
             $("contentRight").style.width = ctRMainWidth + "px";
@@ -876,64 +946,9 @@
     });
 
     $("ctLScrollBar").onmousedown =function(event){
-        event               = event || window.event;
-        var mouseStartY     = event.pageY; 
-        var ctLMainHeight   = parseFloat(getCss("ctLMain").height);
-        var showDivHeight   = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
-        var scrollBartopNow = parseFloat(getCss("ctLScrollBar").top);
-        var mainNowHeight   = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
-        var scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
-        var scrollHeight    = showDivHeight - mainNowHeight;
-        var barMoveHeight   = ctLMainHeight  - scrollBarHeight;
-        var ctLMainMarginTop;
-        $("screen").style.display = "block";
-        document.onmousemove = function(event){
-            var moveY = event.pageY - mouseStartY + scrollBartopNow;
-            
-            if(moveY >= 0 && moveY <= barMoveHeight){
-                $("ctLScrollBar").style.top = moveY + "px";
-                ctLMainMarginTop = parseFloat(getCss("ctLScrollBar").top)/barMoveHeight*scrollHeight;
-                $("ctLMain"+point+"Show").style.marginTop = ctLMainMarginTop +"px";
-            }
-            else if(moveY < 0){
-                    $("ctLScrollBar").style.top = 0;                    
-                    $("ctLMain"+point+"Show").style.marginTop = 0;
-                }
-                else if(moveY >= barMoveHeight){
-                        $("ctLScrollBar").top = barMoveHeight + "px";                    
-                        $("ctLMain"+point+"Show").marginTop = scrollHeight + "px";
-                    };
-            //滚动条拉到底加载
-            switch(point){
-                case 1:
-                    if(needToLoad[1]&&canLoad[1]&&(parseFloat($("ctLMain1Show").style.marginTop) <= (showDivHeight - mainNowHeight + 70))){
-                        if(needToLoad[1]){
-                            needToLoad[1] = false;
-                            canLoad[1] = false;
-                            scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
-                            barMoveHeight   = ctLMainHeight - scrollBarHeight;
-                            linkContentLoad("timestamp");
-                        };            
-                    }
-                    else if((parseFloat($("ctLMain1Show").style.marginTop) > (showDivHeight - mainNowHeight + 70))){
-                        canLoad[1] = true;
-                    };
-                    break;
-
-                case 2:
-                    if(needToLoad[2]&&canLoad[2]&&(parseFloat($("ctLMain2Show").style.marginTop) <= (showDivHeight - mainNowHeight + 70))){
-                        needToLoad[2] = false;
-                        canLoad[2] = false;
-                        scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
-                        barMoveHeight   = ctLMainHeight - scrollBarHeight;
-                        commentLoad();            
-                    }
-                    else if((parseFloat($("ctLMain2Show").style.marginTop) > (showDivHeight - mainNowHeight + 70))){
-                        canLoad[2] = true;
-                    };
-                    break;
-            };
-        };
+        event           = event || window.event;
+        var mouseStartY = event.pageY; 
+        controlByScrollBar(mouseStartY);
     };
 
     $("commentSubmit").onclick = function(){
