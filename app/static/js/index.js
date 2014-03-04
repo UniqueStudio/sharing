@@ -242,7 +242,32 @@
         changeScrollBarTop();
     };
 
+    var setScrollBarHide = function(){
+        $("ctLScrollBar").style.webkitTransitionDelay = "3s";
+        $("ctLScrollBar").style.mozTransitionDelay = "3s";
+        $("ctLScrollBar").style.transitionDelay = "3s";
+
+        $("ctLScrollBar").style.webkitTransitionDuration = "1.2s";
+        $("ctLScrollBar").style.mozTransitionDuration = "1.2s";
+        $("ctLScrollBar").style.transitionDuration = "1.2s"
+
+        $("ctLScrollBar").style.opacity = 0;
+    };
+    var setScrollBarShow = function(){
+        $("ctLScrollBar").style.webkitTransitionDelay = "0s";
+        $("ctLScrollBar").style.mozTransitionDelay = "0s";
+        $("ctLScrollBar").style.transitionDelay = "0s";
+
+        $("ctLScrollBar").style.webkitTransitionDuration = "0.01s";
+        $("ctLScrollBar").style.mozTransitionDuration = "0.01s";
+        $("ctLScrollBar").style.transitionDuration = "0.01s";
+
+        $("ctLScrollBar").style.opacity = 1;
+    };
+
     var ctLMainScroll = function(theScroll){
+        setScrollBarShow();
+        setTimeout(setScrollBarHide,50);
         canScroll = true;
         var marginTopNow         =  parseFloat(getCss("ctLMain"+point+"Show").marginTop);
         var ctLMainShowDivHeight = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
@@ -298,6 +323,8 @@
         var ctLMainMarginTop;
         $("screen").style.display = "block";
         document.onmousemove = function(event){
+            setScrollBarShow()
+            $("ctLScroll").onmouseout = function(){};
             var moveY = event.pageY - mouseStartY + scrollBartopNow;
             
             if(moveY >= 0 && moveY <= barMoveHeight){
@@ -356,15 +383,19 @@
         changeScrollBarHeight();
     };
 
+    var ifameWaitStop = function(){
+        $("ctRWaitBoxBg").style.display = "none";
+        ifameWait.waitingStop();
+    };
+
     var ifameWaitShow = function(){
         ifameWait.waitingStop();
-        $("ctRWaitBoxBg").style.display = "inline-block"
+        $("ctRWaitBoxBg").style.display = "inline-block";
         ifameWait.waitingShow();
         var ctRMain = $('ctRMain');
         ctRMain.onload = ctRMain.onreadystatechange = function(){
             if (!ctRMain.readyState || ctRMain.readyState == "complete") {  
-                $("ctRWaitBoxBg").style.display = 'none'
-                ifameWait.waitingStop();
+                ifameWaitStop();
             };
         };
     };
@@ -462,6 +493,7 @@
                             ++i;
                         }
                         else{
+                            setScrollBarHide();
                             needToLoad[1] = true;
                             clearInterval(loopTime);
                         };  
@@ -634,7 +666,6 @@
         const ctRMainWidth = parseFloat(getCss("headerRight").width);
         const length = ctLMainWidth;
         ctLShowJudge = false;
-
         $("toLeft").style.display = "none";
         $("toRight").style.display = "inline-block";
 
@@ -684,7 +715,6 @@
             length = bodyWidth*0.3;
         };
 
-        ctLShowJudge = true;
         $("contentLeft").style.marginLeft  = (0 - ctLMainWidth) +"px";
         $("contentLeft").style.width  = (ctLMainWidth) +"px";
         $("contentLeft").style.minWidth  = "0px";
@@ -703,6 +733,7 @@
                 ++countTime;
             }
             else{
+                ctLShowJudge = true;
                 $("contentLeft").style.width  = "30%";
                 $("contentLeft").style.minWidth  = "335px";
                 $("contentRight").style.width  = (bodyWidth - ctLMainWidth) + "px";
@@ -722,7 +753,6 @@
         const ctLMainWidth = parseFloat(getCss("headerLeft").width);
         const ctRMainWidth = parseFloat(getCss("headerRight").width);
         const length = ctLMainWidth;
-        ctLShowJudge = false;
 
         var moveTime = setInterval(function(){  
             if(countTime <= t1){
@@ -767,7 +797,6 @@
             ctLMainWidth = bodyWidth*0.3;
             length = bodyWidth*0.3;
         }
-        ctLShowJudge = true;
         $("headerLeft").style.marginLeft = (0 - ctLMainWidth) +"px";
         $("contentLeft").style.marginLeft  = (0 - ctLMainWidth) +"px";
         $("headerLeft").style.width = (ctLMainWidth) +"px";
@@ -793,12 +822,15 @@
                 ++countTime;
             }
             else{
+                ctLShowJudge = true;
                 $("headerLeft").style.width = "30%";
                 $("contentLeft").style.width  = "30%";
                 $("headerLeft").style.minWidth = "335px";
                 $("contentLeft").style.minWidth  = "335px";
-                $("headerRight").style.width = (bodyWidth - ctLMainWidth) + "px";
-                $("contentRight").style.width  = (bodyWidth - ctLMainWidth) + "px";
+                //$("headerRight").style.width = (bodyWidth - ctLMainWidth) + "px";
+                //$("contentRight").style.width  = (bodyWidth - ctLMainWidth) + "px";
+                $("headerRight").style.width = "70%";
+                $("contentRight").style.width  = "70%";
                 clearInterval(moveTime);
             }
         },1);
@@ -806,6 +838,10 @@
 
     var hasHeaderLeftHide = function(){
         return (getCss("headerLeft").display === "none")
+    };
+
+    var hasContentLeftHide = function(){
+        return (getCss("contentLeft").display === "none")
     };
 
     window.onload = function(){
@@ -832,17 +868,15 @@
         ctLMain1Wait.changeWaitBox();
         ctLMain2Wait.changeWaitBox();
         ifameWait.changeWaitBox();
-
-        if(!ctLShowJudge){
-            ctRMainWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width) - parseFloat(getCss("headerLeft").width);  
-            $("headerRight").style.width = ctRMainWidth + "px";
-            $("contentRight").style.width = ctRMainWidth + "px";
-        };
     };
 
     document.onmouseup = function(){
         $("screen").style.display = "none";
         document.onmousemove = function(){};
+        setScrollBarHide();
+        $("ctLScroll").onmouseout = function(){
+            setScrollBarHide();
+        };
     };
 
     window.onbeforeunload = function(){
@@ -955,13 +989,13 @@
     };
 
     $("moreButton").onclick = function(){
-        if(ctLShowJudge){
+        if(ctLShowJudge&&!hasContentLeftHide()){
             contentLeftHide(20);
             $("moreButtomCover").onmouseout = function(){
                 headerLeftHide(20);
             };
         }
-        else{
+        else if(!ctLShowJudge&&hasContentLeftHide()){
             $("moreButtomCover").onmouseout = function(){};
             if(hasHeaderLeftHide()){
                 ctLMainShow(20);
@@ -1016,5 +1050,17 @@
             $("commentSubmit").style.backgroundColor = "#DFDFDF";
             $("commentSubmit").children[0].style.color = "#BDBDBD";
         };
+    };
+
+    $("ctRWaitBoxBg").onclick = function(){
+        ifameWaitStop();
+    };
+
+    $("ctLScroll").onmouseover = function(){
+        setScrollBarShow();
+    };
+
+    $("ctLScroll").onmouseout = function(){
+        setScrollBarHide();
     };
 })()

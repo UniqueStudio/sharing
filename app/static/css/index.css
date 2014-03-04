@@ -423,6 +423,7 @@ p,a,span{
     position: absolute;
     top: 0px;
     left: 0px;
+    opacity: 1;
 
     display: inline-block;
     width: 100%;
@@ -430,6 +431,18 @@ p,a,span{
     border-radius: 100px;
     background-color:rgba(211, 211, 211, 0.8);
     cursor: default;
+
+    transition:opacity ;
+    transition-duration:1.2s;
+    transition-delay:5s; 
+
+    -moz-transition:opacity ; 
+    -moz-transition-duration:1.2s;
+    -moz-transition-delay :5s;
+
+    -webkit-transition:opacity; 
+    -webkit-transition-duration:1.2s;
+    -webkit-transition-delay:5s;  
 }
 
 .ctLMain>div{
@@ -858,7 +871,7 @@ p,a,span{
     width: 100%;
     height: 100%;
     display: none;
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0,0,0,0.9);
     text-align: center;
 }
 
