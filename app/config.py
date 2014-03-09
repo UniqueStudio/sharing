@@ -3,10 +3,8 @@ mail_config = {
         'MAIL_SERVER': 'smtp.gmail.com',
         'MAIL_PORT': 587, 
         'MAIL_USE_TLS': True,
-        'MAIL_USER_NAME': 'kabsky9@gmail.com',
-        'MAIL_PASSWORD': 'jalmoeijckdptkos', 
-        'MAIL_DEBUG': True, 
-        'MAIL_DEFAULT_SENDER': '948282320@qq.com'
+        'MAIL_USERNAME': 'uniqueguoqi@gmail.com',
+        'MAIL_PASSWORD': '!#%&(_618753294g' 
 }
 
 constance = {

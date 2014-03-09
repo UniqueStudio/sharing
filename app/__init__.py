@@ -1,7 +1,6 @@
 #encoding: utf-8
 from flask import Flask
-# from flask.ext.mail import Mail
-# from config import mail_config
+from config import mail_config
 
 # import db
 from models import db
@@ -26,10 +25,12 @@ app.config.from_object('config')
 # configure uploadset
 configure_uploads(app, photos)
 
-# app.config.update(mail_config)
+app.config.update(mail_config)
+
 
 # 把数据库和应用相关联 
 db.init_app(app)
+
 
 # 注册Blueprint
 app.register_blueprint(account, url_prefix = '/account')
@@ -38,7 +39,6 @@ app.register_blueprint(comment, url_prefix = '/comment')
 app.register_blueprint(extension, url_prefix = '/extension')
 app.register_blueprint(collection, url_prefix = '/collection')
 
-# mail_abc = Mail(app)
 
 
 
@@ -58,3 +58,9 @@ def handle_OutputError(error):
             'msg': error.msg
             }
     return json.dumps(result)
+
+
+from scheduler import mail 
+# 初始化邮件
+mail.init_app(app)
+

@@ -72,7 +72,8 @@ def list():
                         'author_name': item.author.nickname, 
                         'author_image': item.author.image or '../static/img/default.jpg',  
                         'author_id': item.author.id, 
-                        'is_collection': False
+                        'is_collection': False, 
+                        'is_like': g.current_user.is_like(item)
                         }
                 if g.current_user.is_in_the_collections(item):
                     tmp['is_collection'] = True
@@ -130,10 +131,21 @@ def detail():
     if next_share is not None:
         result['status'] = True
         result['result'] = {
-                'url': next_share.url, 
                 'id': next_share.id, 
-                'title': next_share.title
+                'title': next_share.title, 
+                'explain': next_share.explain, 
+                'url': next_share.url, 
+                'likes': next_share.likes, 
+                'comments': next_share.comments_num, 
+                'timestamp': str(next_share.timestamp), 
+                'author_name': next_share.author.nickname, 
+                'author_image': next_share.author.image or '../static/img/default.jpg', 
+                'author_id': next_share.author.id, 
+                'is_collection': False, 
+                'is_like': g.current_user.is_like(next_share)
                 }
+        if g.current_user.is_in_the_collections(next_share):
+            result['result']['is_collection'] = True
     else:
         result['status'] = False
         result['msg'] = '未找到前一项'
@@ -149,9 +161,20 @@ def shuffle():
     result = {}
     result['status'] = True
     result['result'] = {
-            'url': shares[r_index].url, 
             'id': shares[r_index].id, 
-            'title': shares[r_index].title
+            'title': shares[r_index].title, 
+            'explain': shares[r_index].explain, 
+            'url': shares[r_index].url, 
+            'likes': shares[r_index].likes, 
+            'comments': shares[r_index].comments_num, 
+            'timestamp': str(shares[r_index].timestamp), 
+            'author_name': shares[r_index].author.nickname, 
+            'author_image': shares[r_index].author.image or '../static/img/default.jpg',
+            'author_id': shares[r_index].author.id, 
+            'is_collection': False, 
+            'is_like': g.current_user.is_like(shares[r_index])
             }
+    if g.current_user.is_in_the_collections(shares[r_index]):
+        result['result']['is_collection'] = True
     return json.dumps(result)
 
