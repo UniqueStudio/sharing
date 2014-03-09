@@ -40,6 +40,9 @@ app.register_blueprint(extension, url_prefix = '/extension')
 app.register_blueprint(collection, url_prefix = '/collection')
 
 
+from scheduler import mail 
+# 初始化邮件
+mail.init_app(app)
 
 
 import sys
@@ -60,7 +63,13 @@ def handle_OutputError(error):
     return json.dumps(result)
 
 
-from scheduler import mail 
-# 初始化邮件
-mail.init_app(app)
+
+from flask import render_template
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('page_not_found.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('internal_error.html'), 500
 
