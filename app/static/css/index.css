@@ -481,6 +481,11 @@ p,a,span{
     margin-left: -13px;
 }
 
+.toggleLike:hover{
+    text-decoration: underline;
+    color: rgb(128, 179, 255);
+}
+
 .shareShot{
     display: inline-block;
     width: 56px;

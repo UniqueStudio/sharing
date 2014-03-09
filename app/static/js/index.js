@@ -152,6 +152,7 @@
     var needToLoad = new Array(true,true,true,true); 
     var canLoad = new Array(true,true,true,true)
     var canScroll = true;
+    var needToCleanComment = false;
     var username;
     var userImgUrl;
 
@@ -383,6 +384,14 @@
         changeScrollBarHeight();
     };
 
+    var addCommentNum = function(){
+        var addCommentNode = document.getElementById(contentId).getElementsByClassName("ctCommentShow")[0]
+        var commentNum = parseInt(addCommentNode.innerHTML.substring(3));
+        if(commentNum){
+            addCommentNode.innerHTML = "评论("+ (commentNum + 1) + ") ";
+        }
+    };
+
     var ifameWaitStop = function(){
         $("ctRWaitBoxBg").style.display = "none";
         ifameWait.waitingStop();
@@ -478,9 +487,9 @@
                                             +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
                                             +"'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                             +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
-                                            +"</span></div><span class='shareDetail'>赞("+content.likes
-                                            +")  评论("+ content.comments
-                                            +")  " + content.timestamp
+                                            +"</span></div><span class='shareDetail'><span class='toggleLike' click='return clickToAddLike(this)'>赞("+content.likes
+                                            +")  </span><span class='ctCommentShow'>评论("+ content.comments
+                                            +")  </span>" + content.timestamp
                                             +"</span></div></div></a>";
                     };
                     var lengthNow = contentObj.length;
@@ -528,8 +537,10 @@
                     $("hdRShareTitle").children[0].innerHTML = json.result.title;
                     contentId = json.result.id;
                     commentID = 1;
+                    needToCleanComment = true;
                     if(point === 2){
-                        $("ctLMain2Show").style.marginTop = "0px"
+                        $("ctLMain2Show").style.marginTop = "0px";
+                        $("commentText").value = "";
                         $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
                         commentLoad();
                     };
@@ -603,6 +614,7 @@
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
+                    addCommentNum();
                     var newCommentText = "<div class='eachComment commentShow'><div class='eCmShareImg' style='background-image:" + userImgUrl
                                         +";'></div><div class='eCmCommentText'><span>"+ commentText
                                         +"</span><div class='replyButton' onclick='commentReply(this)'><div></div></div></div></div>"
@@ -617,6 +629,22 @@
         xmlhttp.open("POST","/comment/add",true);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
         xmlhttp.send("content="+commentText +"&share_id="+contentId);
+    };
+
+    var sendCollection = function(id){
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
+                var json  = JSON.parse(xmlhttp.responseText);
+                if(json.status){
+                    
+                };
+            };
+        };
+        xmlhttp.open("POST","/collection/toggleCollection",true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("share_id="+id);
     };
 
     window.commentReply = function(obj){
@@ -635,7 +663,6 @@
         };
 
         $("commentText").focus();
-        console.log(reg1.test($("commentText").value),name);
         if(reg1.test($("commentText").value)){
             $("commentText").value = $("commentText").value.replace(reg1,"回复@"+ name +":");
         }
@@ -652,6 +679,10 @@
         $("hdR0").href = obj.href;
         $("hdRShareTitle").children[0].innerHTML = obj.children[0].children[1].children[0].children[0].innerHTML
         return false;
+    };
+
+    window.clickToAddLike = function(obj){
+        
     };
 
     var contentLeftHide = function(T){
@@ -913,6 +944,11 @@
             point = 2;      
             changeScrollBarHeight();  
             if(commentID === 1){
+                if(needToCleanComment){//在无评论时，根据是否第一次点开该分享的评论，true:清除，false:不执行
+                    needToCleanComment = false;
+                    $("commentText").value = "";
+                };
+                
                 $("ctLMain2Show").style.marginTop = "0px"
                 $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
                 commentLoad();
@@ -949,7 +985,9 @@
                     $("hdRShareTitle").children[0].innerHTML = json.result.title;
                     --contentId;
                     commentID = 1;
+                    needToCleanComment = true;
                     if(point === 2){
+                        $("commentText").value = "";
                         $("ctLMain2Show").style.marginTop = "0px"
                         $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
                         commentLoad();
@@ -975,7 +1013,9 @@
                     $("hdRShareTitle").children[0].innerHTML = json.result.title;
                     ++contentId;
                     commentID = 1;
+                    needToCleanComment = true;
                     if(point === 2){
+                        $("commentText").value = "";
                         $("ctLMain2Show").style.marginTop = "0px"
                         $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
                         commentLoad();
@@ -1020,6 +1060,20 @@
         };
     });
 
+    $("ctLScroll").onmousewheel = function(event) {
+        if(canScroll){
+            canScroll = false;
+            event = event || window.event; 
+            ctLMainScroll(event.wheelDelta/120);
+        };
+    };
+    $("ctLScroll").addEventListener("DOMMouseScroll", function(event) {
+        if(canScroll){
+            canScroll = false;
+            ctLMainScroll(event.detail/-3);
+        };
+    });
+
     $("ctLScrollBar").onmousedown =function(event){
         event           = event || window.event;
         var mouseStartY = event.pageY; 
@@ -1040,8 +1094,7 @@
         }
         else{
             valueLength = (reg.exec(this.value))[0].length;
-        }
-        console.log(valueLength)
+        };
         if(this.value.length > valueLength){
             $("commentSubmit").style.backgroundColor = "rgb(226, 226, 226)";
             $("commentSubmit").children[0].style.color = "rgb(119, 119, 119)";
