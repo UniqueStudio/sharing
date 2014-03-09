@@ -4,7 +4,8 @@ import datetime
 from flask import render_template 
 from flask_mail import Mail
 from flask_mail import Message
-from models import User, Share
+from decorates import async
+from app import app
 
 mail = Mail()
 
@@ -15,18 +16,21 @@ def create_messsage(subject='', recipients=[], sender=None, nickname=None,
     return msg
 
 
+@async
 def send_mail():
-    subject = '[Share]每日精彩分享'
-    users = User.query.all()
-    shares = Share.query.order_by(Share.likes).paginate(1, 5, False)
-    with mail.connect() as conn:
-        for user in users:
-            print 'ready to send mail'
-            msg = create_messsage(subject, recipients=[user.email], nickname=user.nickname, shares=shares)
-            conn.send(msg)
-            print 'mail has been sent'
-    time.sleep(cal_delay(0))
-    send_mail()
+    with app.app_context():
+        from models import User, Share
+        subject = '[Share]每日精彩分享'
+        users = User.query.all()
+        shares = Share.query.order_by(Share.likes).paginate(1, 5, False)
+        with mail.connect() as conn:
+            for user in users:
+                print 'ready to send mail'
+                msg = create_messsage(subject, recipients=[user.email], nickname=user.nickname, shares=shares)
+                conn.send(msg)
+                print 'mail has been sent'
+        time.sleep(cal_delay(0))
+        send_mail()
 
 
 

@@ -60,9 +60,7 @@ def handle_OutputError(error):
     return json.dumps(result)
 
 
-from scheduler import mail, send_mail
+from scheduler import mail 
 # 初始化邮件
 mail.init_app(app)
-with app.app_context():
-    send_mail()
 
