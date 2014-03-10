@@ -18,6 +18,8 @@ def create_messsage(subject='', recipients=[], sender=None, nickname=None,
 
 @async
 def send_mail():
+    # 休眠延时, 每日固定时间发送
+    time.sleep(cal_delay(0))
     with app.app_context():
         from models import User, Share
         subject = '[Share]每日精彩分享'
@@ -29,7 +31,6 @@ def send_mail():
                 msg = create_messsage(subject, recipients=[user.email], nickname=user.nickname, shares=shares)
                 conn.send(msg)
                 print 'mail has been sent'
-        time.sleep(cal_delay(0))
         send_mail()
 
 
