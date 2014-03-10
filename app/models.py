@@ -72,14 +72,13 @@ class User(db.Model):
         return cls.query.filter(User.email == email).first()
     
     # likes
-    def like(self, share_id):
-        share = Share.get(share_id)
+    def like(self, share):
         if not self.is_like(share):
             self.like_shares.append(share)
+            print share
             share.likes += 1
     
-    def dislike(self, share_id):
-        share = Share.get(share_id)
+    def dislike(self, share):
         if self.is_like(share):
             self.like_shares.remove(share)
             share.likes -= 1

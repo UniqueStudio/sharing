@@ -90,20 +90,21 @@ def list():
 
 @share.route('/toggleLikes', methods=['POST'])
 def toggleLikes():
-    result = []
+    result = {}
     args = request.form
-    if args.has_key('share_id'):
-        share = Share.query.get(args['share_id']) or None
-        if g.current_user.is_like(share):
-            g.current_user.dislike(share)
-        else:
-            g.current_user.like(share)
-        db.session.add(share)
-        db.session.commit()
-        result['status'] = True
-
-    else:
+    try:
+        share_id = args.get('share_id', type=int)
+    except ValueError:
         raise OutputError('参数错误')
+    print share_id
+    share = Share.query.get(share_id) or None
+    if g.current_user.is_like(share):
+        g.current_user.dislike(share)
+    else:
+        g.current_user.like(share)
+    db.session.add(g.current_user)
+    db.session.commit()
+    result['status'] = True
 
     return json.dumps(result)
 
