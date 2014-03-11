@@ -385,11 +385,15 @@
     };
 
     var addCommentNum = function(){
-        var addCommentNode = document.getElementById(contentId).getElementsByClassName("ctCommentShow")[0]
-        var commentNum = parseInt(addCommentNode.innerHTML.substring(3));
-        if(commentNum){
-            addCommentNode.innerHTML = "评论("+ (commentNum + 1) + ") ";
-        }
+        var idElement = document.getElementById(contentId);
+        if(idElement){
+            var addCommentNode = idElement.parentNode.getElementsByClassName("ctCommentShow")[0];
+            console.log(document.getElementById(contentId).parentNode);
+            var commentNum = parseInt(addCommentNode.innerHTML.substring(3));
+            if(commentNum){
+                addCommentNode.innerHTML = "评论("+ (commentNum + 1) + ")";
+            };
+        };        
     };
 
     var ifameWaitStop = function(){
@@ -412,39 +416,52 @@
     var collectLoad = function(){
         var json;
         var content;
+        var addElement;
         var contentJson;
         var contentObj       = $("ctLMain0Show").children;
         var lengthLoadBefore = contentObj.length;
         var xmlhttp          =new XMLHttpRequest();
-        ctLMain1Wait.waitingShow();
+        //ctLMain0Wait.waitingShow();
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status&&json.length>0){
                     document.onmousemove = function(){};
-                    ++colllectNum;
+                    ++collectNum;
                     for (var i = 0;i < json.length;++i){
                         content = json.result[i];
-                        $("ctLMain0Show").innerHTML = $("ctLMain0Show").innerHTML 
-                                            + "<a href='"+content.url
-                                            +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
-                                            +"'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
-                                            +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
-                                            +"</span></div><span class='shareDetail'>赞("+content.likes
-                                            +")  评论("+ content.comments
-                                            +")  " + content.timestamp
-                                            +"</span></div></div></a>";
+
+                        addElement = "<div style='position:relative;'><a href='"+content.url
+                                +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
+                                +"'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
+                                +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
+                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection' onclick='return clickToAddCollect(this)'>";
+                        
+                        if(content.is_collection){
+                            addElement += "已";
+                        };
+                        addElement += "收藏</a><a class='toggleLike' onclick='return clickToAddLike(this)'>"
+                        
+                        if(content.is_like){
+                            addElement += "取消";
+                        };
+                        addElement += "赞("+content.likes
+                                    +")</a><span class='ctCommentShow'>评论("+ content.comments
+                                    +")</span>" + content.timestamp
+                                    +"</span></div>";
+
+                        $("ctLMain0Show").innerHTML = $("ctLMain0Show").innerHTML + addElement;
                     };
                     var lengthNow = contentObj.length;
                     var i = lengthLoadBefore;
                     var loopTime = setInterval(function(){
                         if(i < lengthNow){
-                            contentObj[i].className += " contentShow";
+                            contentObj[i].children[0].className += " contentShow";
                             changeScrollBarHeight();
-
                             ++i;
                         }
                         else{
+                            setScrollBarHide();
                             needToLoad[0] = true;
                             clearInterval(loopTime);
                         };  
@@ -464,6 +481,7 @@
     var linkContentLoad = function(type){
         var json;
         var content;
+        var addElement;
         var contentJson;
         var contentObj       = $("ctLMain1Show").children;
         var lengthLoadBefore = contentObj.length;
@@ -479,24 +497,36 @@
                     }
                     else if(type === "likes"){
                         ++likesNum;
-                    }
+                    };
                     for (var i = 0;i < json.length;++i){
                         content = json.result[i];
-                        $("ctLMain1Show").innerHTML = $("ctLMain1Show").innerHTML 
-                                            + "<a href='"+content.url
-                                            +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
-                                            +"'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
-                                            +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
-                                            +"</span></div><span class='shareDetail'><span class='toggleLike' click='return clickToAddLike(this)'>赞("+content.likes
-                                            +")  </span><span class='ctCommentShow'>评论("+ content.comments
-                                            +")  </span>" + content.timestamp
-                                            +"</span></div></div></a>";
+
+                        addElement = "<div style='position:relative;'><a href='"+content.url
+                                +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
+                                +"'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
+                                +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
+                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection' onclick='return clickToAddCollect(this)'>";
+                        
+                        if(content.is_collection){
+                            addElement += "已";
+                        };
+                        addElement += "收藏</a><a class='toggleLike' onclick='return clickToAddLike(this)'>"
+                        
+                        if(content.is_like){
+                            addElement += "取消";
+                        };
+                        addElement += "赞("+content.likes
+                                    +")</a><span class='ctCommentShow'>评论("+ content.comments
+                                    +")</span>" + content.timestamp
+                                    +"</span></div>";
+
+                        $("ctLMain1Show").innerHTML = $("ctLMain1Show").innerHTML + addElement;
                     };
                     var lengthNow = contentObj.length;
                     var i = lengthLoadBefore;
                     var loopTime = setInterval(function(){
                         if(i < lengthNow){
-                            contentObj[i].className += " contentShow";
+                            contentObj[i].children[0].className += " contentShow";
                             changeScrollBarHeight();
 
                             ++i;
@@ -631,26 +661,10 @@
         xmlhttp.send("content="+commentText +"&share_id="+contentId);
     };
 
-    var sendCollection = function(id){
-        var xmlhttp = new XMLHttpRequest();
-
-        xmlhttp.onreadystatechange = function(){
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
-                var json  = JSON.parse(xmlhttp.responseText);
-                if(json.status){
-                    
-                };
-            };
-        };
-        xmlhttp.open("POST","/collection/toggleCollection",true);
-        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-        xmlhttp.send("share_id="+id);
-    };
-
     window.commentReply = function(obj){
         var reg1 = /^回复@\S+:/;
         var reg2 = /回复@\S+:/;
-        var reg3 = /^\S+回复@\S+:/;
+        var reg3 = /^\S+回复@.+:/;
         var reg4 = /:/;
         var name;
         var objValue = obj.parentNode.children[0].innerHTML;
@@ -682,7 +696,49 @@
     };
 
     window.clickToAddLike = function(obj){
+        var xmlhttp = new XMLHttpRequest();
+        var id = obj.parentNode.parentNode.children[0].id;
         
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
+                var json  = JSON.parse(xmlhttp.responseText);
+                if(json.status){
+                    var value = parseInt(obj.innerHTML.substring(2));
+                    obj.innerHTML = "取消赞(" + (value+1) + ")";
+                }
+                else if(json.status === false){
+                    var value = parseInt(obj.innerHTML.substring(2));
+                    obj.innerHTML = "赞(" + (value-1) + ")";
+                };
+            };
+        };
+        xmlhttp.open("POST","/share/toggleLikes",true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("share_id="+id);
+        return true;
+    };
+
+    window.clickToAddCollect = function(obj){
+        var xmlhttp = new XMLHttpRequest();
+        var id = obj.parentNode.parentNode.children[0].id;
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
+                var json  = JSON.parse(xmlhttp.responseText);
+                if(json.status){
+                    if(json.status){
+                        if(obj.innerHTML === "收藏"){
+                            obj.innerHTML = "已收藏";
+                        }
+                        else if(obj.innerHTML === "已收藏"){
+                            obj.innerHTML = "收藏";
+                        }
+                    };
+                };
+            };
+        };
+        xmlhttp.open("POST","/collection/toggleCollection",true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("share_id="+id);
     };
 
     var contentLeftHide = function(T){
