@@ -54,8 +54,7 @@ def list():
 
     id_list = [share.id for share in g.current_user.collections.all()]
 
-    shares = Share.query.filter(Share.id in
-            id_list).order_by(order.desc()).paginate(start, per_page, False)
+    shares = Share.query.filter(Share.id.in_(id_list)).order_by(order.desc()).paginate(start, per_page, False)
 
     items = []
     if shares.items is not None:

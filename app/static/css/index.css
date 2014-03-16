@@ -570,6 +570,20 @@ p,a,span{
     word-wrap:break-word;   
 }
 
+.ctLMain0ShowDiv{
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ctLMain0Show{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    padding-bottom: 40px;
+}
+
 .ctLMain1ShowDiv{
     display: inline-block;
     width: 100%;

@@ -137,6 +137,7 @@
         };
     };
 
+    var ctLMain0Wait;
     var ctLMain1Wait;
     var ctLMain2Wait;
     var ifameWait;
@@ -285,6 +286,12 @@
                     changeScrollBarTop();
                 };
                 switch(point){
+                    case 0:
+                        if(needToLoad[0]&&parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
+                            needToLoad[0] = false;
+                            collectLoad("");
+                        };
+                        break;
                     case 1:
                         if(needToLoad[1]&&parseFloat($("ctLMain"+point+"Show").style.marginTop) <= (ctLMainShowDivHeight - mainNowHeight + 70)){
                             needToLoad[1] = false;
@@ -343,6 +350,20 @@
                     };
             //滚动条拉到底加载
             switch(point){
+                case 0:
+                    if(needToLoad[0]&&canLoad[0]&&(parseFloat(getCss("ctLMain0Show").marginTop) <= (showDivHeight - mainNowHeight + 70))){
+                        if(needToLoad[0]){
+                            needToLoad[0] = false;
+                            canLoad[0] = false;
+                            scrollBarHeight = parseFloat(getCss("ctLScrollBar").height);
+                            barMoveHeight   = ctLMainHeight - scrollBarHeight;
+                            collectLoad();
+                        };            
+                    }
+                    else if((parseFloat(getCss("ctLMain1Show").marginTop) > (showDivHeight - mainNowHeight + 70))){
+                        canLoad[1] = true;
+                    };
+                    break;
                 case 1:
                     if(needToLoad[1]&&canLoad[1]&&(parseFloat(getCss("ctLMain1Show").marginTop) <= (showDivHeight - mainNowHeight + 70))){
                         if(needToLoad[1]){
@@ -378,22 +399,32 @@
         var showDivHeight   = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
         var mainNowHeight   = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
         var showDivMarginTop = parseFloat(getCss("ctLMain"+point+"Show").marginTop);
-        if((mainNowHeight + showDivMarginTop) < showDivHeight){
-            $("ctLMain"+point+"Show").style.marginTop = (showDivHeight -mainNowHeight) +"px";
+        if(mainNowHeight > showDivHeight){
+            if((mainNowHeight + showDivMarginTop) < showDivHeight){
+                $("ctLMain"+point+"Show").style.marginTop = (showDivHeight -mainNowHeight) +"px";
+            };
+            changeScrollBarHeight();
         };
-        changeScrollBarHeight();
+        
     };
 
     var addCommentNum = function(){
-        var idElement = document.getElementById(contentId);
-        if(idElement){
-            var addCommentNode = idElement.parentNode.getElementsByClassName("ctCommentShow")[0];
-            console.log(document.getElementById(contentId).parentNode);
+        var idElement1 = document.getElementById(contentId+"con");
+        var idElement2 = document.getElementById(contentId+"col");
+        if(idElement1){
+            var addCommentNode = idElement1.parentNode.getElementsByClassName("ctCommentShow")[0];
             var commentNum = parseInt(addCommentNode.innerHTML.substring(3));
             if(commentNum){
                 addCommentNode.innerHTML = "评论("+ (commentNum + 1) + ")";
             };
-        };        
+        };  
+        if(idElement2){
+            var addCommentNode = idElement2.parentNode.getElementsByClassName("ctCommentShow")[0];
+            var commentNum = parseInt(addCommentNode.innerHTML.substring(3));
+            if(commentNum){
+                addCommentNode.innerHTML = "评论("+ (commentNum + 1) + ")";
+            };
+        };       
     };
 
     var ifameWaitStop = function(){
@@ -421,7 +452,7 @@
         var contentObj       = $("ctLMain0Show").children;
         var lengthLoadBefore = contentObj.length;
         var xmlhttp          =new XMLHttpRequest();
-        //ctLMain0Wait.waitingShow();
+        ctLMain0Wait.waitingShow();
         xmlhttp.onreadystatechange=function(){
             if (xmlhttp.readyState==4 && xmlhttp.status==200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
@@ -433,18 +464,9 @@
 
                         addElement = "<div style='position:relative;'><a href='"+content.url
                                 +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
-                                +"'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
+                                +"col'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                 +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
-                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection' onclick='return clickToAddCollect(this)'>";
-                        
-                        if(content.is_collection){
-                            addElement += "已";
-                        };
-                        addElement += "收藏</a><a class='toggleLike' onclick='return clickToAddLike(this)'>"
-                        
-                        if(content.is_like){
-                            addElement += "取消";
-                        };
+                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection' onclick='return clickToAddCollect(this)'>已收藏</a><a class='toggleLike' onclick='return clickToAddLike(this)'>";
                         addElement += "赞("+content.likes
                                     +")</a><span class='ctCommentShow'>评论("+ content.comments
                                     +")</span>" + content.timestamp
@@ -463,6 +485,7 @@
                         else{
                             setScrollBarHide();
                             needToLoad[0] = true;
+                            canLoad[0] = true;
                             clearInterval(loopTime);
                         };  
                     },20);
@@ -503,7 +526,7 @@
 
                         addElement = "<div style='position:relative;'><a href='"+content.url
                                 +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
-                                +"'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
+                                +"con'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                 +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
                                 +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection' onclick='return clickToAddCollect(this)'>";
                         
@@ -534,6 +557,7 @@
                         else{
                             setScrollBarHide();
                             needToLoad[1] = true;
+                            canLoad[1] = true;
                             clearInterval(loopTime);
                         };  
                     },20);
@@ -686,7 +710,7 @@
     };
 
     window.ecCilck = function(obj){
-        contentId = obj.id;
+        contentId = parseInt(obj.id);
         commentID = 1;
         ifameWaitShow();
         $("ctRMain").src = obj.href;
@@ -932,6 +956,7 @@
     };
 
     window.onload = function(){
+        ctLMain0Wait     = new waitingDot("ctLMain0WaitBox");
         ctLMain1Wait     = new waitingDot("ctLMain1WaitBox");
         ctLMain2Wait     = new waitingDot("ctLMain2WaitBox");
         ifameWait        = new  waitingDot("ctRWaitBox");
