@@ -100,8 +100,10 @@ def toggleLikes():
     share = Share.query.get(share_id) or None
     if g.current_user.is_like(share):
         g.current_user.dislike(share)
+        result['result'] = 'notlike'
     else:
         g.current_user.like(share)
+        result['result'] = 'like'
     db.session.add(g.current_user)
     db.session.commit()
     result['status'] = True
@@ -157,25 +159,28 @@ def detail():
 
 @share.route('/shuffle', methods=['POST'])
 def shuffle():
-    shares = Share.query.all()
-    r_index = random.randint(0, len(shares) - 1)
+    shares = Share.query.all() or None
     result = {}
-    result['status'] = True
-    result['result'] = {
-            'id': shares[r_index].id, 
-            'title': shares[r_index].title, 
-            'explain': shares[r_index].explain, 
-            'url': shares[r_index].url, 
-            'likes': shares[r_index].likes, 
-            'comments': shares[r_index].comments_num, 
-            'timestamp': str(shares[r_index].timestamp), 
-            'author_name': shares[r_index].author.nickname, 
-            'author_image': shares[r_index].author.image or '../static/img/default.jpg',
-            'author_id': shares[r_index].author.id, 
-            'is_collection': False, 
-            'is_like': g.current_user.is_like(shares[r_index])
-            }
-    if g.current_user.is_in_the_collections(shares[r_index]):
-        result['result']['is_collection'] = True
+    if shares is not None:
+        r_index = random.randint(0, len(shares) - 1)
+        result['status'] = True
+        result['result'] = {
+                'id': shares[r_index].id, 
+                'title': shares[r_index].title, 
+                'explain': shares[r_index].explain, 
+                'url': shares[r_index].url, 
+                'likes': shares[r_index].likes, 
+                'comments': shares[r_index].comments_num, 
+                'timestamp': str(shares[r_index].timestamp), 
+                'author_name': shares[r_index].author.nickname, 
+                'author_image': shares[r_index].author.image or '../static/img/default.jpg',
+                'author_id': shares[r_index].author.id, 
+                'is_collection': False, 
+                'is_like': g.current_user.is_like(shares[r_index])
+                }
+        if g.current_user.is_in_the_collections(shares[r_index]):
+            result['result']['is_collection'] = True
+    else:
+        result['status'] = False
     return json.dumps(result)
 

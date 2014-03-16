@@ -33,6 +33,7 @@ db.init_app(app)
 
 
 # 注册Blueprint
+from app import views
 app.register_blueprint(account, url_prefix = '/account')
 app.register_blueprint(share, url_prefix = '/share')
 app.register_blueprint(comment, url_prefix = '/comment')
