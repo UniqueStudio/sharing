@@ -11,6 +11,7 @@ html,body{
 }
 
 body{
+    position: relative;
     background: url("../img/bgImgWhite.jpg") repeat;
     background-size: 350px 350px;
 }
@@ -23,6 +24,11 @@ div{
 
 p,a,span{
     font-family: 'Open Sans','Helvetica Neue',Arial,'Hiragino Sans GB','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif;
+}
+
+a{
+    outline: 0px;
+    text-decoration: none;
 }
 
 
@@ -100,14 +106,15 @@ p,a,span{
     margin-bottom: -10px;
 }
 
-.hdLMenu>div{
+.hdLMenu>a{
+    display: inline-block;
     width: 25%;
     height: 100%;
     cursor: pointer;
     text-align: center;
 }
 
-.hdLMenu>div:hover{
+.hdLMenu>a:hover{
     background-color: rgba(68, 128, 189, 0.36);
 }
 
@@ -317,6 +324,8 @@ p,a,span{
     position: absolute;
     top: 45px;
     bottom: 0px;
+    left: 0px;
+    right: 0px;
 
     display: -webkit-box;
     display: -moz-box;
@@ -555,6 +564,10 @@ p,a,span{
     color: #8ea0bb;
 }
 
+.shareDetail>a{
+    color: #8ea0bb;
+}
+
 .shareDetail>span,.shareDetail>a{
     border-right: 1px solid rgba(195, 204, 231, 0.81);
     padding: 0px 3px;
@@ -584,6 +597,10 @@ p,a,span{
     padding-bottom: 40px;
 }
 
+.ctLMain0Show>div{
+    position: relative;
+}
+
 .ctLMain1ShowDiv{
     display: inline-block;
     width: 100%;
@@ -598,8 +615,35 @@ p,a,span{
     padding-bottom: 40px;
 }
 
-.ctLMain1WaitBox{
+.ctLMain1Show>div{
+    position: relative;
+}
+
+.ctLMain0WaitBox{
+    position: absolute!important;
+    bottom: 0px;
+    display:inline-block;
+    width: 100%;
+    height: 40px;
+}
+
+.ctLMain0WaitBox>div{
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 100px;
+    margin:auto 0px;
+
     position: absolute;
+    bottom: 0px;
+    top: 0px;
+    left: -10px;
+    opacity: 0;
+    background-color: rgb(255, 0, 20);
+}
+
+.ctLMain1WaitBox{
+    position: absolute!important;
     bottom: 0px;
     display:inline-block;
     width: 100%;

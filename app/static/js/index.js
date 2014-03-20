@@ -157,15 +157,15 @@
     var username;
     var userImgUrl;
 
-    var $ = function(className){
+    function $(className){
         return document.getElementsByClassName(className)[0];
     };
 
-    var getCss = function(className){
+    function getCss(className){
         return window.getComputedStyle(document.getElementsByClassName(className)[0],false);
     };
 
-    var ctLMainMove = function(T,thePoint){
+    function ctLMainMove(T,thePoint){
         $("ctLMain"+point).style.left = "100%";
 
         var countTime = 1;
@@ -192,7 +192,7 @@
         },1);
     };
 
-    var arrowMove = function(T,thePoint){
+    function arrowMove(T,thePoint){
         var countTime = 1;
         const a1 = 500/(T*T);
         const a2 = 1000/(3*T*T);
@@ -220,7 +220,7 @@
         },1);
     };
 
-    var changeScrollBarTop = function(scrollHeight,contentHeight,marginTopNow){
+    function changeScrollBarTop(scrollHeight,contentHeight,marginTopNow){
         var ctLMainHeight        = parseFloat(getCss("ctLMain").height);
         var ctLMainShowDivHeight = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
         var scrollHeight         = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom) - ctLMainShowDivHeight;
@@ -230,7 +230,23 @@
         $("ctLScrollBar").style.top = scrollTop +"px";
     };
 
-    var changeScrollBarHeight = function(){
+    function changeContentRightWidth(){
+        if(ctLShowJudge){
+            var ctRWidth =  parseInt($("contentRight").style.width)||70;
+            console.log(ctRWidth);
+            var bodyWidth = parseInt(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
+            if(bodyWidth > 1600 && ctRWidth !== 100){
+                $("contentRight").style.width = "100%";
+                $("headerRight").style.width = "100%";
+            }
+            else if(bodyWidth <= 1600 && ctRWidth !== 70){
+                $("contentRight").style.width = "70%";
+                $("headerRight").style.width = "70%";
+            };
+        };
+    };
+
+    function changeScrollBarHeight(){
         var ctLMainHeight        = parseFloat(getCss("ctLMain").height);
         var ctLMainShowDivHeight = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
         var mainNowHeight        = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
@@ -244,7 +260,7 @@
         changeScrollBarTop();
     };
 
-    var setScrollBarHide = function(){
+    function setScrollBarHide(){
         $("ctLScrollBar").style.webkitTransitionDelay = "3s";
         $("ctLScrollBar").style.mozTransitionDelay = "3s";
         $("ctLScrollBar").style.transitionDelay = "3s";
@@ -255,7 +271,7 @@
 
         $("ctLScrollBar").style.opacity = 0;
     };
-    var setScrollBarShow = function(){
+    function setScrollBarShow(){
         $("ctLScrollBar").style.webkitTransitionDelay = "0s";
         $("ctLScrollBar").style.mozTransitionDelay = "0s";
         $("ctLScrollBar").style.transitionDelay = "0s";
@@ -267,7 +283,7 @@
         $("ctLScrollBar").style.opacity = 1;
     };
 
-    var ctLMainScroll = function(theScroll){
+    function ctLMainScroll(theScroll){
         setScrollBarShow();
         setTimeout(setScrollBarHide,50);
         canScroll = true;
@@ -320,7 +336,7 @@
         };
     };
 
-    var controlByScrollBar = function(mouseStartY){
+    function controlByScrollBar(mouseStartY){
         var ctLMainHeight   = parseFloat(getCss("ctLMain").height);
         var showDivHeight   = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
         var scrollBartopNow = parseFloat(getCss("ctLScrollBar").top);
@@ -395,7 +411,7 @@
         };
     };
 
-    var changeCtLMarginTop = function(){
+    function changeCtLMarginTop(){
         var showDivHeight   = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
         var mainNowHeight   = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom);
         var showDivMarginTop = parseFloat(getCss("ctLMain"+point+"Show").marginTop);
@@ -408,7 +424,7 @@
         
     };
 
-    var addCommentNum = function(){
+    function addCommentNum(){
         var idElement1 = document.getElementById(contentId+"con");
         var idElement2 = document.getElementById(contentId+"col");
         if(idElement1){
@@ -427,12 +443,12 @@
         };       
     };
 
-    var ifameWaitStop = function(){
+    function ifameWaitStop(){
         $("ctRWaitBoxBg").style.display = "none";
         ifameWait.waitingStop();
     };
 
-    var ifameWaitShow = function(){
+    function ifameWaitShow(){
         ifameWait.waitingStop();
         $("ctRWaitBoxBg").style.display = "inline-block";
         ifameWait.waitingShow();
@@ -444,7 +460,7 @@
         };
     };
 
-    var collectLoad = function(){
+    function collectLoad(){
         var json;
         var content;
         var addElement;
@@ -462,11 +478,11 @@
                     for (var i = 0;i < json.length;++i){
                         content = json.result[i];
 
-                        addElement = "<div style='position:relative;'><a href='"+content.url
+                        addElement = "<div><a href='"+content.url
                                 +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
                                 +"col'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                 +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
-                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection' onclick='return clickToAddCollect(this)'>已收藏</a><a class='toggleLike' onclick='return clickToAddLike(this)'>";
+                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection' onclick='return colClickToAddCollect(this)'>已收藏</a><a class='toggleLike' onclick='return clickToAddLike(this)'>";
                         addElement += "赞("+content.likes
                                     +")</a><span class='ctCommentShow'>评论("+ content.comments
                                     +")</span>" + content.timestamp
@@ -494,14 +510,14 @@
                     needToLoad[0] = true;
                 }
             };
-            ctLMain1Wait.waitingStop();
+            ctLMain0Wait.waitingStop();
         };
         xmlhttp.open("POST","/collection/list",true);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
         xmlhttp.send("start="+collectNum+"&sortby=timestamp");
     };
 
-    var linkContentLoad = function(type){
+    function linkContentLoad(type){
         var json;
         var content;
         var addElement;
@@ -524,16 +540,16 @@
                     for (var i = 0;i < json.length;++i){
                         content = json.result[i];
 
-                        addElement = "<div style='position:relative;'><a href='"+content.url
+                        addElement = "<div><a href='"+content.url
                                 +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
                                 +"con'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                 +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
-                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection' onclick='return clickToAddCollect(this)'>";
+                                +"</span></div></div></div></a><span class='shareDetail'><a href='javascript:void(0)' class='toggleCollection' onclick='return conClickToAddCollect(this)'>";
                         
                         if(content.is_collection){
                             addElement += "已";
                         };
-                        addElement += "收藏</a><a class='toggleLike' onclick='return clickToAddLike(this)'>"
+                        addElement += "收藏</a><a href='javascript:void(0)' class='toggleLike' onclick='return clickToAddLike(this)'>"
                         
                         if(content.is_like){
                             addElement += "取消";
@@ -578,7 +594,7 @@
         };
     };
 
-    var shuffleLoad = function(){
+    function shuffleLoad(){
         var xmlhttp=new XMLHttpRequest();
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
@@ -606,7 +622,7 @@
         xmlhttp.send();
     };
 
-    var commentLoad = function(){
+    function commentLoad(){
         var contentObj       = $("ctLMain2Show").children;
         var lengthLoadBefore = contentObj.length;
         var xmlhttp          = new XMLHttpRequest();
@@ -621,7 +637,7 @@
                     for(var i = 0;i < commentLength;++i){
                         var newCommentText = "<div class='eachComment'><div class='eCmShareImg' style='background-image:url(" + json.result[i].author_image
                                             +");'></div><div class='eCmCommentText'><span>"+ json.result[i].body
-                                            +"</span><div class='replyButton' onclick='commentReply(this)'><div></div></div></div></div>"
+                                            +"</span><a href='javascript:void(0)' class='replyButton' onclick='commentReply(this)'><div></div></a></div></div>"
                         $("ctLMain2Show").innerHTML = $("ctLMain2Show").innerHTML + newCommentText;
                     };
 
@@ -650,7 +666,7 @@
         xmlhttp.send("start="+commentID+"&share_id="+contentId);
     };
 
-    var sendComment = function(){
+    function sendComment(){
         var xmlhttp = new XMLHttpRequest();
         var commentText;
 
@@ -671,7 +687,7 @@
                     addCommentNum();
                     var newCommentText = "<div class='eachComment commentShow'><div class='eCmShareImg' style='background-image:" + userImgUrl
                                         +";'></div><div class='eCmCommentText'><span>"+ commentText
-                                        +"</span><div class='replyButton' onclick='commentReply(this)'><div></div></div></div></div>"
+                                        +"</span><a class='replyButton' onclick='commentReply(this)'><div></div></a></div></div>"
                     $("ctLMain2Show").innerHTML = newCommentText + $("ctLMain2Show").innerHTML;
                     changeScrollBarHeight();
                     $("commentText").value = "";
@@ -685,10 +701,38 @@
         xmlhttp.send("content="+commentText +"&share_id="+contentId);
     };
 
+    function collectDelete(obj){
+        const timeToDisappear = 50;
+        const timeToShorten   = 20;
+        var countDisappear    = 1;
+        var countShorten      = 1;
+        var eachOpacity       = 1.0/timeToDisappear;
+        var eachHeight        = 70.0/timeToShorten;
+        var time1 = setInterval(function(){
+            if(countDisappear <= timeToDisappear){
+                obj.style.opacity = 1 - countDisappear*eachOpacity;
+                ++countDisappear; 
+            }
+            else{
+                var time2 = setInterval(function(){
+                    if(countShorten  <= timeToShorten ){
+                        obj.style.height = (70 - countShorten*eachHeight) + "px";
+                        ++countShorten ; 
+                    }
+                    else{
+                        obj.parentNode.removeChild(obj);
+                        clearInterval(time2);
+                    };
+                },1);
+                clearInterval(time1);
+            };
+        },1); 
+    };
+
     window.commentReply = function(obj){
-        var reg1 = /^回复@\S+:/;
-        var reg2 = /回复@\S+:/;
-        var reg3 = /^\S+回复@.+:/;
+        var reg1 = /^回复@\S+\s?\S+:/;
+        var reg2 = /回复@\S+\s?\S+:/;
+        var reg3 = /^\S+\s?\S+回复@\S+\s?\S+:/;
         var reg4 = /:/;
         var name;
         var objValue = obj.parentNode.children[0].innerHTML;
@@ -721,19 +765,22 @@
 
     window.clickToAddLike = function(obj){
         var xmlhttp = new XMLHttpRequest();
-        var id = obj.parentNode.parentNode.children[0].id;
+        var id = parseInt(obj.parentNode.parentNode.children[0].id);
         
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
-                    var value = parseInt(obj.innerHTML.substring(2));
-                    obj.innerHTML = "取消赞(" + (value+1) + ")";
-                }
-                else if(json.status === false){
-                    var value = parseInt(obj.innerHTML.substring(2));
-                    obj.innerHTML = "赞(" + (value-1) + ")";
+                    if(json.result == "like"){
+                        var value = parseInt(obj.innerHTML.substring(2));
+                        obj.innerHTML = "取消赞(" + (value+1) + ")";
+                    }
+                    else if(json.result == "notlike"){
+                        var value = parseInt(obj.innerHTML.substring(4));
+                        obj.innerHTML = "赞(" + (value-1) + ")";
+                    };
                 };
+               
             };
         };
         xmlhttp.open("POST","/share/toggleLikes",true);
@@ -742,20 +789,32 @@
         return true;
     };
 
-    window.clickToAddCollect = function(obj){
+    window.conClickToAddCollect = function(obj){
         var xmlhttp = new XMLHttpRequest();
-        var id = obj.parentNode.parentNode.children[0].id;
+        var id = parseInt(obj.parentNode.parentNode.children[0].id);
+        var colObj = document.getElementById(id + "col");
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     if(json.status){
-                        if(obj.innerHTML === "收藏"){
+                        if(obj.innerHTML == "收藏"){
                             obj.innerHTML = "已收藏";
+                            var addElement = document.createElement("div");
+                            addElement.innerHTML = obj.parentNode.parentNode.innerHTML;
+                            addElement.children[0].id = id+"col";
+                            addElement.getElementsByClassName("toggleCollection")[0].setAttribute("onclick","colClickToAddCollect(this");
+
+                            $('ctLMain0Show').insertBefore(addElement,$('ctLMain0Show').children[1]);
+                           // document.getElementById(id+"col").parentNode.getElementsByClassName("toggleCollection")[0].onclick = "return colClickToAddCollect(this)";
+
                         }
-                        else if(obj.innerHTML === "已收藏"){
-                            obj.innerHTML = "收藏";
-                        }
+                        else if(obj.innerHTML == "已收藏"){
+                               obj.innerHTML = "收藏";
+                               if(colObj){
+                                    $('ctLMain0Show').removeChild(colObj.parentNode);
+                               };
+                        };
                     };
                 };
             };
@@ -765,7 +824,32 @@
         xmlhttp.send("share_id="+id);
     };
 
-    var contentLeftHide = function(T){
+    window.colClickToAddCollect = function(obj){
+        var xmlhttp = new XMLHttpRequest();
+        var id = parseInt(obj.parentNode.parentNode.children[0].id);
+        var  conObj = document.getElementById(id + "con");
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
+                var json  = JSON.parse(xmlhttp.responseText);
+                if(json.status){
+                    if(json.status){
+                        if(conObj){
+                            var collectObj1 = conObj.parentNode.getElementsByClassName("toggleCollection")[0];
+                            if(collectObj1.innerHTML == "已收藏"){
+                                collectObj1.innerHTML = "收藏";
+                            };
+                        };
+                        collectDelete(obj.parentNode.parentNode);
+                    };
+                };
+            };
+        };
+        xmlhttp.open("POST","/collection/toggleCollection",true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("share_id="+id);
+    };
+
+    function contentLeftHide(T){
         var countTime = 1;
         var moveDistance;
         const a1 = 500/(T*T);
@@ -800,7 +884,7 @@
         },1);
     };
 
-    var contentLeftShow = function(T){
+    function contentLeftShow(T){
         var bodyWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
         var countTime = 1;
         var moveDistance;
@@ -853,7 +937,7 @@
         },1);
     };
 
-    var headerLeftHide = function(T){
+    function headerLeftHide(T){
         var countTime = 1;
         var moveDistance;
         const a1 = 500/(T*T);
@@ -885,7 +969,7 @@
         },1);
     };
 
-    var ctLMainShow = function(T){
+    function ctLMainShow(T){
         var bodyWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
         var countTime = 1;
         var moveDistance;
@@ -947,11 +1031,11 @@
         },1);
     };
 
-    var hasHeaderLeftHide = function(){
+    function hasHeaderLeftHide(){
         return (getCss("headerLeft").display === "none")
     };
 
-    var hasContentLeftHide = function(){
+    function hasContentLeftHide(){
         return (getCss("contentLeft").display === "none")
     };
 
@@ -974,9 +1058,10 @@
     }; 
 
     window.onresize = function(){
-        var ctRMainWidth;
         changeCtLMarginTop();
+        changeContentRightWidth()
 
+        ctLMain0Wait.changeWaitBox();
         ctLMain1Wait.changeWaitBox();
         ctLMain2Wait.changeWaitBox();
         ifameWait.changeWaitBox();
