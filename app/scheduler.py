@@ -49,7 +49,7 @@ def cal_delay(hours):
         delay = delta.total_seconds()
     else:
         dest2 = datetime.datetime(today.year, today.month, today.day,
-                today.hour + hours, today.minute + 5, today.second)
+                today.hour + hours, today.minute + 1, today.second)
         delta2 = dest2 - today
         delay = delta2.total_seconds()
 
