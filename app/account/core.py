@@ -62,7 +62,8 @@ def get_auth_url(state):
             'scope': SCOPE, 
             'access_type': ACCESS_TYPE, 
             'login_hint': LOGIN_HINT, 
-            'state': state
+            'state': state,
+            'hd': 'hustunique.com'
             }
     req = MyRequest(URL_AUTH, data)
     req.wrap_url()
