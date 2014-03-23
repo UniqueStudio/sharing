@@ -96,7 +96,6 @@ def toggleLikes():
         share_id = args.get('share_id', type=int)
     except ValueError:
         raise OutputError('参数错误')
-    print share_id
     share = Share.query.get(share_id) or None
     if g.current_user.is_like(share):
         g.current_user.dislike(share)
