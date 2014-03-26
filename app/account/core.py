@@ -10,9 +10,9 @@ URL_PEOPLE = 'https://www.googleapis.com/plus/v1/people/me'
 
 
 RESPONSE_TYPE = 'code' 
-CLIENT_ID = '619166640784-ddtj5snjjv01g26v6otfvns1ncissjd0.apps.googleusercontent.com'
-CLIENT_SECRET = 'zTE-_Ljfege61faalXKYTAyL'
-REDIRECT_URI = 'http://localhost:5000/account/connect'
+# CLIENT_ID = '619166640784-ddtj5snjjv01g26v6otfvns1ncissjd0.apps.googleusercontent.com'
+# CLIENT_SECRET = 'zTE-_Ljfege61faalXKYTAyL'
+# REDIRECT_URI = 'http://localhost:5000/account/connect'
 # SCOPE = ['email', 'https://www.googleapis.com/auth/admin.directory.user'] 
 SCOPE = 'email'
 ACCESS_TYPE = 'online'
@@ -23,6 +23,13 @@ photos = UploadSet('photos', ALL, default_dest=lambda app: 'app/static/uploads')
 
 PHOTO_PREFIX = '../static/uploads/'
 
+
+f = open('app/client_secret.json', 'r')
+web = json.loads(f.read())['web']
+f.close()
+CLIENT_SECRET = web['client_secret']
+REDIRECT_URI = web['redirect_uris'][0]
+CLIENT_ID = web['client_id']
 
 
 class MyRequest(object):
@@ -62,7 +69,8 @@ def get_auth_url(state):
             'scope': SCOPE, 
             'access_type': ACCESS_TYPE, 
             'login_hint': LOGIN_HINT, 
-            'state': state
+            'state': state, 
+            'hd': 'hustunique.com'
             }
     req = MyRequest(URL_AUTH, data)
     req.wrap_url()

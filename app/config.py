@@ -3,9 +3,15 @@ mail_config = {
         'MAIL_SERVER': 'smtp.gmail.com',
         'MAIL_PORT': 587, 
         'MAIL_USE_TLS': True,
+<<<<<<< HEAD
         #'MAIL_USE_SSL': True, 
         'MAIL_USERNAME': 'uniqueguoqi@gmail.com',
         'MAIL_PASSWORD': '!#%&(_618753294g' 
+=======
+        'MAIL_USERNAME': '',
+        'MAIL_PASSWORD': '', 
+        'MAIL_DEFAULT_SENDER': ''
+>>>>>>> 22b99a8390ba7fb7c169fa7b34110b8d5b18f9fc
 }
 
 constance = {
