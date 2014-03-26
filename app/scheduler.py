@@ -39,8 +39,8 @@ def cal_delay(hours):
     # 获取当前时间
     today = datetime.datetime.today()
     # 获取第二日的目标时间
-    dest = datetime.datetime(today.year, today.month, today.day+1,
-            today.hour + hours, today.minute + 5, today.second)
+    dest = datetime.datetime(today.year, today.month, today.day,
+            today.hour + hours, today.minute + 1, today.second)
     # 取差，判断今天是否执行过
     delta = dest - today
     # 今天已经执行过, 那么根据实际差值计算休眠的秒数
@@ -49,7 +49,7 @@ def cal_delay(hours):
         delay = delta.total_seconds()
     else:
         dest2 = datetime.datetime(today.year, today.month, today.day,
-                today.hour + hours, today.minute + 5, today.second)
+                today.hour + hours, today.minute + 1, today.second)
         delta2 = dest2 - today
         delay = delta2.total_seconds()
 

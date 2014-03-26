@@ -3,6 +3,7 @@ mail_config = {
         'MAIL_SERVER': 'smtp.gmail.com',
         'MAIL_PORT': 587, 
         'MAIL_USE_TLS': True,
+        #'MAIL_USE_SSL': True, 
         'MAIL_USERNAME': 'uniqueguoqi@gmail.com',
         'MAIL_PASSWORD': '!#%&(_618753294g' 
 }

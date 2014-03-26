@@ -30,6 +30,7 @@
         this.waitDotLength = this.Obj.length;
 
         this.waitingShow = function(){
+            this.changeWaitBox();
             this.waitDotMove();
         };
         
@@ -144,11 +145,9 @@
     var point = 1;
     var timestampNum = 1;
     var likesNum = 1;
-    var collectNum = 1;
     var contentIdLoadBefore = 1;
     var contentLengthNow = 0;
     var contentId = 1;
-    var commentID = 1;
     var ctLShowJudge = true;
     var needToLoad = new Array(true,true,true,true); 
     var canLoad = new Array(true,true,true,true)
@@ -220,7 +219,7 @@
         },1);
     };
 
-    function changeScrollBarTop(scrollHeight,contentHeight,marginTopNow){
+    function changeScrollBarTop(){
         var ctLMainHeight        = parseFloat(getCss("ctLMain").height);
         var ctLMainShowDivHeight = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
         var scrollHeight         = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom) - ctLMainShowDivHeight;
@@ -233,7 +232,6 @@
     function changeContentRightWidth(){
         if(ctLShowJudge){
             var ctRWidth =  parseInt($("contentRight").style.width)||70;
-            console.log(ctRWidth);
             var bodyWidth = parseInt(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
             if(bodyWidth > 1600 && ctRWidth !== 100){
                 $("contentRight").style.width = "100%";
@@ -267,7 +265,7 @@
 
         $("ctLScrollBar").style.webkitTransitionDuration = "1.2s";
         $("ctLScrollBar").style.mozTransitionDuration = "1.2s";
-        $("ctLScrollBar").style.transitionDuration = "1.2s"
+        $("ctLScrollBar").style.transitionDuration = "1.2s";
 
         $("ctLScrollBar").style.opacity = 0;
     };
@@ -467,6 +465,8 @@
         var contentJson;
         var contentObj       = $("ctLMain0Show").children;
         var lengthLoadBefore = contentObj.length;
+        var collectNum       = parseInt((lengthLoadBefore + 18)/20) + 1;
+
         var xmlhttp          =new XMLHttpRequest();
         ctLMain0Wait.waitingShow();
         xmlhttp.onreadystatechange=function(){
@@ -474,27 +474,52 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status&&json.length>0){
                     document.onmousemove = function(){};
-                    ++collectNum;
                     for (var i = 0;i < json.length;++i){
                         content = json.result[i];
-
-                        addElement = "<div><a href='"+content.url
-                                +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
+                        var newNode = document.createElement("div");
+                        addElement = "<a href='"+content.url
+                                +"' class='eachConnection' id='"+content.id
                                 +"col'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                 +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
-                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection' onclick='return colClickToAddCollect(this)'>已收藏</a><a class='toggleLike' onclick='return clickToAddLike(this)'>";
+                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection'>已收藏</a><a class='toggleLike'>";
                         addElement += "赞("+content.likes
                                     +")</a><span class='ctCommentShow'>评论("+ content.comments
-                                    +")</span>" + content.timestamp
-                                    +"</span></div>";
-
-                        $("ctLMain0Show").innerHTML = $("ctLMain0Show").innerHTML + addElement;
+                                    +")</span></span><div class='detailBox'><p class='detailBoxTitle'>" + content.title
+                                    +"</p><div class='sharemanBox'><div class='SMBLeft'><div class='SMBSharemanImg' style='background-image:url(" + content.author_image
+                                    +")'></div></div><div class='SMBRight'><p class='SMBShareReason'>" + content.author_name 
+                                    +": " + content.explain
+                                    +"</p><div class='SMBDetailBox'><span>赞(" + content.likes
+                                    +") 评论(" + content.comments
+                                    +") " + content.timestamp
+                                    +"</span></div></div></div></div>";
+                        newNode.innerHTML = addElement;
+                        newNode.children[0].onclick = function(){
+                            return ecCilck(this);
+                        };
+                        newNode.children[0].onmouseover = function(){
+                            shareBoxShow(this.parentNode.children[2]);
+                        };
+                        newNode.children[0].onmouseout = function(){
+                            shareBoxHide(this.parentNode.children[2]);
+                        };
+                        newNode.getElementsByClassName("toggleCollection")[0].onclick = function(){
+                            return colClickToAddCollect(this);
+                        };
+                        newNode.getElementsByClassName("toggleLike")[0].onclick = function(){
+                            return clickToAddLike(this);
+                        };
+                        $("ctLMain0Show").appendChild(newNode);
                     };
                     var lengthNow = contentObj.length;
                     var i = lengthLoadBefore;
                     var loopTime = setInterval(function(){
                         if(i < lengthNow){
-                            contentObj[i].children[0].className += " contentShow";
+                            contentObj[i].style.display = "block";
+                            var obj = contentObj[i];
+                            setTimeout(function(){
+                              obj.style.opacity = 1;  
+                            },0);
+
                             changeScrollBarHeight();
                             ++i;
                         }
@@ -504,7 +529,7 @@
                             canLoad[0] = true;
                             clearInterval(loopTime);
                         };  
-                    },20);
+                    },100);
                 }
                 else{
                     needToLoad[0] = true;
@@ -539,33 +564,61 @@
                     };
                     for (var i = 0;i < json.length;++i){
                         content = json.result[i];
-
-                        addElement = "<div><a href='"+content.url
-                                +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
+                        var newNode = document.createElement("div");
+                        addElement = "<a href='"+content.url
+                                +"' class='eachConnection' id='"+content.id
                                 +"con'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                 +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
-                                +"</span></div></div></div></a><span class='shareDetail'><a href='javascript:void(0)' class='toggleCollection' onclick='return conClickToAddCollect(this)'>";
+                                +"</span></div></div></div></a><span class='shareDetail'><a href='javascript:void(0)' class='toggleCollection'>";
                         
                         if(content.is_collection){
                             addElement += "已";
                         };
-                        addElement += "收藏</a><a href='javascript:void(0)' class='toggleLike' onclick='return clickToAddLike(this)'>"
+                        addElement += "收藏</a><a href='javascript:void(0)' class='toggleLike'>"
                         
                         if(content.is_like){
                             addElement += "取消";
                         };
                         addElement += "赞("+content.likes
                                     +")</a><span class='ctCommentShow'>评论("+ content.comments
-                                    +")</span>" + content.timestamp
-                                    +"</span></div>";
+                                    +")</span></span><div class='detailBox'><p class='detailBoxTitle'>" + content.title
+                                    +"</p><div class='sharemanBox'><div class='SMBLeft'><div class='SMBSharemanImg' style='background-image:url(" + content.author_image
+                                    +")'></div></div><div class='SMBRight'><p class='SMBShareReason'>" + content.author_name 
+                                    +": " + content.explain
+                                    +"</p><div class='SMBDetailBox'><span>赞(" + content.likes
+                                    +") 评论(" + content.comments
+                                    +") " + content.timestamp
+                                    +"</span></div></div></div></div>";
 
-                        $("ctLMain1Show").innerHTML = $("ctLMain1Show").innerHTML + addElement;
+                        newNode.innerHTML = addElement;
+                        newNode.children[0].onclick = function(){
+                            return ecCilck(this);
+                        };
+                        newNode.children[0].onmouseover = function(){
+                            shareBoxShow(this.parentNode.children[2]);
+                        };
+                        newNode.children[0].onmouseout = function(){
+                            shareBoxHide(this.parentNode.children[2]);
+                        };
+                        newNode.getElementsByClassName("toggleCollection")[0].onclick = function(){
+                            return conClickToAddCollect(this);
+                        };
+                        newNode.getElementsByClassName("toggleLike")[0].onclick = function(){
+                            return clickToAddLike(this);
+                        };
+                        $("ctLMain1Show").appendChild(newNode);
+
                     };
                     var lengthNow = contentObj.length;
                     var i = lengthLoadBefore;
                     var loopTime = setInterval(function(){
                         if(i < lengthNow){
-                            contentObj[i].children[0].className += " contentShow";
+                            var obj = contentObj[i];
+                            obj.style.display = "block";
+                            setTimeout(function(){
+                              obj.style.opacity = 1;  
+                            },0);
+
                             changeScrollBarHeight();
 
                             ++i;
@@ -576,7 +629,7 @@
                             canLoad[1] = true;
                             clearInterval(loopTime);
                         };  
-                    },20);
+                    },100);
                 }
                 else{
                     needToLoad[1] = true;
@@ -606,12 +659,11 @@
                     $("hdR0").href = json.result.url;
                     $("hdRShareTitle").children[0].innerHTML = json.result.title;
                     contentId = json.result.id;
-                    commentID = 1;
                     needToCleanComment = true;
                     if(point === 2){
                         $("ctLMain2Show").style.marginTop = "0px";
                         $("commentText").value = "";
-                        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
+                        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
                         commentLoad();
                     };
                 }
@@ -625,6 +677,7 @@
     function commentLoad(){
         var contentObj       = $("ctLMain2Show").children;
         var lengthLoadBefore = contentObj.length;
+        var commentID = parseInt((lengthLoadBefore + 18)/20) + 1;
         var xmlhttp          = new XMLHttpRequest();
         ctLMain2Wait.waitingShow();
         xmlhttp.onreadystatechange = function(){
@@ -637,7 +690,7 @@
                     for(var i = 0;i < commentLength;++i){
                         var newCommentText = "<div class='eachComment'><div class='eCmShareImg' style='background-image:url(" + json.result[i].author_image
                                             +");'></div><div class='eCmCommentText'><span>"+ json.result[i].body
-                                            +"</span><a href='javascript:void(0)' class='replyButton' onclick='commentReply(this)'><div></div></a></div></div>"
+                                            +"</span><a href='javascript:void(0)' class='replyButton'><div></div></a></div></div>"
                         $("ctLMain2Show").innerHTML = $("ctLMain2Show").innerHTML + newCommentText;
                     };
 
@@ -645,7 +698,14 @@
                     var i = lengthLoadBefore;
                     var loopTime = setInterval(function(){
                         if(i < lengthNow){
-                            contentObj[i].className += " commentShow";
+                            var addElement = contentObj[i];
+                            addElement.style.display = "flex";
+                            setTimeout(function(){
+                                addElement.style.opacity = 1;
+                            },0);
+                            contentObj[i].getElementsByClassName("replyButton")[0].onclick = function(){
+                                commentReply(this);
+                            };
                             changeScrollBarHeight();
                             ++i;
                         }
@@ -685,10 +745,22 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     addCommentNum();
-                    var newCommentText = "<div class='eachComment commentShow'><div class='eCmShareImg' style='background-image:" + userImgUrl
+                    var addElement = document.createElement("div");
+                    addElement.className = "eachComment  commentShow";
+                    addElement.innerHTML = "<div class='eCmShareImg' style='background-image:" + userImgUrl
                                         +";'></div><div class='eCmCommentText'><span>"+ commentText
-                                        +"</span><a class='replyButton' onclick='commentReply(this)'><div></div></a></div></div>"
-                    $("ctLMain2Show").innerHTML = newCommentText + $("ctLMain2Show").innerHTML;
+                                        +"</span><a class='replyButton'><div></div></a></div>";
+                    addElement.children[1].children[1].onclick = function(){
+                        commentReply(this);
+                    };
+                    $('ctLMain2Show').insertBefore(addElement,$('ctLMain2Show').children[1]);
+                    addElement.style.transitionDuration = "2s";
+                    addElement.style.mozTransitionDuration = "2s";
+                    addElement.style.webkitTransitionDuration = "2s";
+                    setTimeout(function(){
+                        addElement.style.opacity = 1;
+                    },0);
+
                     changeScrollBarHeight();
                     $("commentText").value = "";
                     $("commentSubmit").style.backgroundColor = "#E0E0E0";
@@ -708,6 +780,9 @@
         var countShorten      = 1;
         var eachOpacity       = 1.0/timeToDisappear;
         var eachHeight        = 70.0/timeToShorten;
+        obj.style.transitionDuration = 0;
+        obj.style.mozTransitionDuration = 0;
+        obj.style.webkitTransitionDuration = 0;
         var time1 = setInterval(function(){
             if(countDisappear <= timeToDisappear){
                 obj.style.opacity = 1 - countDisappear*eachOpacity;
@@ -729,7 +804,7 @@
         },1); 
     };
 
-    window.commentReply = function(obj){
+    function commentReply(obj){
         var reg1 = /^回复@\S+\s?\S+:/;
         var reg2 = /回复@\S+\s?\S+:/;
         var reg3 = /^\S+\s?\S+回复@\S+\s?\S+:/;
@@ -753,17 +828,17 @@
         };        
     };
 
-    window.ecCilck = function(obj){
+    function ecCilck(obj){
         contentId = parseInt(obj.id);
-        commentID = 1;
         ifameWaitShow();
+        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
         $("ctRMain").src = obj.href;
         $("hdR0").href = obj.href;
         $("hdRShareTitle").children[0].innerHTML = obj.children[0].children[1].children[0].children[0].innerHTML
         return false;
     };
 
-    window.clickToAddLike = function(obj){
+    function clickToAddLike(obj){
         var xmlhttp = new XMLHttpRequest();
         var id = parseInt(obj.parentNode.parentNode.children[0].id);
         
@@ -789,7 +864,7 @@
         return true;
     };
 
-    window.conClickToAddCollect = function(obj){
+    function conClickToAddCollect(obj){
         var xmlhttp = new XMLHttpRequest();
         var id = parseInt(obj.parentNode.parentNode.children[0].id);
         var colObj = document.getElementById(id + "col");
@@ -803,10 +878,12 @@
                             var addElement = document.createElement("div");
                             addElement.innerHTML = obj.parentNode.parentNode.innerHTML;
                             addElement.children[0].id = id+"col";
-                            addElement.getElementsByClassName("toggleCollection")[0].setAttribute("onclick","colClickToAddCollect(this");
-
+                            addElement.children[1].children[0].onclick = function(){
+                                return colClickToAddCollect(this);
+                            };
                             $('ctLMain0Show').insertBefore(addElement,$('ctLMain0Show').children[1]);
-                           // document.getElementById(id+"col").parentNode.getElementsByClassName("toggleCollection")[0].onclick = "return colClickToAddCollect(this)";
+                            addElement.style.display = "block";
+                            addElement.style.opacity = 1;
 
                         }
                         else if(obj.innerHTML == "已收藏"){
@@ -824,7 +901,7 @@
         xmlhttp.send("share_id="+id);
     };
 
-    window.colClickToAddCollect = function(obj){
+    function colClickToAddCollect(obj){
         var xmlhttp = new XMLHttpRequest();
         var id = parseInt(obj.parentNode.parentNode.children[0].id);
         var  conObj = document.getElementById(id + "con");
@@ -1022,13 +1099,41 @@
                 $("contentLeft").style.width  = "30%";
                 $("headerLeft").style.minWidth = "335px";
                 $("contentLeft").style.minWidth  = "335px";
-                //$("headerRight").style.width = (bodyWidth - ctLMainWidth) + "px";
-                //$("contentRight").style.width  = (bodyWidth - ctLMainWidth) + "px";
                 $("headerRight").style.width = "70%";
                 $("contentRight").style.width  = "70%";
                 clearInterval(moveTime);
             }
         },1);
+    };
+
+    function shareBoxShow(obj){
+        if(window.getComputedStyle(obj,false).display == "none"){
+            obj.style.display = "inline-block";
+
+            var bodyHeight = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).height);
+            var shareBoxHeight = parseFloat(window.getComputedStyle(obj,false).height);
+            var objParentnodeTop = obj.parentNode.getBoundingClientRect().top;
+            var disBetweenBottom = bodyHeight - objParentnodeTop - 135;
+            if(disBetweenBottom - shareBoxHeight < 0){
+                var disBetweenTop = objParentnodeTop - 45;
+                if(disBetweenTop > disBetweenBottom && obj.style.top != "auto"){
+                    obj.style.top = "auto";
+                    obj.style.bottom = "70px";
+                }
+                else if(disBetweenTop < disBetweenBottom && obj.style.top == "auto"){
+                    obj.style.top = "70px";
+                    obj.style.bottom = "auto";
+                };
+            };
+            setTimeout(function(){obj.style.opacity = 1;},0);
+        };   
+    };
+
+    function shareBoxHide(obj){
+        if(window.getComputedStyle(obj,false).display == "block"||window.getComputedStyle(obj,false).display == "inline-block"){
+            obj.style.display = "none";
+            obj.style.opacity = 0;
+        };
     };
 
     function hasHeaderLeftHide(){
@@ -1108,7 +1213,8 @@
             arrowMove(30,point - 2);
             ctLMainMove(30,2);
             point = 2;      
-            changeScrollBarHeight();  
+            changeScrollBarHeight(); 
+            var commentID = parseInt(($("ctLMain2Show").children.length + 18)/20) + 1; 
             if(commentID === 1){
                 if(needToCleanComment){//在无评论时，根据是否第一次点开该分享的评论，true:清除，false:不执行
                     needToCleanComment = false;
@@ -1150,7 +1256,6 @@
                     $("hdR0").href = json.result.url;
                     $("hdRShareTitle").children[0].innerHTML = json.result.title;
                     --contentId;
-                    commentID = 1;
                     needToCleanComment = true;
                     if(point === 2){
                         $("commentText").value = "";
@@ -1178,7 +1283,6 @@
                     $("hdR0").href = json.result.url;
                     $("hdRShareTitle").children[0].innerHTML = json.result.title;
                     ++contentId;
-                    commentID = 1;
                     needToCleanComment = true;
                     if(point === 2){
                         $("commentText").value = "";
@@ -1198,6 +1302,7 @@
         if(ctLShowJudge&&!hasContentLeftHide()){
             contentLeftHide(20);
             $("moreButtomCover").onmouseout = function(){
+                $("moreButtomCover").onmouseout = function(){};
                 headerLeftHide(20);
             };
         }
