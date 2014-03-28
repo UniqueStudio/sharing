@@ -258,6 +258,35 @@
         changeScrollBarTop();
     };
 
+    function changeNewShare(result){
+        var hdShreBoxObj = $("hdRSTDetailBox");
+        $("ctRMain").src = result.url;
+        $("hdR0").href = result.url;
+        $("hdRShareTitle").children[0].innerHTML = result.title;
+
+        hdShreBoxObj.getElementsByClassName("detailBoxTitle")[0].innerHTML = result.title;
+        hdShreBoxObj.getElementsByClassName("SMBSharemanImg")[0].style.backgroundImage = "url(" + result.author_image + ")";
+        hdShreBoxObj.getElementsByClassName("SMBShareReason")[0].innerHTML = result.explain;
+        if(result.is_collection){
+            hdShreBoxObj.getElementsByClassName("toggleCollection")[0].innerHTML = "已收藏";
+        }
+        else{
+            hdShreBoxObj.getElementsByClassName("toggleCollection")[0].innerHTML = "收藏";
+        };
+
+        if(result.is_like){
+            hdShreBoxObj.getElementsByClassName("toggleLike")[0].innerHTML = "取消赞(" + result.likes + ")";
+        }
+        else{
+            hdShreBoxObj.getElementsByClassName("toggleLike")[0].innerHTML = "赞(" + result.likes + ")";
+        };
+
+        hdShreBoxObj.getElementsByClassName("SMBComment")[0].innerHTML = "评论(" + result.comments + ")"
+        hdShreBoxObj.getElementsByClassName("SMBTime")[0].innerHTML = result.timestamp;
+        
+        needToCleanComment = true;
+    };
+
     function setScrollBarHide(){
         $("ctLScrollBar").style.webkitTransitionDelay = "3s";
         $("ctLScrollBar").style.mozTransitionDelay = "3s";
@@ -482,6 +511,9 @@
                                 +"col'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                 +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
                                 +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection'>已收藏</a><a class='toggleLike'>";
+                        if(content.is_like){
+                            addElement += "取消";
+                        };
                         addElement += "赞("+content.likes
                                     +")</a><span class='ctCommentShow'>评论("+ content.comments
                                     +")</span></span><div class='detailBox'><p class='detailBoxTitle'>" + content.title
@@ -490,11 +522,11 @@
                                     +": " + content.explain
                                     +"</p><div class='SMBDetailBox'><span>赞(" + content.likes
                                     +") 评论(" + content.comments
-                                    +") " + content.timestamp
-                                    +"</span></div></div></div></div>";
+                                    +") <span class='ctLSMBTime'>" + content.timestamp
+                                    +"</span></span></div></div></div></div>";
                         newNode.innerHTML = addElement;
                         newNode.children[0].onclick = function(){
-                            return ecCilck(this);
+                            return ecClick(this);
                         };
                         newNode.children[0].onmouseover = function(){
                             shareBoxShow(this.parentNode.children[2]);
@@ -506,7 +538,7 @@
                             return colClickToAddCollect(this);
                         };
                         newNode.getElementsByClassName("toggleLike")[0].onclick = function(){
-                            return clickToAddLike(this);
+                            return clickToAddLike(parseInt(this.parentNode.parentNode.children[0].id),"col");
                         };
                         $("ctLMain0Show").appendChild(newNode);
                     };
@@ -587,12 +619,12 @@
                                     +": " + content.explain
                                     +"</p><div class='SMBDetailBox'><span>赞(" + content.likes
                                     +") 评论(" + content.comments
-                                    +") " + content.timestamp
-                                    +"</span></div></div></div></div>";
+                                    +") <span class='ctLSMBTime'>" + content.timestamp
+                                    +"</span></span></div></div></div></div>";
 
                         newNode.innerHTML = addElement;
                         newNode.children[0].onclick = function(){
-                            return ecCilck(this);
+                            return ecClick(this);
                         };
                         newNode.children[0].onmouseover = function(){
                             shareBoxShow(this.parentNode.children[2]);
@@ -604,7 +636,7 @@
                             return conClickToAddCollect(this);
                         };
                         newNode.getElementsByClassName("toggleLike")[0].onclick = function(){
-                            return clickToAddLike(this);
+                            return clickToAddLike(parseInt(this.parentNode.parentNode.children[0].id),"con");
                         };
                         $("ctLMain1Show").appendChild(newNode);
 
@@ -655,11 +687,8 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     ifameWaitShow();
-                    $("ctRMain").src = json.result.url;
-                    $("hdR0").href = json.result.url;
-                    $("hdRShareTitle").children[0].innerHTML = json.result.title;
+                    changeNewShare(json.result);
                     contentId = json.result.id;
-                    needToCleanComment = true;
                     if(point === 2){
                         $("ctLMain2Show").style.marginTop = "0px";
                         $("commentText").value = "";
@@ -757,6 +786,7 @@
                     addElement.style.transitionDuration = "2s";
                     addElement.style.mozTransitionDuration = "2s";
                     addElement.style.webkitTransitionDuration = "2s";
+                    addElement.style.display = "flex";
                     setTimeout(function(){
                         addElement.style.opacity = 1;
                     },0);
@@ -828,31 +858,72 @@
         };        
     };
 
-    function ecCilck(obj){
+    function ecClick(obj){
+        var objParentNode = obj.parentNode;
+        var hdShareBoxObj = $("hdRSTDetailBoxShow");
         contentId = parseInt(obj.id);
         ifameWaitShow();
         $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
         $("ctRMain").src = obj.href;
         $("hdR0").href = obj.href;
-        $("hdRShareTitle").children[0].innerHTML = obj.children[0].children[1].children[0].children[0].innerHTML
+        $("hdRShareTitle").children[0].innerHTML                                        = objParentNode.getElementsByClassName("shareTitle")[0].children[0].innerHTML
+        hdShareBoxObj.getElementsByClassName("detailBoxTitle")[0].innerHTML             = objParentNode.getElementsByClassName("shareTitle")[0].children[0].innerHTML;
+        hdShareBoxObj.getElementsByClassName("SMBSharemanImg")[0].style.backgroundImage = objParentNode.getElementsByClassName("SMBSharemanImg")[0].style.backgroundImage;
+        hdShareBoxObj.getElementsByClassName("SMBShareReason")[0].innerHTML             = objParentNode.getElementsByClassName("SMBShareReason")[0].innerHTML;
+        hdShareBoxObj.getElementsByClassName("toggleCollection")[0].innerHTML           = objParentNode.getElementsByClassName("toggleCollection")[0].innerHTML;
+        hdShareBoxObj.getElementsByClassName("toggleLike")[0].innerHTML                 = objParentNode.getElementsByClassName("toggleLike")[0].innerHTML;
+        hdShareBoxObj.getElementsByClassName("SMBComment")[0].innerHTML                 = objParentNode.getElementsByClassName("ctCommentShow")[0].innerHTML;
+        hdShareBoxObj.getElementsByClassName("SMBTime")[0].innerHTML                    = objParentNode.getElementsByClassName("ctLSMBTime")[0].innerHTML;
         return false;
     };
 
-    function clickToAddLike(obj){
+    function clickToAddLike(id,objType){
         var xmlhttp = new XMLHttpRequest();
-        var id = parseInt(obj.parentNode.parentNode.children[0].id);
+        var conObj = document.getElementById(id + "con");
+        var colObj = document.getElementById(id + "col");
+        var hdObj = $("hdRShareTitle");
         
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     if(json.result == "like"){
-                        var value = parseInt(obj.innerHTML.substring(2));
-                        obj.innerHTML = "取消赞(" + (value+1) + ")";
+                        var value;
+                        switch(objType){
+                            case "col":value = parseInt(colObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(2));
+                                        break;
+                            case "con":value = parseInt(conObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(2));
+                                        break;
+                            case "hd":value = parseInt(hdObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(2));
+                                        break;
+                        };
+                        var newValue = "取消赞(" + (value+1) + ")";
+                        if(conObj){
+                            conObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        };
+                        if(colObj){
+                            colObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        };
+                        $("hdRSTDetailBoxShow").getElementsByClassName("toggleLike")[0].innerHTML = newValue;
                     }
                     else if(json.result == "notlike"){
-                        var value = parseInt(obj.innerHTML.substring(4));
-                        obj.innerHTML = "赞(" + (value-1) + ")";
+                        var value;
+                        switch(objType){
+                            case "col":value = parseInt(colObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(4));
+                                        break;
+                            case "con":value = parseInt(conObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(4));
+                                        break;
+                            case "hd":value = parseInt(hdObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(4));
+                                        break;
+                        };
+                        var newValue = "赞(" + (value-1) + ")";
+                        if(conObj){
+                            conObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        };
+                        if(colObj){
+                            colObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        };
+                        $("hdRSTDetailBoxShow").getElementsByClassName("toggleLike")[0].innerHTML = newValue;
                     };
                 };
                
@@ -878,12 +949,28 @@
                             var addElement = document.createElement("div");
                             addElement.innerHTML = obj.parentNode.parentNode.innerHTML;
                             addElement.children[0].id = id+"col";
+                            addElement.children[0].onclick = function(){
+                                return ecClick(this);
+                            };
+                            addElement.children[0].onmouseover = function(){
+                                shareBoxShow(this.parentNode.children[2]);
+                            };
+                            addElement.children[0].onmouseout = function(){
+                                shareBoxHide(this.parentNode.children[2]);
+                            };
                             addElement.children[1].children[0].onclick = function(){
                                 return colClickToAddCollect(this);
+                            };
+                            addElement.children[1].children[1].onclick = function(){
+                                return clickToAddLike(parseInt(this.parentNode.parentNode.children[0].id),"col");
                             };
                             $('ctLMain0Show').insertBefore(addElement,$('ctLMain0Show').children[1]);
                             addElement.style.display = "block";
                             addElement.style.opacity = 1;
+
+                            if(id == contentId){
+                                $("hdRSTDetailBox").getElementsByClassName("toggleCollection")[0].innerHTML = "已收藏";
+                            };
 
                         }
                         else if(obj.innerHTML == "已收藏"){
@@ -891,6 +978,9 @@
                                if(colObj){
                                     $('ctLMain0Show').removeChild(colObj.parentNode);
                                };
+                               if(id == contentId){
+                                $("hdRSTDetailBox").getElementsByClassName("toggleCollection")[0].innerHTML = "收藏";
+                            };
                         };
                     };
                 };
@@ -911,12 +1001,92 @@
                 if(json.status){
                     if(json.status){
                         if(conObj){
-                            var collectObj1 = conObj.parentNode.getElementsByClassName("toggleCollection")[0];
-                            if(collectObj1.innerHTML == "已收藏"){
-                                collectObj1.innerHTML = "收藏";
-                            };
+                            conObj.parentNode.getElementsByClassName("toggleCollection")[0].innerHTML = "收藏";
+                        };
+                        if(id == contentId){
+                            $("hdRSTDetailBox").getElementsByClassName("toggleCollection")[0].innerHTML = "收藏";
                         };
                         collectDelete(obj.parentNode.parentNode);
+                    };
+                };
+            };
+        };
+        xmlhttp.open("POST","/collection/toggleCollection",true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("share_id="+id);
+    };
+
+    function hdClickToAddCollect(obj){
+        var xmlhttp = new XMLHttpRequest();
+        var id = contentId;
+        var colObj = document.getElementById(id + "col");
+        var conObj = document.getElementById(id + "con");
+        var hdObj  = $("hdRSTDetailBox");
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
+                var json  = JSON.parse(xmlhttp.responseText);
+                if(json.status){
+                    if(json.status){
+                        if(obj.innerHTML == "收藏"){
+                            obj.innerHTML = "已收藏";
+                            var addElement = document.createElement("div");
+                            addElement.innerHTML = "<a href='"
+                                + $("ctRMain").src
+                                + "' class='eachConnection' id='" 
+                                + id
+                                + "col'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=" 
+                                + $("ctRMain").src
+                                + ")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>" 
+                                + hdObj.getElementsByClassName("detailBoxTitle")[0].innerHTML
+                                + "</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection'>已收藏</a><a class='toggleLike'>"
+                                + hdObj.getElementsByClassName("toggleLike")[0].innerHTML
+                                + "</a><span class='ctCommentShow'>"
+                                + hdObj.getElementsByClassName("SMBComment")[0].innerHTML
+                                + "</span></span><div class='detailBox'><p class='detailBoxTitle'>" 
+                                + hdObj.getElementsByClassName("detailBoxTitle")[0].innerHTML
+                                + "</p><div class='sharemanBox'><div class='SMBLeft'><div class='SMBSharemanImg' style='background-image:" 
+                                + hdObj.getElementsByClassName("SMBSharemanImg")[0].style.backgroundImage
+                                + "'></div></div><div class='SMBRight'><p class='SMBShareReason'>"
+                                + hdObj.getElementsByClassName("SMBShareReason")[0].innerHTML
+                                + "</p><div class='SMBDetailBox'><span>" 
+                                + hdObj.getElementsByClassName("toggleLike")[0].innerHTML + " "
+                                + hdObj.getElementsByClassName("SMBComment")[0].innerHTML
+                                + " <span class='ctLSMBTime'>" 
+                                + hdObj.getElementsByClassName("SMBTime")[0].innerHTML
+                                + "</span></span></div></div></div></div>";;
+                            addElement.children[0].onclick = function(){
+                                return ecClick(this);
+                            };
+                            addElement.children[0].onmouseover = function(){
+                                shareBoxShow(this.parentNode.children[2]);
+                            };
+                            addElement.children[0].onmouseout = function(){
+                                shareBoxHide(this.parentNode.children[2]);
+                            };
+                            addElement.children[1].children[0].onclick = function(){
+                                return colClickToAddCollect(this);
+                            };
+                            addElement.children[1].children[1].onclick = function(){
+                                return clickToAddLike(parseInt(this.parentNode.parentNode.children[0].id),"col");
+                            };
+                            $('ctLMain0Show').insertBefore(addElement,$('ctLMain0Show').children[1]);
+                            addElement.style.display = "block";
+                            addElement.style.opacity = 1;
+
+                            if(conObj){
+                                 conObj.parentNode.getElementsByClassName("toggleCollection")[0].innerHTML = "已收藏";
+                            };
+
+                        }
+                        else if(obj.innerHTML == "已收藏"){
+                               obj.innerHTML = "收藏";
+                               if(conObj){
+                                    conObj.parentNode.getElementsByClassName("toggleCollection")[0].innerHTML = "收藏";
+                               };
+                               if(colObj){
+                                    $('ctLMain0Show').removeChild(colObj.parentNode);
+                               };
+                        };
                     };
                 };
             };
@@ -1252,9 +1422,7 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     ifameWaitShow();
-                    $("ctRMain").src = json.result.url;
-                    $("hdR0").href = json.result.url;
-                    $("hdRShareTitle").children[0].innerHTML = json.result.title;
+                    changeNewShare(json.result);
                     --contentId;
                     needToCleanComment = true;
                     if(point === 2){
@@ -1279,9 +1447,7 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     ifameWaitShow();
-                    $("ctRMain").src = json.result.url;
-                    $("hdR0").href = json.result.url;
-                    $("hdRShareTitle").children[0].innerHTML = json.result.title;
+                    changeNewShare(json.result);
                     ++contentId;
                     needToCleanComment = true;
                     if(point === 2){
@@ -1315,6 +1481,13 @@
                 contentLeftShow(20);
             }
         };
+    };
+
+    $("hdRSTDetailBox").getElementsByClassName("toggleCollection")[0].onclick = function(){
+        return hdClickToAddCollect(this);
+    };
+    $("hdRSTDetailBox").getElementsByClassName("toggleLike")[0].onclick = function(){
+        return clickToAddLike(contentId,"hd");
     };
 
     $("ctLMain").onmousewheel = function(event) {
