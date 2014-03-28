@@ -229,21 +229,6 @@
         $("ctLScrollBar").style.top = scrollTop +"px";
     };
 
-    function changeContentRightWidth(){
-        if(ctLShowJudge){
-            var ctRWidth =  parseInt($("contentRight").style.width)||70;
-            var bodyWidth = parseInt(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
-            if(bodyWidth > 1600 && ctRWidth !== 100){
-                $("contentRight").style.width = "100%";
-                $("headerRight").style.width = "100%";
-            }
-            else if(bodyWidth <= 1600 && ctRWidth !== 70){
-                $("contentRight").style.width = "70%";
-                $("headerRight").style.width = "70%";
-            };
-        };
-    };
-
     function changeScrollBarHeight(){
         var ctLMainHeight        = parseFloat(getCss("ctLMain").height);
         var ctLMainShowDivHeight = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
@@ -1104,8 +1089,7 @@
         const t1 = 0.4*T;//加速时间
         const t2 = 0.6*T;//减速时间
         const v  = 200/T;
-        const ctLMainWidth = parseFloat(getCss("headerLeft").width);
-        const ctRMainWidth = parseFloat(getCss("headerRight").width);
+        const ctLMainWidth = parseFloat(getCss("layoutLeft").width);
         const length = ctLMainWidth;
         ctLShowJudge = false;
         $("toLeft").style.display = "none";
@@ -1119,13 +1103,11 @@
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
             $("contentLeft").style.marginLeft  = (0 - moveDistance) +"px";
-            $("contentRight").style.width = (ctRMainWidth + moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
             else{
                 $("contentLeft").style.display  ="none";
-                $("contentRight").style.width = "100%"
                 clearInterval(moveTime);
             }
         },1);
@@ -1135,32 +1117,20 @@
         var bodyWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
         var countTime = 1;
         var moveDistance;
-        var ctLMainWidth;
-        var length;
-        const a1 = 500/(T*T);
-        const a2 = 1000/(3*T*T);
-        const t1 = 0.4*T;//加速时间
-        const t2 = 0.6*T;//减速时间
-        const v  = 200/T;
+        const ctLMainWidth = parseFloat(getCss("layoutLeft").width);
+        const length       = ctLMainWidth;
+        const a1           = 500/(T*T);
+        const a2           = 1000/(3*T*T);
+        const t1           = 0.4*T;//加速时间
+        const t2           = 0.6*T;//减速时间
+        const v            = 200/T;
 
         $("moreButtomCover").onmouseout = function(){};
 
-        $("toLeft").style.display = "inline-block";
-        $("toRight").style.display = "none";
-
-        if(bodyWidth <= 1117){
-            ctLMainWidth = 335;
-            length = 335;
-        }
-        else{
-            ctLMainWidth = bodyWidth*0.3;
-            length = bodyWidth*0.3;
-        };
-
-        $("contentLeft").style.marginLeft  = (0 - ctLMainWidth) +"px";
-        $("contentLeft").style.width  = (ctLMainWidth) +"px";
-        $("contentLeft").style.minWidth  = "0px";
-        $("contentLeft").style.display  ="inline-block";
+        $("toLeft").style.display         = "inline-block";
+        $("toRight").style.display        = "none";
+        $("contentLeft").style.marginLeft = (0 - ctLMainWidth) +"px";
+        $("contentLeft").style.display    = "inline-block";
 
         var moveTime = setInterval(function(){  
             if(countTime <= t1){
@@ -1170,15 +1140,12 @@
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
             $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";
-            $("contentRight").style.width = (bodyWidth - moveDistance) +"px";
+            console.log(getCss("contentLeft").width)
             if(countTime < T){
                 ++countTime;
             }
             else{
                 ctLShowJudge = true;
-                $("contentLeft").style.width  = "30%";
-                $("contentLeft").style.minWidth  = "335px";
-                $("contentRight").style.width  = (bodyWidth - ctLMainWidth) + "px";
                 clearInterval(moveTime);
             }
         },1);
@@ -1192,8 +1159,7 @@
         const t1 = 0.4*T;//加速时间
         const t2 = 0.6*T;//减速时间
         const v  = 200/T;
-        const ctLMainWidth = parseFloat(getCss("headerLeft").width);
-        const ctRMainWidth = parseFloat(getCss("headerRight").width);
+        const ctLMainWidth = parseFloat(getCss("layoutLeft").width);
         const length = ctLMainWidth;
 
         var moveTime = setInterval(function(){  
@@ -1204,47 +1170,33 @@
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
             $("headerLeft").style.marginLeft = (0 - moveDistance) +"px";
-            $("headerRight").style.width  = (ctRMainWidth + moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
             else{
                 $("headerLeft").style.display = "none";
-                $("headerRight").style.width  = "100%"
                 clearInterval(moveTime);
             }
         },1);
     };
 
     function ctLMainShow(T){
-        var bodyWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
-        var countTime = 1;
+        var bodyWidth      = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
+        var countTime      = 1;
         var moveDistance;
-        var ctLMainWidth;
-        var length;
-        const a1 = 500/(T*T);
-        const a2 = 1000/(3*T*T);
-        const t1 = 0.4*T;//加速时间
-        const t2 = 0.6*T;//减速时间
-        const v  = 200/T;
+        const ctLMainWidth = parseFloat(getCss("layoutLeft").width);
+        const length       = ctLMainWidth;
+        const a1           = 500/(T*T);
+        const a2           = 1000/(3*T*T);
+        const t1           = 0.4*T;//加速时间
+        const t2           = 0.6*T;//减速时间
+        const v            = 200/T;
 
         $("toLeft").style.display = "inline-block";
         $("toRight").style.display = "none";
 
-        if(bodyWidth <= 1117){
-            ctLMainWidth = 335;
-            length = 335;
-        }
-        else{
-            ctLMainWidth = bodyWidth*0.3;
-            length = bodyWidth*0.3;
-        }
         $("headerLeft").style.marginLeft = (0 - ctLMainWidth) +"px";
         $("contentLeft").style.marginLeft  = (0 - ctLMainWidth) +"px";
-        $("headerLeft").style.width = (ctLMainWidth) +"px";
-        $("contentLeft").style.width  = (ctLMainWidth) +"px";
-        $("headerLeft").style.minWidth = "0px";
-        $("contentLeft").style.minWidth  = "0px";
 
         $("headerLeft").style.display = "inline-block";
         $("contentLeft").style.display  ="inline-block";
@@ -1257,20 +1209,12 @@
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
             $("headerLeft").style.marginLeft = (0 - ctLMainWidth + moveDistance) +"px";
-            $("headerRight").style.width  = (bodyWidth - moveDistance) +"px";
             $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";
-            $("contentRight").style.width = (bodyWidth - moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
             else{
                 ctLShowJudge = true;
-                $("headerLeft").style.width = "30%";
-                $("contentLeft").style.width  = "30%";
-                $("headerLeft").style.minWidth = "335px";
-                $("contentLeft").style.minWidth  = "335px";
-                $("headerRight").style.width = "70%";
-                $("contentRight").style.width  = "70%";
                 clearInterval(moveTime);
             }
         },1);
@@ -1334,7 +1278,6 @@
 
     window.onresize = function(){
         changeCtLMarginTop();
-        changeContentRightWidth()
 
         ctLMain0Wait.changeWaitBox();
         ctLMain1Wait.changeWaitBox();
