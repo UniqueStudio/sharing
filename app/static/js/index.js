@@ -152,6 +152,7 @@
     var needToLoad = new Array(true,true,true,true); 
     var canLoad = new Array(true,true,true,true)
     var canScroll = true;
+    var canHeaderMove = true;
     var needToCleanComment = false;
     var username;
     var userImgUrl;
@@ -186,6 +187,7 @@
                 ++countTime;
             }
             else{
+                canHeaderMove = true;
                 clearInterval(moveTime);
             }
         },1);
@@ -1139,8 +1141,7 @@
             else{
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
-            $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";
-            console.log(getCss("contentLeft").width)
+            $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";`)
             if(countTime < T){
                 ++countTime;
             }
@@ -1299,57 +1300,69 @@
     }
 
     $("hdL0").onclick = function(){
-        if(point !== 0){
-            $("hdL"+point).style.cursor = "pointer";
-            arrowMove(30,point - 0);
-            ctLMainMove(30,0);
-            point = 0;
-            changeScrollBarHeight(); 
-            $("hdL0").style.cursor = "default";
+        if(canHeaderMove){
+            if(point !== 0){
+                canHeaderMove = false;
+                $("hdL"+point).style.cursor = "pointer";
+                arrowMove(30,point - 0);
+                ctLMainMove(30,0);
+                point = 0;
+                changeScrollBarHeight(); 
+                $("hdL0").style.cursor = "default";
+            };
         };
     };
 
     $("hdL1").onclick = function(){
-        if(point !== 1){
-            $("hdL"+point).style.cursor = "pointer";
-            arrowMove(30,point - 1);
-            ctLMainMove(30,1);
-            point = 1;
-            changeScrollBarHeight();
-            $("hdL1").style.cursor = "default";
+        if(canHeaderMove){
+            if(point !== 1){
+                canHeaderMove = false;
+                $("hdL"+point).style.cursor = "pointer";
+                arrowMove(30,point - 1);
+                ctLMainMove(30,1);
+                point = 1;
+                changeScrollBarHeight();
+                $("hdL1").style.cursor = "default";
+            };
         };
     };
 
     $("hdL2").onclick = function(){
-        if(point !== 2){
-            $("hdL"+point).style.cursor = "pointer";
-            arrowMove(30,point - 2);
-            ctLMainMove(30,2);
-            point = 2;      
-            changeScrollBarHeight(); 
-            var commentID = parseInt(($("ctLMain2Show").children.length + 18)/20) + 1; 
-            if(commentID === 1){
-                if(needToCleanComment){//在无评论时，根据是否第一次点开该分享的评论，true:清除，false:不执行
-                    needToCleanComment = false;
-                    $("commentText").value = "";
-                };
-                
-                $("ctLMain2Show").style.marginTop = "0px"
-                $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
-                commentLoad();
-            }
-            $("hdL2").style.cursor = "default";
+        if(canHeaderMove){
+            if(point !== 2){
+                canHeaderMove = false;
+                $("hdL"+point).style.cursor = "pointer";
+                arrowMove(30,point - 2);
+                ctLMainMove(30,2);
+                point = 2;      
+                changeScrollBarHeight(); 
+                var commentID = parseInt(($("ctLMain2Show").children.length + 18)/20) + 1; 
+                if(commentID === 1){
+                    if(needToCleanComment){//在无评论时，根据是否第一次点开该分享的评论，true:清除，false:不执行
+                        needToCleanComment = false;
+                        $("commentText").value = "";
+                    };
+                    
+                    $("ctLMain2Show").style.marginTop = "0px"
+                    $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
+                    commentLoad();
+                }
+                $("hdL2").style.cursor = "default";
+            };
         };
     };
 
     $("hdL3").onclick = function(){
-        if(point !== 3){
-            $("hdL"+point).style.cursor = "pointer";
-            arrowMove(30,point - 3);
-            ctLMainMove(30,3);
-            point = 3;     
-            changeScrollBarHeight();  
-            $("hdL3").style.cursor = "default";
+        if(canHeaderMove){
+            if(point !== 3){
+                canHeaderMove = false;
+                $("hdL"+point).style.cursor = "pointer";
+                arrowMove(30,point - 3);
+                ctLMainMove(30,3);
+                point = 3;     
+                changeScrollBarHeight();  
+                $("hdL3").style.cursor = "default";
+            };
         };
     };
 
