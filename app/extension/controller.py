@@ -19,6 +19,7 @@ def login():
         raise OutputError('参数错误')
     
     user = User.query.filter(User.email == email).first() or None
+    print user, password
     if user is not None and user.check_password(password):
         session['user_id'] = user.id
         session['email'] = user.email
