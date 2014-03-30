@@ -9,7 +9,8 @@
       "tabs",
       "cookies",
       "http://localhost/*",
-    "http://www.baidu.com/*"
+    "http://www.baidu.com/*", 
+    "http://share.hustunique.com/*"
 
       ],
 

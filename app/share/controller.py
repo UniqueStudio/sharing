@@ -21,6 +21,9 @@ def add():
         explain = args['explain'] if args.has_key('explain') else None
         url = args['url']
         user_id = g.current_user.id
+        
+        if Share.query.filter(Share.url == url).first():
+            raise OutputError('该条目已经被分享过了')
 
         # 添加到数据库
         share = Share(title=title, explain=explain,

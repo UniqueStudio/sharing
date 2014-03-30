@@ -1141,7 +1141,7 @@
             else{
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
-            $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";`)
+            $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
