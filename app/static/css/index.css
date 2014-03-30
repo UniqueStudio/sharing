@@ -240,7 +240,7 @@ a{
 .headerRight{
     position: relative;
     height: 45px;
-    width: 70%;
+    width: 100%;
 }
 
 .hdR0,.hdR1,.hdR2,.hdR3{
@@ -259,7 +259,7 @@ a{
     
     display: inline-block;
     height: 100%;
-    overflow: hidden;
+    text-align: center;
 
     -moz-user-select: text;
     -webkit-user-select: text;
@@ -276,6 +276,7 @@ a{
     text-align: center;
     font: 16px/45px arial;
     color:rgba(237, 241, 247, 0.87);
+    cursor: pointer;
 
     overflow:hidden;
     text-overflow : ellipsis ; 
@@ -361,7 +362,8 @@ a{
 .contentRight{
     position: relative;
     height: 100%;
-    width: 70%;
+    width: 100%;
+    background-color: #F7F7F7;
 }
 
 .ctLMainDiv{
@@ -426,6 +428,7 @@ a{
     display: inline-block;
     width: 13px;
     height: 100%;
+    z-index: 101;
 }
 
 .ctLScrollBar{
@@ -462,7 +465,11 @@ a{
 }
 
 .eachConnection{
-    display:none;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
 
     -webkit-flex-direction:row;
     -moz-flex-direction:row;
@@ -575,6 +582,7 @@ a{
 
 .ctCommentShow{
     margin-right: 3px;
+    border-right:0px!important;
 }
 
 .shareReason{
@@ -599,6 +607,16 @@ a{
 
 .ctLMain0Show>div{
     position: relative;
+    display: none;
+    opacity: 0;
+    transition:opacity ;
+    transition-duration:0.5s;
+
+    -moz-transition:opacity ; 
+    -moz-transition-duration:0.5s;
+
+    -webkit-transition:opacity; 
+    -webkit-transition-duration:0.5s;
 }
 
 .ctLMain1ShowDiv{
@@ -617,12 +635,23 @@ a{
 
 .ctLMain1Show>div{
     position: relative;
+    display: none;
+    opacity: 0;
+    transition:opacity ;
+    transition-duration:0.5s;
+
+    -moz-transition:opacity ; 
+    -moz-transition-duration:0.5s;
+
+    -webkit-transition:opacity; 
+    -webkit-transition-duration:0.5s;
 }
 
 .ctLMain0WaitBox{
     position: absolute!important;
     bottom: 0px;
-    display:inline-block;
+    opacity: 1!important;
+    display:inline-block!important;
     width: 100%;
     height: 40px;
 }
@@ -645,7 +674,8 @@ a{
 .ctLMain1WaitBox{
     position: absolute!important;
     bottom: 0px;
-    display:inline-block;
+    opacity: 1!important;
+    display:inline-block!important;
     width: 100%;
     height: 40px;
 }
@@ -803,7 +833,7 @@ a{
     width: 100%;
     color: #BDBDBD;
     font:16px/25px arial;
-     font-family: 'Open Sans','Helvetica Neue',Arial,'Hiragino Sans GB','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif;
+    font-family: 'Open Sans','Helvetica Neue',Arial,'Hiragino Sans GB','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif;
 }
 
 .eachComment{
@@ -818,6 +848,16 @@ a{
     margin-left: -13px;
     height: auto;  
     border-bottom:1px solid rgba(228, 228, 228, 0.54);
+    opacity: 0;
+
+    transition:opacity ;
+    transition-duration:1s;
+
+    -moz-transition:opacity ; 
+    -moz-transition-duration:1s;
+
+    -webkit-transition:opacity; 
+    -webkit-transition-duration:1s;
 }
 
 .eCmShareImg{
@@ -915,23 +955,6 @@ a{
     transition: opacity 0.31s ease-in-out 0.04s;
 }
 
-
-.contentShow{
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-}
-
-.commentShow{
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-}
-
 .ctLMain2WaitBox{
     position: absolute;
     bottom: 0px;
@@ -974,7 +997,7 @@ a{
     margin: auto;
     display:inline-block;
     max-width: 450px;
-    width: 450px;
+    min-width: 216px;
     height: 40px;
     overflow: hidden;
 }
@@ -994,4 +1017,205 @@ a{
     background-color: rgb(255, 0, 20);
 }
 
+.detailBox{
+    position: absolute;
+    top: 70px;
+    right: 0px;
+    left: 0px;
 
+    display: none;
+    padding: 6px 13px 7px 10px;
+    padding-right: 13px;
+    padding-left: 10px;
+    background-color: #FAFAFA;
+    z-index: 100;
+    border: 1px solid rgba(216, 216, 216, 0.85);
+    opacity: 0;
+
+    transition:opacity ;
+    transition-duration:0.5s;
+    transition-delay:0.5s;
+
+    -moz-transition:opacity ; 
+    -moz-transition-duration:0.5s;
+    -moz-transition-delay :0.5s;
+
+    -webkit-transition:opacity; 
+    -webkit-transition-duration:0.5s;
+    -webkit-transition-delay:0.5s;
+}
+
+.detailBoxTitle{
+    margin: 0px 0px 5px 0px;
+    font-size: 15px;
+    line-height: 20px;
+    word-wrap: break-word;
+    font-weight: 200;
+    color: rgba(71, 94, 129, 0.95);
+    border-bottom: rgba(172, 181, 228, 0.7) 1px dotted;
+}
+
+.sharemanBox{
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    -moz-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-content: stretch;
+    -moz-align-content: stretch;
+    align-content: stretch;
+
+    width: 100%;
+}
+
+.SMBLeft{
+    display: inline-block;
+    width: 127px;
+    min-height: 72px;
+}
+
+.SMBSharemanImg{
+    display: inline-block;
+    width: 70px;
+    height: 70px;
+    margin: 2px 15px 0px 0px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+    box-shadow: 1px 1px 3px #ACACAC;
+}
+
+.SMBRight{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    padding-bottom: 18px;
+}
+
+.SMBShareReason{
+    word-wrap: break-word;
+    margin: 0px;
+    line-height: 20px;
+    font-size: 15px;
+    color: rgba(71, 94, 129, 0.95);
+}
+
+.SMBDetailBox{
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+
+.SMBDetailBox>span{
+    font-size: 13px;
+    color: #8ea0bb;
+}
+
+.hdRSTDetailBox{
+    display: inline-block;
+    width: 0px;
+
+    position: absolute;
+    right: 0px;
+    left: 0px;
+    top:45px;
+    margin: auto;
+    
+    background-color: rgba(250, 250, 250, 0.85);
+    z-index: 1;
+    text-align: left;
+    overflow: hidden;
+    opacity: 0;
+    box-shadow: rgba(60, 60, 60 ,0.4) 1px 1px 2px,
+                rgba(80, 80, 80 ,0.4) 2px 2px 4px,
+                rgba(100, 100, 100 ,0.4) 3px 3px 6px,
+                rgba(150, 150, 150 ,0.3) 4px 4px 8px,
+                rgba(180, 180, 180,0.3) 5px 5px 10px,
+                rgba(60, 60, 60 ,0.4) -1px 1px 2px,
+                rgba(80, 80, 80 ,0.4) -2px 2px 4px,
+                rgba(100, 100, 100 ,0.4) -3px 3px 6px,
+                rgba(150, 150, 150 ,0.3) -4px 4px 8px,
+                rgba(180, 180, 180,0.3) -5px 5px 10px;
+
+    transition:opacity,width;
+    transition-duration:0.5s;
+    transition-delay:0s;
+
+    -moz-transition:opacity,width; 
+    -moz-transition-duration:0.5s;
+    -moz-transition-delay:0s;
+
+    -webkit-transition:opacity,width; 
+    -webkit-transition-duration:0.5s;
+    -webkit-transition-delay:0s;
+}
+
+.hdRSTDetailBoxShow{
+    display: inline-block;
+    width: 400px;
+    padding: 10px;
+}
+
+.hdRSTShareDetailBox{
+    position: absolute;
+    bottom: 2px;
+    right: 0px;
+    display: inline-block;
+    width: 100%;
+    height: 13px;
+    margin-left: -10px;
+    padding-top: 4px;
+    text-align: right;
+    font-size: 13px;
+    color: #8ea0bb;
+}
+
+.hdRSTShareDetailBox>a,.hdRSTShareDetailBox>span{
+    border-right: 1px solid rgba(195, 204, 231, 0.81);
+    padding-right: 3px;
+    color: #8ea0bb;
+}
+
+.hdRSTDetailBox .SMBTime{
+    border-right: 0px!important;
+}
+
+.hdRShareTitle:hover>.hdRSTDetailBox{
+    width: 420px;
+    opacity: 1;
+    transition-delay:0.2s;
+    -moz-transition-delay:0.2s;
+    -webkit-transition-delay:0.2s;
+}
+
+.layout{
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-flex-direction:row;
+    -moz-flex-direction:row;
+    flex-direction:row;
+
+    width: 100%;
+    height: 0px;
+}
+
+.layoutLeft{
+    display: inline-block;
+    width: 30%;
+    min-width: 335px;
+    max-width: 480px;
+    height: 0px;
+}   
+
+.layoutRight{
+    display: inline-block;
+    height: 0px;
+    width: 100%;
+    background-color: #F7F7F7;
+}

@@ -70,7 +70,8 @@ def list():
                     'author_name': item.author.nickname, 
                     'author_image': item.author.image or '../static/img/default.jpg', 
                     'author_id': item.author.id, 
-                    'is_collection': True
+                    'is_collection': True,
+                    'is_like': g.current_user.is_like(item)
                     }
             items.append(tmp)
 

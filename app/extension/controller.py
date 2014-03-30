@@ -23,12 +23,16 @@ def login():
     if user is not None and user.check_password(password):
         session['user_id'] = user.id
         session['email'] = user.email
-        result['status'] = True
-    else:
-        result['status'] = False
-        result['msg'] = '用户名或密码错误'
+        result['success'] = True
+    elif user is None:
+        result['success'] = False
+        result['errorCode'] = 1
+    elif not user.check_password(password):
+        result['success'] = False
+        result['errorCode'] = 2
 
     return json.dumps(result)
+
 
 @extension.route('/logout', methods=['POST'])
 def logout():

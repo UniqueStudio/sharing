@@ -30,6 +30,7 @@
         this.waitDotLength = this.Obj.length;
 
         this.waitingShow = function(){
+            this.changeWaitBox();
             this.waitDotMove();
         };
         
@@ -144,15 +145,14 @@
     var point = 1;
     var timestampNum = 1;
     var likesNum = 1;
-    var collectNum = 1;
     var contentIdLoadBefore = 1;
     var contentLengthNow = 0;
     var contentId = 1;
-    var commentID = 1;
     var ctLShowJudge = true;
     var needToLoad = new Array(true,true,true,true); 
     var canLoad = new Array(true,true,true,true)
     var canScroll = true;
+    var canHeaderMove = true;
     var needToCleanComment = false;
     var username;
     var userImgUrl;
@@ -187,6 +187,7 @@
                 ++countTime;
             }
             else{
+                canHeaderMove = true;
                 clearInterval(moveTime);
             }
         },1);
@@ -220,7 +221,7 @@
         },1);
     };
 
-    function changeScrollBarTop(scrollHeight,contentHeight,marginTopNow){
+    function changeScrollBarTop(){
         var ctLMainHeight        = parseFloat(getCss("ctLMain").height);
         var ctLMainShowDivHeight = parseFloat(getCss("ctLMain"+point+"ShowDiv").height);
         var scrollHeight         = parseFloat(getCss("ctLMain"+point+"Show").height) + parseFloat(getCss("ctLMain"+point+"Show").paddingBottom) - ctLMainShowDivHeight;
@@ -228,22 +229,6 @@
         var scrollBarHeiht       = parseFloat(getCss("ctLScrollBar").height);
         var scrollTop            = marginTopNow/scrollHeight*(ctLMainHeight - scrollBarHeiht);
         $("ctLScrollBar").style.top = scrollTop +"px";
-    };
-
-    function changeContentRightWidth(){
-        if(ctLShowJudge){
-            var ctRWidth =  parseInt($("contentRight").style.width)||70;
-            console.log(ctRWidth);
-            var bodyWidth = parseInt(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
-            if(bodyWidth > 1600 && ctRWidth !== 100){
-                $("contentRight").style.width = "100%";
-                $("headerRight").style.width = "100%";
-            }
-            else if(bodyWidth <= 1600 && ctRWidth !== 70){
-                $("contentRight").style.width = "70%";
-                $("headerRight").style.width = "70%";
-            };
-        };
     };
 
     function changeScrollBarHeight(){
@@ -260,6 +245,35 @@
         changeScrollBarTop();
     };
 
+    function changeNewShare(result){
+        var hdShreBoxObj = $("hdRSTDetailBox");
+        $("ctRMain").src = result.url;
+        $("hdR0").href = result.url;
+        $("hdRShareTitle").children[0].innerHTML = result.title;
+
+        hdShreBoxObj.getElementsByClassName("detailBoxTitle")[0].innerHTML = result.title;
+        hdShreBoxObj.getElementsByClassName("SMBSharemanImg")[0].style.backgroundImage = "url(" + result.author_image + ")";
+        hdShreBoxObj.getElementsByClassName("SMBShareReason")[0].innerHTML = result.explain;
+        if(result.is_collection){
+            hdShreBoxObj.getElementsByClassName("toggleCollection")[0].innerHTML = "已收藏";
+        }
+        else{
+            hdShreBoxObj.getElementsByClassName("toggleCollection")[0].innerHTML = "收藏";
+        };
+
+        if(result.is_like){
+            hdShreBoxObj.getElementsByClassName("toggleLike")[0].innerHTML = "取消赞(" + result.likes + ")";
+        }
+        else{
+            hdShreBoxObj.getElementsByClassName("toggleLike")[0].innerHTML = "赞(" + result.likes + ")";
+        };
+
+        hdShreBoxObj.getElementsByClassName("SMBComment")[0].innerHTML = "评论(" + result.comments + ")"
+        hdShreBoxObj.getElementsByClassName("SMBTime")[0].innerHTML = result.timestamp;
+        
+        needToCleanComment = true;
+    };
+
     function setScrollBarHide(){
         $("ctLScrollBar").style.webkitTransitionDelay = "3s";
         $("ctLScrollBar").style.mozTransitionDelay = "3s";
@@ -267,7 +281,7 @@
 
         $("ctLScrollBar").style.webkitTransitionDuration = "1.2s";
         $("ctLScrollBar").style.mozTransitionDuration = "1.2s";
-        $("ctLScrollBar").style.transitionDuration = "1.2s"
+        $("ctLScrollBar").style.transitionDuration = "1.2s";
 
         $("ctLScrollBar").style.opacity = 0;
     };
@@ -467,6 +481,8 @@
         var contentJson;
         var contentObj       = $("ctLMain0Show").children;
         var lengthLoadBefore = contentObj.length;
+        var collectNum       = parseInt((lengthLoadBefore + 18)/20) + 1;
+
         var xmlhttp          =new XMLHttpRequest();
         ctLMain0Wait.waitingShow();
         xmlhttp.onreadystatechange=function(){
@@ -474,27 +490,55 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status&&json.length>0){
                     document.onmousemove = function(){};
-                    ++collectNum;
                     for (var i = 0;i < json.length;++i){
                         content = json.result[i];
-
-                        addElement = "<div><a href='"+content.url
-                                +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
+                        var newNode = document.createElement("div");
+                        addElement = "<a href='"+content.url
+                                +"' class='eachConnection' id='"+content.id
                                 +"col'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                 +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
-                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection' onclick='return colClickToAddCollect(this)'>已收藏</a><a class='toggleLike' onclick='return clickToAddLike(this)'>";
+                                +"</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection'>已收藏</a><a class='toggleLike'>";
+                        if(content.is_like){
+                            addElement += "取消";
+                        };
                         addElement += "赞("+content.likes
                                     +")</a><span class='ctCommentShow'>评论("+ content.comments
-                                    +")</span>" + content.timestamp
-                                    +"</span></div>";
-
-                        $("ctLMain0Show").innerHTML = $("ctLMain0Show").innerHTML + addElement;
+                                    +")</span></span><div class='detailBox'><p class='detailBoxTitle'>" + content.title
+                                    +"</p><div class='sharemanBox'><div class='SMBLeft'><div class='SMBSharemanImg' style='background-image:url(" + content.author_image
+                                    +")'></div></div><div class='SMBRight'><p class='SMBShareReason'>" + content.author_name 
+                                    +": " + content.explain
+                                    +"</p><div class='SMBDetailBox'><span>赞(" + content.likes
+                                    +") 评论(" + content.comments
+                                    +") <span class='ctLSMBTime'>" + content.timestamp
+                                    +"</span></span></div></div></div></div>";
+                        newNode.innerHTML = addElement;
+                        newNode.children[0].onclick = function(){
+                            return ecClick(this);
+                        };
+                        newNode.children[0].onmouseover = function(){
+                            shareBoxShow(this.parentNode.children[2]);
+                        };
+                        newNode.children[0].onmouseout = function(){
+                            shareBoxHide(this.parentNode.children[2]);
+                        };
+                        newNode.getElementsByClassName("toggleCollection")[0].onclick = function(){
+                            return colClickToAddCollect(this);
+                        };
+                        newNode.getElementsByClassName("toggleLike")[0].onclick = function(){
+                            return clickToAddLike(parseInt(this.parentNode.parentNode.children[0].id),"col");
+                        };
+                        $("ctLMain0Show").appendChild(newNode);
                     };
                     var lengthNow = contentObj.length;
                     var i = lengthLoadBefore;
                     var loopTime = setInterval(function(){
                         if(i < lengthNow){
-                            contentObj[i].children[0].className += " contentShow";
+                            contentObj[i].style.display = "block";
+                            var obj = contentObj[i];
+                            setTimeout(function(){
+                              obj.style.opacity = 1;  
+                            },0);
+
                             changeScrollBarHeight();
                             ++i;
                         }
@@ -504,7 +548,7 @@
                             canLoad[0] = true;
                             clearInterval(loopTime);
                         };  
-                    },20);
+                    },100);
                 }
                 else{
                     needToLoad[0] = true;
@@ -539,33 +583,61 @@
                     };
                     for (var i = 0;i < json.length;++i){
                         content = json.result[i];
-
-                        addElement = "<div><a href='"+content.url
-                                +"' class='eachConnection' onclick='return ecCilck(this)' id='"+content.id
+                        var newNode = document.createElement("div");
+                        addElement = "<a href='"+content.url
+                                +"' class='eachConnection' id='"+content.id
                                 +"con'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url="+content.url
                                 +")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>"+content.title
-                                +"</span></div></div></div></a><span class='shareDetail'><a href='javascript:void(0)' class='toggleCollection' onclick='return conClickToAddCollect(this)'>";
+                                +"</span></div></div></div></a><span class='shareDetail'><a href='javascript:void(0)' class='toggleCollection'>";
                         
                         if(content.is_collection){
                             addElement += "已";
                         };
-                        addElement += "收藏</a><a href='javascript:void(0)' class='toggleLike' onclick='return clickToAddLike(this)'>"
+                        addElement += "收藏</a><a href='javascript:void(0)' class='toggleLike'>"
                         
                         if(content.is_like){
                             addElement += "取消";
                         };
                         addElement += "赞("+content.likes
                                     +")</a><span class='ctCommentShow'>评论("+ content.comments
-                                    +")</span>" + content.timestamp
-                                    +"</span></div>";
+                                    +")</span></span><div class='detailBox'><p class='detailBoxTitle'>" + content.title
+                                    +"</p><div class='sharemanBox'><div class='SMBLeft'><div class='SMBSharemanImg' style='background-image:url(" + content.author_image
+                                    +")'></div></div><div class='SMBRight'><p class='SMBShareReason'>" + content.author_name 
+                                    +": " + content.explain
+                                    +"</p><div class='SMBDetailBox'><span>赞(" + content.likes
+                                    +") 评论(" + content.comments
+                                    +") <span class='ctLSMBTime'>" + content.timestamp
+                                    +"</span></span></div></div></div></div>";
 
-                        $("ctLMain1Show").innerHTML = $("ctLMain1Show").innerHTML + addElement;
+                        newNode.innerHTML = addElement;
+                        newNode.children[0].onclick = function(){
+                            return ecClick(this);
+                        };
+                        newNode.children[0].onmouseover = function(){
+                            shareBoxShow(this.parentNode.children[2]);
+                        };
+                        newNode.children[0].onmouseout = function(){
+                            shareBoxHide(this.parentNode.children[2]);
+                        };
+                        newNode.getElementsByClassName("toggleCollection")[0].onclick = function(){
+                            return conClickToAddCollect(this);
+                        };
+                        newNode.getElementsByClassName("toggleLike")[0].onclick = function(){
+                            return clickToAddLike(parseInt(this.parentNode.parentNode.children[0].id),"con");
+                        };
+                        $("ctLMain1Show").appendChild(newNode);
+
                     };
                     var lengthNow = contentObj.length;
                     var i = lengthLoadBefore;
                     var loopTime = setInterval(function(){
                         if(i < lengthNow){
-                            contentObj[i].children[0].className += " contentShow";
+                            var obj = contentObj[i];
+                            obj.style.display = "block";
+                            setTimeout(function(){
+                              obj.style.opacity = 1;  
+                            },0);
+
                             changeScrollBarHeight();
 
                             ++i;
@@ -576,7 +648,7 @@
                             canLoad[1] = true;
                             clearInterval(loopTime);
                         };  
-                    },20);
+                    },100);
                 }
                 else{
                     needToLoad[1] = true;
@@ -602,16 +674,12 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     ifameWaitShow();
-                    $("ctRMain").src = json.result.url;
-                    $("hdR0").href = json.result.url;
-                    $("hdRShareTitle").children[0].innerHTML = json.result.title;
+                    changeNewShare(json.result);
                     contentId = json.result.id;
-                    commentID = 1;
-                    needToCleanComment = true;
                     if(point === 2){
                         $("ctLMain2Show").style.marginTop = "0px";
                         $("commentText").value = "";
-                        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";;
+                        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
                         commentLoad();
                     };
                 }
@@ -625,6 +693,7 @@
     function commentLoad(){
         var contentObj       = $("ctLMain2Show").children;
         var lengthLoadBefore = contentObj.length;
+        var commentID = parseInt((lengthLoadBefore + 18)/20) + 1;
         var xmlhttp          = new XMLHttpRequest();
         ctLMain2Wait.waitingShow();
         xmlhttp.onreadystatechange = function(){
@@ -637,7 +706,7 @@
                     for(var i = 0;i < commentLength;++i){
                         var newCommentText = "<div class='eachComment'><div class='eCmShareImg' style='background-image:url(" + json.result[i].author_image
                                             +");'></div><div class='eCmCommentText'><span>"+ json.result[i].body
-                                            +"</span><a href='javascript:void(0)' class='replyButton' onclick='commentReply(this)'><div></div></a></div></div>"
+                                            +"</span><a href='javascript:void(0)' class='replyButton'><div></div></a></div></div>"
                         $("ctLMain2Show").innerHTML = $("ctLMain2Show").innerHTML + newCommentText;
                     };
 
@@ -645,7 +714,14 @@
                     var i = lengthLoadBefore;
                     var loopTime = setInterval(function(){
                         if(i < lengthNow){
-                            contentObj[i].className += " commentShow";
+                            var addElement = contentObj[i];
+                            addElement.style.display = "flex";
+                            setTimeout(function(){
+                                addElement.style.opacity = 1;
+                            },0);
+                            contentObj[i].getElementsByClassName("replyButton")[0].onclick = function(){
+                                commentReply(this);
+                            };
                             changeScrollBarHeight();
                             ++i;
                         }
@@ -685,10 +761,23 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     addCommentNum();
-                    var newCommentText = "<div class='eachComment commentShow'><div class='eCmShareImg' style='background-image:" + userImgUrl
+                    var addElement = document.createElement("div");
+                    addElement.className = "eachComment  commentShow";
+                    addElement.innerHTML = "<div class='eCmShareImg' style='background-image:" + userImgUrl
                                         +";'></div><div class='eCmCommentText'><span>"+ commentText
-                                        +"</span><a class='replyButton' onclick='commentReply(this)'><div></div></a></div></div>"
-                    $("ctLMain2Show").innerHTML = newCommentText + $("ctLMain2Show").innerHTML;
+                                        +"</span><a class='replyButton'><div></div></a></div>";
+                    addElement.children[1].children[1].onclick = function(){
+                        commentReply(this);
+                    };
+                    $('ctLMain2Show').insertBefore(addElement,$('ctLMain2Show').children[1]);
+                    addElement.style.transitionDuration = "2s";
+                    addElement.style.mozTransitionDuration = "2s";
+                    addElement.style.webkitTransitionDuration = "2s";
+                    addElement.style.display = "flex";
+                    setTimeout(function(){
+                        addElement.style.opacity = 1;
+                    },0);
+
                     changeScrollBarHeight();
                     $("commentText").value = "";
                     $("commentSubmit").style.backgroundColor = "#E0E0E0";
@@ -708,6 +797,9 @@
         var countShorten      = 1;
         var eachOpacity       = 1.0/timeToDisappear;
         var eachHeight        = 70.0/timeToShorten;
+        obj.style.transitionDuration = 0;
+        obj.style.mozTransitionDuration = 0;
+        obj.style.webkitTransitionDuration = 0;
         var time1 = setInterval(function(){
             if(countDisappear <= timeToDisappear){
                 obj.style.opacity = 1 - countDisappear*eachOpacity;
@@ -729,7 +821,7 @@
         },1); 
     };
 
-    window.commentReply = function(obj){
+    function commentReply(obj){
         var reg1 = /^回复@\S+\s?\S+:/;
         var reg2 = /回复@\S+\s?\S+:/;
         var reg3 = /^\S+\s?\S+回复@\S+\s?\S+:/;
@@ -753,31 +845,72 @@
         };        
     };
 
-    window.ecCilck = function(obj){
+    function ecClick(obj){
+        var objParentNode = obj.parentNode;
+        var hdShareBoxObj = $("hdRSTDetailBoxShow");
         contentId = parseInt(obj.id);
-        commentID = 1;
         ifameWaitShow();
+        $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
         $("ctRMain").src = obj.href;
         $("hdR0").href = obj.href;
-        $("hdRShareTitle").children[0].innerHTML = obj.children[0].children[1].children[0].children[0].innerHTML
+        $("hdRShareTitle").children[0].innerHTML                                        = objParentNode.getElementsByClassName("shareTitle")[0].children[0].innerHTML
+        hdShareBoxObj.getElementsByClassName("detailBoxTitle")[0].innerHTML             = objParentNode.getElementsByClassName("shareTitle")[0].children[0].innerHTML;
+        hdShareBoxObj.getElementsByClassName("SMBSharemanImg")[0].style.backgroundImage = objParentNode.getElementsByClassName("SMBSharemanImg")[0].style.backgroundImage;
+        hdShareBoxObj.getElementsByClassName("SMBShareReason")[0].innerHTML             = objParentNode.getElementsByClassName("SMBShareReason")[0].innerHTML;
+        hdShareBoxObj.getElementsByClassName("toggleCollection")[0].innerHTML           = objParentNode.getElementsByClassName("toggleCollection")[0].innerHTML;
+        hdShareBoxObj.getElementsByClassName("toggleLike")[0].innerHTML                 = objParentNode.getElementsByClassName("toggleLike")[0].innerHTML;
+        hdShareBoxObj.getElementsByClassName("SMBComment")[0].innerHTML                 = objParentNode.getElementsByClassName("ctCommentShow")[0].innerHTML;
+        hdShareBoxObj.getElementsByClassName("SMBTime")[0].innerHTML                    = objParentNode.getElementsByClassName("ctLSMBTime")[0].innerHTML;
         return false;
     };
 
-    window.clickToAddLike = function(obj){
+    function clickToAddLike(id,objType){
         var xmlhttp = new XMLHttpRequest();
-        var id = parseInt(obj.parentNode.parentNode.children[0].id);
+        var conObj = document.getElementById(id + "con");
+        var colObj = document.getElementById(id + "col");
+        var hdObj = $("hdRShareTitle");
         
         xmlhttp.onreadystatechange = function(){
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     if(json.result == "like"){
-                        var value = parseInt(obj.innerHTML.substring(2));
-                        obj.innerHTML = "取消赞(" + (value+1) + ")";
+                        var value;
+                        switch(objType){
+                            case "col":value = parseInt(colObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(2));
+                                        break;
+                            case "con":value = parseInt(conObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(2));
+                                        break;
+                            case "hd":value = parseInt(hdObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(2));
+                                        break;
+                        };
+                        var newValue = "取消赞(" + (value+1) + ")";
+                        if(conObj){
+                            conObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        };
+                        if(colObj){
+                            colObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        };
+                        $("hdRSTDetailBoxShow").getElementsByClassName("toggleLike")[0].innerHTML = newValue;
                     }
                     else if(json.result == "notlike"){
-                        var value = parseInt(obj.innerHTML.substring(4));
-                        obj.innerHTML = "赞(" + (value-1) + ")";
+                        var value;
+                        switch(objType){
+                            case "col":value = parseInt(colObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(4));
+                                        break;
+                            case "con":value = parseInt(conObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(4));
+                                        break;
+                            case "hd":value = parseInt(hdObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML.substring(4));
+                                        break;
+                        };
+                        var newValue = "赞(" + (value-1) + ")";
+                        if(conObj){
+                            conObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        };
+                        if(colObj){
+                            colObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        };
+                        $("hdRSTDetailBoxShow").getElementsByClassName("toggleLike")[0].innerHTML = newValue;
                     };
                 };
                
@@ -789,7 +922,7 @@
         return true;
     };
 
-    window.conClickToAddCollect = function(obj){
+    function conClickToAddCollect(obj){
         var xmlhttp = new XMLHttpRequest();
         var id = parseInt(obj.parentNode.parentNode.children[0].id);
         var colObj = document.getElementById(id + "col");
@@ -803,10 +936,28 @@
                             var addElement = document.createElement("div");
                             addElement.innerHTML = obj.parentNode.parentNode.innerHTML;
                             addElement.children[0].id = id+"col";
-                            addElement.getElementsByClassName("toggleCollection")[0].setAttribute("onclick","colClickToAddCollect(this");
-
+                            addElement.children[0].onclick = function(){
+                                return ecClick(this);
+                            };
+                            addElement.children[0].onmouseover = function(){
+                                shareBoxShow(this.parentNode.children[2]);
+                            };
+                            addElement.children[0].onmouseout = function(){
+                                shareBoxHide(this.parentNode.children[2]);
+                            };
+                            addElement.children[1].children[0].onclick = function(){
+                                return colClickToAddCollect(this);
+                            };
+                            addElement.children[1].children[1].onclick = function(){
+                                return clickToAddLike(parseInt(this.parentNode.parentNode.children[0].id),"col");
+                            };
                             $('ctLMain0Show').insertBefore(addElement,$('ctLMain0Show').children[1]);
-                           // document.getElementById(id+"col").parentNode.getElementsByClassName("toggleCollection")[0].onclick = "return colClickToAddCollect(this)";
+                            addElement.style.display = "block";
+                            addElement.style.opacity = 1;
+
+                            if(id == contentId){
+                                $("hdRSTDetailBox").getElementsByClassName("toggleCollection")[0].innerHTML = "已收藏";
+                            };
 
                         }
                         else if(obj.innerHTML == "已收藏"){
@@ -814,6 +965,9 @@
                                if(colObj){
                                     $('ctLMain0Show').removeChild(colObj.parentNode);
                                };
+                               if(id == contentId){
+                                $("hdRSTDetailBox").getElementsByClassName("toggleCollection")[0].innerHTML = "收藏";
+                            };
                         };
                     };
                 };
@@ -824,7 +978,7 @@
         xmlhttp.send("share_id="+id);
     };
 
-    window.colClickToAddCollect = function(obj){
+    function colClickToAddCollect(obj){
         var xmlhttp = new XMLHttpRequest();
         var id = parseInt(obj.parentNode.parentNode.children[0].id);
         var  conObj = document.getElementById(id + "con");
@@ -834,12 +988,92 @@
                 if(json.status){
                     if(json.status){
                         if(conObj){
-                            var collectObj1 = conObj.parentNode.getElementsByClassName("toggleCollection")[0];
-                            if(collectObj1.innerHTML == "已收藏"){
-                                collectObj1.innerHTML = "收藏";
-                            };
+                            conObj.parentNode.getElementsByClassName("toggleCollection")[0].innerHTML = "收藏";
+                        };
+                        if(id == contentId){
+                            $("hdRSTDetailBox").getElementsByClassName("toggleCollection")[0].innerHTML = "收藏";
                         };
                         collectDelete(obj.parentNode.parentNode);
+                    };
+                };
+            };
+        };
+        xmlhttp.open("POST","/collection/toggleCollection",true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("share_id="+id);
+    };
+
+    function hdClickToAddCollect(obj){
+        var xmlhttp = new XMLHttpRequest();
+        var id = contentId;
+        var colObj = document.getElementById(id + "col");
+        var conObj = document.getElementById(id + "con");
+        var hdObj  = $("hdRSTDetailBox");
+        xmlhttp.onreadystatechange = function(){
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200){//成功发送请求
+                var json  = JSON.parse(xmlhttp.responseText);
+                if(json.status){
+                    if(json.status){
+                        if(obj.innerHTML == "收藏"){
+                            obj.innerHTML = "已收藏";
+                            var addElement = document.createElement("div");
+                            addElement.innerHTML = "<a href='"
+                                + $("ctRMain").src
+                                + "' class='eachConnection' id='" 
+                                + id
+                                + "col'><div class='briefShow'><div class='shareShot' style='background:url(http://img.bitpixels.com/getthumbnail?code=38052&size=200&url=" 
+                                + $("ctRMain").src
+                                + ")'></div><div class='shareTitleBlock'><div class='shareTitle'><span>" 
+                                + hdObj.getElementsByClassName("detailBoxTitle")[0].innerHTML
+                                + "</span></div></div></div></a><span class='shareDetail'><a class='toggleCollection'>已收藏</a><a class='toggleLike'>"
+                                + hdObj.getElementsByClassName("toggleLike")[0].innerHTML
+                                + "</a><span class='ctCommentShow'>"
+                                + hdObj.getElementsByClassName("SMBComment")[0].innerHTML
+                                + "</span></span><div class='detailBox'><p class='detailBoxTitle'>" 
+                                + hdObj.getElementsByClassName("detailBoxTitle")[0].innerHTML
+                                + "</p><div class='sharemanBox'><div class='SMBLeft'><div class='SMBSharemanImg' style='background-image:" 
+                                + hdObj.getElementsByClassName("SMBSharemanImg")[0].style.backgroundImage
+                                + "'></div></div><div class='SMBRight'><p class='SMBShareReason'>"
+                                + hdObj.getElementsByClassName("SMBShareReason")[0].innerHTML
+                                + "</p><div class='SMBDetailBox'><span>" 
+                                + hdObj.getElementsByClassName("toggleLike")[0].innerHTML + " "
+                                + hdObj.getElementsByClassName("SMBComment")[0].innerHTML
+                                + " <span class='ctLSMBTime'>" 
+                                + hdObj.getElementsByClassName("SMBTime")[0].innerHTML
+                                + "</span></span></div></div></div></div>";;
+                            addElement.children[0].onclick = function(){
+                                return ecClick(this);
+                            };
+                            addElement.children[0].onmouseover = function(){
+                                shareBoxShow(this.parentNode.children[2]);
+                            };
+                            addElement.children[0].onmouseout = function(){
+                                shareBoxHide(this.parentNode.children[2]);
+                            };
+                            addElement.children[1].children[0].onclick = function(){
+                                return colClickToAddCollect(this);
+                            };
+                            addElement.children[1].children[1].onclick = function(){
+                                return clickToAddLike(parseInt(this.parentNode.parentNode.children[0].id),"col");
+                            };
+                            $('ctLMain0Show').insertBefore(addElement,$('ctLMain0Show').children[1]);
+                            addElement.style.display = "block";
+                            addElement.style.opacity = 1;
+
+                            if(conObj){
+                                 conObj.parentNode.getElementsByClassName("toggleCollection")[0].innerHTML = "已收藏";
+                            };
+
+                        }
+                        else if(obj.innerHTML == "已收藏"){
+                               obj.innerHTML = "收藏";
+                               if(conObj){
+                                    conObj.parentNode.getElementsByClassName("toggleCollection")[0].innerHTML = "收藏";
+                               };
+                               if(colObj){
+                                    $('ctLMain0Show').removeChild(colObj.parentNode);
+                               };
+                        };
                     };
                 };
             };
@@ -857,8 +1091,7 @@
         const t1 = 0.4*T;//加速时间
         const t2 = 0.6*T;//减速时间
         const v  = 200/T;
-        const ctLMainWidth = parseFloat(getCss("headerLeft").width);
-        const ctRMainWidth = parseFloat(getCss("headerRight").width);
+        const ctLMainWidth = parseFloat(getCss("layoutLeft").width);
         const length = ctLMainWidth;
         ctLShowJudge = false;
         $("toLeft").style.display = "none";
@@ -872,13 +1105,11 @@
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
             $("contentLeft").style.marginLeft  = (0 - moveDistance) +"px";
-            $("contentRight").style.width = (ctRMainWidth + moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
             else{
                 $("contentLeft").style.display  ="none";
-                $("contentRight").style.width = "100%"
                 clearInterval(moveTime);
             }
         },1);
@@ -888,32 +1119,20 @@
         var bodyWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
         var countTime = 1;
         var moveDistance;
-        var ctLMainWidth;
-        var length;
-        const a1 = 500/(T*T);
-        const a2 = 1000/(3*T*T);
-        const t1 = 0.4*T;//加速时间
-        const t2 = 0.6*T;//减速时间
-        const v  = 200/T;
+        const ctLMainWidth = parseFloat(getCss("layoutLeft").width);
+        const length       = ctLMainWidth;
+        const a1           = 500/(T*T);
+        const a2           = 1000/(3*T*T);
+        const t1           = 0.4*T;//加速时间
+        const t2           = 0.6*T;//减速时间
+        const v            = 200/T;
 
         $("moreButtomCover").onmouseout = function(){};
 
-        $("toLeft").style.display = "inline-block";
-        $("toRight").style.display = "none";
-
-        if(bodyWidth <= 1117){
-            ctLMainWidth = 335;
-            length = 335;
-        }
-        else{
-            ctLMainWidth = bodyWidth*0.3;
-            length = bodyWidth*0.3;
-        };
-
-        $("contentLeft").style.marginLeft  = (0 - ctLMainWidth) +"px";
-        $("contentLeft").style.width  = (ctLMainWidth) +"px";
-        $("contentLeft").style.minWidth  = "0px";
-        $("contentLeft").style.display  ="inline-block";
+        $("toLeft").style.display         = "inline-block";
+        $("toRight").style.display        = "none";
+        $("contentLeft").style.marginLeft = (0 - ctLMainWidth) +"px";
+        $("contentLeft").style.display    = "inline-block";
 
         var moveTime = setInterval(function(){  
             if(countTime <= t1){
@@ -923,15 +1142,11 @@
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
             $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";
-            $("contentRight").style.width = (bodyWidth - moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
             else{
                 ctLShowJudge = true;
-                $("contentLeft").style.width  = "30%";
-                $("contentLeft").style.minWidth  = "335px";
-                $("contentRight").style.width  = (bodyWidth - ctLMainWidth) + "px";
                 clearInterval(moveTime);
             }
         },1);
@@ -945,8 +1160,7 @@
         const t1 = 0.4*T;//加速时间
         const t2 = 0.6*T;//减速时间
         const v  = 200/T;
-        const ctLMainWidth = parseFloat(getCss("headerLeft").width);
-        const ctRMainWidth = parseFloat(getCss("headerRight").width);
+        const ctLMainWidth = parseFloat(getCss("layoutLeft").width);
         const length = ctLMainWidth;
 
         var moveTime = setInterval(function(){  
@@ -957,47 +1171,33 @@
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
             $("headerLeft").style.marginLeft = (0 - moveDistance) +"px";
-            $("headerRight").style.width  = (ctRMainWidth + moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
             else{
                 $("headerLeft").style.display = "none";
-                $("headerRight").style.width  = "100%"
                 clearInterval(moveTime);
             }
         },1);
     };
 
     function ctLMainShow(T){
-        var bodyWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
-        var countTime = 1;
+        var bodyWidth      = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width);
+        var countTime      = 1;
         var moveDistance;
-        var ctLMainWidth;
-        var length;
-        const a1 = 500/(T*T);
-        const a2 = 1000/(3*T*T);
-        const t1 = 0.4*T;//加速时间
-        const t2 = 0.6*T;//减速时间
-        const v  = 200/T;
+        const ctLMainWidth = parseFloat(getCss("layoutLeft").width);
+        const length       = ctLMainWidth;
+        const a1           = 500/(T*T);
+        const a2           = 1000/(3*T*T);
+        const t1           = 0.4*T;//加速时间
+        const t2           = 0.6*T;//减速时间
+        const v            = 200/T;
 
         $("toLeft").style.display = "inline-block";
         $("toRight").style.display = "none";
 
-        if(bodyWidth <= 1117){
-            ctLMainWidth = 335;
-            length = 335;
-        }
-        else{
-            ctLMainWidth = bodyWidth*0.3;
-            length = bodyWidth*0.3;
-        }
         $("headerLeft").style.marginLeft = (0 - ctLMainWidth) +"px";
         $("contentLeft").style.marginLeft  = (0 - ctLMainWidth) +"px";
-        $("headerLeft").style.width = (ctLMainWidth) +"px";
-        $("contentLeft").style.width  = (ctLMainWidth) +"px";
-        $("headerLeft").style.minWidth = "0px";
-        $("contentLeft").style.minWidth  = "0px";
 
         $("headerLeft").style.display = "inline-block";
         $("contentLeft").style.display  ="inline-block";
@@ -1010,25 +1210,45 @@
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
             $("headerLeft").style.marginLeft = (0 - ctLMainWidth + moveDistance) +"px";
-            $("headerRight").style.width  = (bodyWidth - moveDistance) +"px";
             $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";
-            $("contentRight").style.width = (bodyWidth - moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
             else{
                 ctLShowJudge = true;
-                $("headerLeft").style.width = "30%";
-                $("contentLeft").style.width  = "30%";
-                $("headerLeft").style.minWidth = "335px";
-                $("contentLeft").style.minWidth  = "335px";
-                //$("headerRight").style.width = (bodyWidth - ctLMainWidth) + "px";
-                //$("contentRight").style.width  = (bodyWidth - ctLMainWidth) + "px";
-                $("headerRight").style.width = "70%";
-                $("contentRight").style.width  = "70%";
                 clearInterval(moveTime);
             }
         },1);
+    };
+
+    function shareBoxShow(obj){
+        if(window.getComputedStyle(obj,false).display == "none"){
+            obj.style.display = "inline-block";
+
+            var bodyHeight = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).height);
+            var shareBoxHeight = parseFloat(window.getComputedStyle(obj,false).height);
+            var objParentnodeTop = obj.parentNode.getBoundingClientRect().top;
+            var disBetweenBottom = bodyHeight - objParentnodeTop - 135;
+            if(disBetweenBottom - shareBoxHeight < 0){
+                var disBetweenTop = objParentnodeTop - 45;
+                if(disBetweenTop > disBetweenBottom && obj.style.top != "auto"){
+                    obj.style.top = "auto";
+                    obj.style.bottom = "70px";
+                }
+                else if(disBetweenTop < disBetweenBottom && obj.style.top == "auto"){
+                    obj.style.top = "70px";
+                    obj.style.bottom = "auto";
+                };
+            };
+            setTimeout(function(){obj.style.opacity = 1;},0);
+        };   
+    };
+
+    function shareBoxHide(obj){
+        if(window.getComputedStyle(obj,false).display == "block"||window.getComputedStyle(obj,false).display == "inline-block"){
+            obj.style.display = "none";
+            obj.style.opacity = 0;
+        };
     };
 
     function hasHeaderLeftHide(){
@@ -1059,7 +1279,6 @@
 
     window.onresize = function(){
         changeCtLMarginTop();
-        changeContentRightWidth()
 
         ctLMain0Wait.changeWaitBox();
         ctLMain1Wait.changeWaitBox();
@@ -1081,56 +1300,69 @@
     }
 
     $("hdL0").onclick = function(){
-        if(point !== 0){
-            $("hdL"+point).style.cursor = "pointer";
-            arrowMove(30,point - 0);
-            ctLMainMove(30,0);
-            point = 0;
-            changeScrollBarHeight(); 
-            $("hdL0").style.cursor = "default";
+        if(canHeaderMove){
+            if(point !== 0){
+                canHeaderMove = false;
+                $("hdL"+point).style.cursor = "pointer";
+                arrowMove(30,point - 0);
+                ctLMainMove(30,0);
+                point = 0;
+                changeScrollBarHeight(); 
+                $("hdL0").style.cursor = "default";
+            };
         };
     };
 
     $("hdL1").onclick = function(){
-        if(point !== 1){
-            $("hdL"+point).style.cursor = "pointer";
-            arrowMove(30,point - 1);
-            ctLMainMove(30,1);
-            point = 1;
-            changeScrollBarHeight();
-            $("hdL1").style.cursor = "default";
+        if(canHeaderMove){
+            if(point !== 1){
+                canHeaderMove = false;
+                $("hdL"+point).style.cursor = "pointer";
+                arrowMove(30,point - 1);
+                ctLMainMove(30,1);
+                point = 1;
+                changeScrollBarHeight();
+                $("hdL1").style.cursor = "default";
+            };
         };
     };
 
     $("hdL2").onclick = function(){
-        if(point !== 2){
-            $("hdL"+point).style.cursor = "pointer";
-            arrowMove(30,point - 2);
-            ctLMainMove(30,2);
-            point = 2;      
-            changeScrollBarHeight();  
-            if(commentID === 1){
-                if(needToCleanComment){//在无评论时，根据是否第一次点开该分享的评论，true:清除，false:不执行
-                    needToCleanComment = false;
-                    $("commentText").value = "";
-                };
-                
-                $("ctLMain2Show").style.marginTop = "0px"
-                $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
-                commentLoad();
-            }
-            $("hdL2").style.cursor = "default";
+        if(canHeaderMove){
+            if(point !== 2){
+                canHeaderMove = false;
+                $("hdL"+point).style.cursor = "pointer";
+                arrowMove(30,point - 2);
+                ctLMainMove(30,2);
+                point = 2;      
+                changeScrollBarHeight(); 
+                var commentID = parseInt(($("ctLMain2Show").children.length + 18)/20) + 1; 
+                if(commentID === 1){
+                    if(needToCleanComment){//在无评论时，根据是否第一次点开该分享的评论，true:清除，false:不执行
+                        needToCleanComment = false;
+                        $("commentText").value = "";
+                    };
+                    
+                    $("ctLMain2Show").style.marginTop = "0px"
+                    $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
+                    commentLoad();
+                }
+                $("hdL2").style.cursor = "default";
+            };
         };
     };
 
     $("hdL3").onclick = function(){
-        if(point !== 3){
-            $("hdL"+point).style.cursor = "pointer";
-            arrowMove(30,point - 3);
-            ctLMainMove(30,3);
-            point = 3;     
-            changeScrollBarHeight();  
-            $("hdL3").style.cursor = "default";
+        if(canHeaderMove){
+            if(point !== 3){
+                canHeaderMove = false;
+                $("hdL"+point).style.cursor = "pointer";
+                arrowMove(30,point - 3);
+                ctLMainMove(30,3);
+                point = 3;     
+                changeScrollBarHeight();  
+                $("hdL3").style.cursor = "default";
+            };
         };
     };
 
@@ -1146,11 +1378,8 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     ifameWaitShow();
-                    $("ctRMain").src = json.result.url;
-                    $("hdR0").href = json.result.url;
-                    $("hdRShareTitle").children[0].innerHTML = json.result.title;
+                    changeNewShare(json.result);
                     --contentId;
-                    commentID = 1;
                     needToCleanComment = true;
                     if(point === 2){
                         $("commentText").value = "";
@@ -1174,11 +1403,8 @@
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
                     ifameWaitShow();
-                    $("ctRMain").src = json.result.url;
-                    $("hdR0").href = json.result.url;
-                    $("hdRShareTitle").children[0].innerHTML = json.result.title;
+                    changeNewShare(json.result);
                     ++contentId;
-                    commentID = 1;
                     needToCleanComment = true;
                     if(point === 2){
                         $("commentText").value = "";
@@ -1198,6 +1424,7 @@
         if(ctLShowJudge&&!hasContentLeftHide()){
             contentLeftHide(20);
             $("moreButtomCover").onmouseout = function(){
+                $("moreButtomCover").onmouseout = function(){};
                 headerLeftHide(20);
             };
         }
@@ -1210,6 +1437,13 @@
                 contentLeftShow(20);
             }
         };
+    };
+
+    $("hdRSTDetailBox").getElementsByClassName("toggleCollection")[0].onclick = function(){
+        return hdClickToAddCollect(this);
+    };
+    $("hdRSTDetailBox").getElementsByClassName("toggleLike")[0].onclick = function(){
+        return clickToAddLike(contentId,"hd");
     };
 
     $("ctLMain").onmousewheel = function(event) {

@@ -77,7 +77,7 @@ function login(email, password){
     }
     xhr.open("POST",urlPrefix+"/extension/login", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send("email="+email+"&password="+pwdhash);
+    xhr.send("email="+email+"&password="+password);
 }
 
 function share(parameters){
@@ -85,23 +85,25 @@ function share(parameters){
     var title = parameters.title;
     var explain = parameters.explain;
     var xhr = new XMLHttpRequest();
-    xhr.open("POST",  urlPrefix+"/add", true);
+    xhr.open("POST",  urlPrefix+"/share/add", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xhr.send("url="+url+"&title="+title+"&explain="+explain);
     xhr.onreadystatechange = function() {
         if(xhr.readyState==4 && xhr.status==200) {
             var resp = JSON.parse(xhr.responseText);
-            if(resp.success){
+            if(resp.status){
                 console.log("shared");
                 showInfo("shared success");
-            }else if (resp.errorCode == 1){
-                shareDiv.style.display = "none";
-                loginDiv.style.display = "block";
-                error = "you need login"
-                var text = document.createTextNode(error);
-                loginError.appendChild(text);
-            }else if (resp.errorCode == 2){
-                error = "this web has been shared";
+            // }else if (resp.errorCode == 1){
+                // shareDiv.style.display = "none";
+                // loginDiv.style.display = "block";
+                // error = "you need login"
+                // var text = document.createTextNode(error);
+                // loginError.appendChild(text);
+            // }else if (resp.errorCode == 2){
+            }
+            else{
+                error = resp.msg
                 showInfo(error);
             }
         }
