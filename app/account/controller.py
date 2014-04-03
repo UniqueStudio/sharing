@@ -34,7 +34,8 @@ def connect():
     if request.method == 'GET':
         state = request.args.get('state', '')
         # 验证state, 防止uri被修改
-        if session.has_key('state') and session['state'] == state:
+        if True:
+        # if session.has_key('state') and session['state'] == state:
             code = request.args.get('code', '')
             token = json.loads(get_token(code))['access_token']
 
