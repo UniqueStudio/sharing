@@ -1,4 +1,4 @@
-var urlPrefix = "http://localhost:5000"
+var urlPrefix = "http://share.hustunique.com"
 var loginButton = document.getElementById('loginButton');
 var shareButton = document.getElementById('shareButton');
 var logoutButton = document.getElementById('logout');
