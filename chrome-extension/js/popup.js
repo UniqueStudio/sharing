@@ -1,3 +1,4 @@
+//var urlPrefix = "http://localhost:5000"
 var urlPrefix = "http://share.hustunique.com"
 var loginButton = document.getElementById('loginButton');
 var shareButton = document.getElementById('shareButton');
@@ -77,7 +78,7 @@ function login(email, password){
     }
     xhr.open("POST",urlPrefix+"/extension/login", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send("email="+email+"&password="+password);
+    xhr.send("email="+email+"&password="+pwdhash);
 }
 
 function share(parameters){

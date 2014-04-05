@@ -9,9 +9,7 @@
       "tabs",
       "cookies",
       "http://localhost/*",
-    "http://www.baidu.com/*", 
-    "http://share.hustunique.com/*"
-
+      "http://share.hustunique.com/*"
       ],
 
   "browser_action": {
