@@ -122,6 +122,8 @@ def login():
 
 @account.route('/register', methods=['POST'])
 def register():
+    # 禁掉注册
+    raise OutputError('亲，该功能暂时还没开放哦～')
     register_form = RegisterForm()
 
     # 当表单提交时
