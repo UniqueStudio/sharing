@@ -16,8 +16,10 @@ function init(){
     var email = getCookie("email");
     var pwd = getCookie("password");
     if(email && pwd){
+        console.log(email, pwd);
         login(email, pwd);
     }else{
+        console.log('heol');
         shareDiv.style.display = "none";
         loginDiv.style.display = "block";
     }
@@ -38,12 +40,14 @@ function showInfo(content){
 }
 
 function setCookie(c_name, value, expiredays){
+    console.log('set cookie', c_name, value, expiredays);
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + expiredays);
-    console.log(exdate.toGMTString());
     document.cookie = c_name + "=" + escape(value) +
-        ((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
+        ((expiredays==null) ? "" : ";expires="+exdate.toGMTString()) +
+        ";path=/;domain=www.uniqueguoqi.com";
 }
+
 function getCookie(c_name){
     if (document.cookie.length > 0){
         c_start = document.cookie.indexOf(c_name + "=");
@@ -88,7 +92,7 @@ function share(parameters){
     var title = parameters.title;
     var explain = parameters.explain;
     var xhr = new XMLHttpRequest();
-    xhr.open("POST",  urlPrefix+"/share/add", true);
+    xhr.open("POST",  urlPrefix+"/extension/add", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xhr.send("url="+url+"&title="+title+"&explain="+explain);
     xhr.onreadystatechange = function() {
@@ -138,6 +142,8 @@ shareButton.onclick = function() {
 
 logoutButton.onclick = function() {
     console.log('sb4');
+    setCookie("email", '', 0);
+    setCookie("password", '', 0);
     var xhr = new XMLHttpRequest();
     xhr.open("GET", urlPrefix + "/extension/logout", true);
     xhr.send();
@@ -146,8 +152,6 @@ logoutButton.onclick = function() {
             var resp = JSON.parse(xhr.responseText);
             if(resp.status){
                 showInfo("logout ");
-                setCookie("email", email, 0);
-                setCookie("pwd", pwdhash, 0);
             }
         }
     }
