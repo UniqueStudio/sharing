@@ -14,7 +14,7 @@ def add():
         raise OutputError('您还未登录，请登录后重试')
 
     user = User.query.get(session.get('ext_user_id'))
-    if user.email is session.get('ext_email'):
+    if user.email == session.get('ext_email'):
         g.current_user = user
     else:
         raise OutputError('登录信息有误，请重新登录')

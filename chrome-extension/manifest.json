@@ -9,6 +9,7 @@
       "tabs",
       "cookies",
       "http://localhost/*",
+	  "http://www.uniqueguoqi.com/*", 
       "http://share.hustunique.com/*"
       ],
 
