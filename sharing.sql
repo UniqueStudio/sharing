@@ -1,19 +1,45 @@
--- MySQL dump 10.13  Distrib 5.5.34, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.35, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: sharing
 -- ------------------------------------------------------
--- Server version	5.5.34-0ubuntu0.13.04.1
+-- Server version	5.5.35-2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `collections`
+--
+
+DROP TABLE IF EXISTS `collections`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `collections` (
+  `user_id` int(11) DEFAULT NULL,
+  `share_id` int(11) DEFAULT NULL,
+  KEY `user_id` (`user_id`),
+  KEY `share_id` (`share_id`),
+  CONSTRAINT `collections_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
+  CONSTRAINT `collections_ibfk_2` FOREIGN KEY (`share_id`) REFERENCES `share` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `collections`
+--
+
+LOCK TABLES `collections` WRITE;
+/*!40000 ALTER TABLE `collections` DISABLE KEYS */;
+/*!40000 ALTER TABLE `collections` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `comment`
@@ -24,7 +50,7 @@ DROP TABLE IF EXISTS `comment`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `body` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `body` varchar(1024) NOT NULL,
   `timestamp` datetime NOT NULL,
   `user_id` int(11) NOT NULL,
   `share_id` int(11) NOT NULL,
@@ -33,7 +59,7 @@ CREATE TABLE `comment` (
   KEY `share_id` (`share_id`),
   CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`share_id`) REFERENCES `share` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +68,7 @@ CREATE TABLE `comment` (
 
 LOCK TABLES `comment` WRITE;
 /*!40000 ALTER TABLE `comment` DISABLE KEYS */;
-INSERT INTO `comment` VALUES (1,'blablabla...','2014-02-14 07:24:13',2,1),(2,'这个段子真不错','2014-02-07 05:03:06',2,2),(3,'hello','2014-02-06 00:00:00',1,2);
+INSERT INTO `comment` VALUES (1,'郭旗: SDgadsg','2014-03-30 13:10:28',2,1),(2,'郭旗: asdg','2014-03-30 13:10:31',2,1);
 /*!40000 ALTER TABLE `comment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -55,13 +81,13 @@ DROP TABLE IF EXISTS `group`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(40) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `title` (`title`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `group_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -87,7 +113,7 @@ CREATE TABLE `group_users` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `group_users_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `group` (`id`),
   CONSTRAINT `group_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -108,16 +134,16 @@ DROP TABLE IF EXISTS `share`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `share` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `explain` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `url` varchar(1024) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `explain` varchar(1024) NOT NULL,
+  `url` varchar(1024) NOT NULL,
   `likes` int(11) NOT NULL,
   `timestamp` datetime NOT NULL,
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `share_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,7 +152,7 @@ CREATE TABLE `share` (
 
 LOCK TABLES `share` WRITE;
 /*!40000 ALTER TABLE `share` DISABLE KEYS */;
-INSERT INTO `share` VALUES (1,'hello world','这是一个测试','http://www.baidu.com/',0,'2014-02-04 10:18:47',1),(2,'hello','这是另一个测试','http://www.baidu.com/',2,'2014-02-04 12:13:57',1),(3,'nihao','这是第三个测试','http://www.baidu.com/',1,'2014-02-04 07:37:09',2),(4,'world','这是第四个测试','http://localhost:5000/',2,'2014-02-04 23:59:59',1),(5,'guoqi','blablabla....','http://www.csdn.com',1,'2014-02-02 03:07:19',2),(6,'hello','test','http://www.baidu.com/',0,'2014-02-09 23:26:34',1);
+INSERT INTO `share` VALUES (1,'API — Flask-SQLAlchemy 0.16 documentation','sdgdafh','http://docs.jinkan.org/docs/flask-sqlalchemy/api.html',1,'2014-03-30 13:08:05',2);
 /*!40000 ALTER TABLE `share` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -139,13 +165,13 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `email` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `pwdhash` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nickname` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `image` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(128) NOT NULL,
+  `pwdhash` varchar(32) NOT NULL,
+  `nickname` varchar(40) NOT NULL,
+  `image` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -154,7 +180,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'uniqueguoqi@gmail.com','c81e728d9d4c2f636f067f89cc14862c','guoqi',NULL),(2,'767813944@qq.com','c81e728d9d4c2f636f067f89cc14862c','hello',NULL),(4,'abc@gmai.com','202cb962ac59075b964b07152d234b70','hello',NULL),(5,'abc@gmail.com','202cb962ac59075b964b07152d234b70','hello ',NULL),(7,'qiguo@hustunique.com','202cb962ac59075b964b07152d234b70','郭旗','https://lh4.googleusercontent.com/-kr7Fvx_vFTM/AAAAAAAAAAI/AAAAAAAAAA8/foybQAaCUNU/photo.jpg?sz=50');
+INSERT INTO `user` VALUES (1,'uniqueguoqi@gmail.com','202cb962ac59075b964b07152d234b70','Qi Guo','https://lh6.googleusercontent.com/-0t4tY23UBag/AAAAAAAAAAI/AAAAAAAAABA/YKf0mgiWc2w/photo.jpg?sz=50'),(2,'qiguo@hustunique.com','c81e728d9d4c2f636f067f89cc14862c','郭旗','https://lh4.googleusercontent.com/-kr7Fvx_vFTM/AAAAAAAAAAI/AAAAAAAAAA8/foybQAaCUNU/photo.jpg?sz=50');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -172,7 +198,7 @@ CREATE TABLE `user_likes` (
   KEY `share_id` (`share_id`),
   CONSTRAINT `user_likes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `user_likes_ibfk_2` FOREIGN KEY (`share_id`) REFERENCES `share` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -181,7 +207,7 @@ CREATE TABLE `user_likes` (
 
 LOCK TABLES `user_likes` WRITE;
 /*!40000 ALTER TABLE `user_likes` DISABLE KEYS */;
-INSERT INTO `user_likes` VALUES (1,2),(2,2),(1,3),(1,4),(2,4),(2,5);
+INSERT INTO `user_likes` VALUES (2,1);
 /*!40000 ALTER TABLE `user_likes` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -194,4 +220,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-02-15 14:46:56
+-- Dump completed on 2014-04-05  2:05:57
