@@ -4,13 +4,14 @@ import json, os
 
 from ..models import db, User, Share
 from ..error import OutputError
+from ..filters import check_logged
 
 
 extension = Blueprint('extension', __name__)
 
 @extension.route('/add', methods=['POST'])
 def add():
-    if not session.has_key('ext_user_id'):
+    if check_logged is False:
         raise OutputError('您还未登录，请登录后重试')
 
     args = request.form
