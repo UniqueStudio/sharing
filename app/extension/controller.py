@@ -1,5 +1,5 @@
 #encoding: utf-8
-from flask import Blueprint, request, session, send_from_directory
+from flask import Blueprint, request, session, send_from_directory, g
 import json, os
 
 from ..models import db, User, Share
@@ -11,7 +11,7 @@ extension = Blueprint('extension', __name__)
 @extension.route('/add', methods=['POST'])
 def add():
     if not session.has_key('ext_user_id'):
-        return OutputError('not logined')
+        raise OutputError('您还未登录，请登录后重试')
 
     args = request.form
     result = {}
@@ -44,7 +44,6 @@ def login():
     except ValueError:
         raise OutputError('参数错误')
     
-    print 'info', email, password
     user = User.query.filter(User.email == email).first() or None
     if user is not None and user.check_password(password):
         session['ext_user_id'] = user.id
@@ -68,9 +67,5 @@ def logout():
 
 @extension.route('/download_ext', methods=['GET'])
 def download_ext():
-    base_folder = os.getcwd()[0: -9]
     download_folder = os.path.join(os.getcwd(), 'download_files')
-    print 'caonima', download_folder
     return send_from_directory(download_folder, 'chrome-extension.crx' ,as_attachment=True)
-
-

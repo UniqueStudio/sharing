@@ -5,7 +5,8 @@ from flaskext.uploads import UploadSet, ALL
 
 URL_AUTH = 'https://accounts.google.com/o/oauth2/auth'
 URL_TOKEN = 'https://accounts.google.com/o/oauth2/token'
-URL_PEOPLE = 'https://www.googleapis.com/plus/v1/people/me'
+# URL_PEOPLE = 'https://www.googleapis.com/plus/v1/people/me'
+URL_PEOPLE = 'https://www.googleapis.com/oauth2/v2/userinfo'
 
 
 
@@ -96,14 +97,14 @@ def get_user_profile(token):
     req = MyRequest(URL_PEOPLE, data)
     profile_json = json.loads(req.request())
 
-    display_name = profile_json['displayName']
-    image = profile_json['image']['url']
+    display_name = profile_json['name']
+    image = profile_json['picture']
 
-    emails = profile_json['emails']
-    for i in emails:
-        if i['type'] == 'account':
-            email = i['value']
-            break
+    email = profile_json['email']
+    # for i in emails:
+        # if i['type'] == 'account':
+            # email = i['value']
+            # break
 
     user_profile = {
                     'email': email, 
