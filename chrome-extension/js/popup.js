@@ -1,4 +1,6 @@
-var urlPrefix = "http://localhost:5000"
+// var urlPrefix = "http://localhost:5000"
+// var urlPrefix = "http://share.hustunique.com"
+var urlPrefix = 'http://www.uniqueguoqi.com'
 var loginButton = document.getElementById('loginButton');
 var shareButton = document.getElementById('shareButton');
 var logoutButton = document.getElementById('logout');
@@ -9,6 +11,7 @@ var loginError = document.getElementById('loginError');
 var shareDiv = document.getElementById('share');
 
 function init(){
+    console.log('init');
     loginDiv.style.display = "none";
     var email = getCookie("email");
     var pwd = getCookie("password");
@@ -77,7 +80,7 @@ function login(email, password){
     }
     xhr.open("POST",urlPrefix+"/extension/login", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send("email="+email+"&password="+password);
+    xhr.send("email="+email+"&password="+pwdhash);
 }
 
 function share(parameters){
@@ -134,19 +137,20 @@ shareButton.onclick = function() {
 };
 
 logoutButton.onclick = function() {
-    console.log('a');
+    console.log('sb4');
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/logout", true);
+    xhr.open("GET", urlPrefix + "/extension/logout", true);
     xhr.send();
     xhr.onreadystatechange = function() {
-        if(xhr.readyState == 4) {
+        if(xhr.readyState==4 && xhr.status==200) {
             var resp = JSON.parse(xhr.responseText);
-            if(resp.success){
+            if(resp.status){
                 showInfo("logout ");
                 setCookie("email", email, 0);
                 setCookie("pwd", pwdhash, 0);
             }
         }
     }
+    //showInfo('logout successful');
 };
 

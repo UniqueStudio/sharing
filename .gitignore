@@ -1,4 +1,5 @@
 venv
+download_files
 *.pyc
 *.swp
 config.py

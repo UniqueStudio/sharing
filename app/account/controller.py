@@ -109,7 +109,7 @@ def login():
                         'user_id', str(user.id), expires=delta)
                 return response
             else:
-                raise ValidationError('用户名或密码错误，请重新输入')
+                login_form.email_field.errors.append('用户名或密码错误，请重新输入')
 
     # 渲染模板
     return render_template('login.html',
@@ -122,6 +122,8 @@ def login():
 
 @account.route('/register', methods=['POST'])
 def register():
+    # 禁掉注册
+    raise OutputError('亲，该功能暂时还没开放哦～')
     register_form = RegisterForm()
 
     # 当表单提交时
