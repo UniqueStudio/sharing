@@ -89,4 +89,5 @@ def logout():
 @extension.route('/download_ext', methods=['GET'])
 def download_ext():
     download_folder = os.path.join(os.getcwd(), 'download_files')
+    print download_folder
     return send_from_directory(download_folder, 'chrome-extension.crx' ,as_attachment=True)
