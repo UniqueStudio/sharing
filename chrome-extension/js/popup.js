@@ -61,23 +61,20 @@ function login(email, password){
         if(xhr.readyState == 4  && xhr.status==200) {
             var resp = JSON.parse(xhr.responseText);
             console.log(resp);
-            if(resp.success){
+            if(resp.status){
                 loginDiv.style.display = "none";
                 shareDiv.style.display = "block";
                 setCookie("email", email, 30);
                 setCookie("password", pwdhash, 30);
-            }else if(resp.errorCode == 1){
-                error = "no email found"
-                loginError.innerHTML = error
-            }else if(resp.errorCode == 2){
-                error = "wrong password"
-                loginError.innerHTML = error
+            }
+            else{
+                loginError.innerHTML = resp.msg
             }
         }
     }
     xhr.open("POST",urlPrefix+"/extension/login", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send("email="+email+"&password="+pwdhash);
+    xhr.send("email="+email+"&password="+password);
 }
 
 function share(parameters){
@@ -85,27 +82,18 @@ function share(parameters){
     var title = parameters.title;
     var explain = parameters.explain;
     var xhr = new XMLHttpRequest();
-    xhr.open("POST",  urlPrefix+"/add", true);
+    xhr.open("POST",  urlPrefix+"/share/add", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xhr.send("url="+url+"&title="+title+"&explain="+explain);
     xhr.onreadystatechange = function() {
         if(xhr.readyState==4 && xhr.status==200) {
             var resp = JSON.parse(xhr.responseText);
-            if(resp.success){
+            if(resp.status){
                 console.log("shared");
                 showInfo("shared success");
-            }else if (resp.errorCode == 1){
-                shareDiv.style.display = "none";
-                loginDiv.style.display = "block";
-                error = "you need login"
-                var text = document.createTextNode(error);
-                loginError.appendChild(text);
-            }else if (resp.errorCode == 2){
-                error = "this web has been shared";
-                showInfo(error);
             }
         }
-        console.log("ok");
+        console.log(xhr.readyState, xhr.status);
     }
 
 };
@@ -132,14 +120,13 @@ shareButton.onclick = function() {
 };
 
 logoutButton.onclick = function() {
-    console.log('a');
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/logout", true);
+    xhr.open("POST", urlPrefix+"/extension/logout", true);
     xhr.send();
     xhr.onreadystatechange = function() {
         if(xhr.readyState == 4) {
             var resp = JSON.parse(xhr.responseText);
-            if(resp.success){
+            if(resp.status){
                 showInfo("logout ");
                 setCookie("email", email, 0);
                 setCookie("pwd", pwdhash, 0);
