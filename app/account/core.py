@@ -98,7 +98,6 @@ def get_user_profile(token):
     req = MyRequest(URL_PEOPLE, data)
     profile_json = json.loads(req.request())
 
-    print 'get_user_profile', profile_json
     display_name = profile_json['name']
     email = profile_json['email']
     if not display_name:
@@ -116,7 +115,6 @@ def get_user_profile(token):
                     'nickname': display_name, 
                     'image': image 
                     }
-    print 'user_profile', user_profile
     return user_profile
                 
     

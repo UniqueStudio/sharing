@@ -5,6 +5,7 @@ import json
 import uuid
 from datetime import datetime, timedelta
 from wtforms.validators import ValidationError
+import md5
 
 from ..filters import check_logged
 # import error
@@ -23,8 +24,7 @@ account = Blueprint('account', __name__)
 def auth():
     state = str(uuid.uuid4())
     session['state'] = state
-    print 'account/auth', 'state', session['state']
-    return make_response(redirect(get_auth_url(state)))
+    return make_response(redirect(get_auth_url(state), code=301))
 
 # 验证登陆请求, 并获取个人信息
 
@@ -56,7 +56,6 @@ def connect():
             # 重定向到添加本站密码的页面
             return make_response(redirect(url_for('account.add_pwd')))
         else:
-            print 'connect'
             raise OutputError('参数错误')
 
 
@@ -100,7 +99,7 @@ def login():
         if login_form.validate_on_submit():
             user = User.query.filter(
                 User.email == login_form.email).first() or None
-            if user is not None and user.check_password(login_form.password):
+            if user is not None and user.check_password(md5.new(login_form.password).hexdigest()):
                 session['user_id'] = user.id
                 session['email'] = user.email
                 response = make_response(redirect(url_for('share.list')))
@@ -163,6 +162,9 @@ def logout():
     check_logged()
     session.clear()
     resp = make_response(redirect(url_for('account.login')))
+    delta = datetime.now() - timedelta(days=1)
+    resp.set_cookie('email', '', expires=delta)
+    resp.set_cookie('user_id', '', expires=delta)
     return resp
 
 

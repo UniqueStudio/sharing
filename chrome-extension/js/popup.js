@@ -12,8 +12,8 @@ var shareDiv = document.getElementById('share');
 
 function init(){
     console.log('init');
-    chrome.cookies.get({url: urlPrefix, name: 'email'}, function(c_email){
-        chrome.cookies.get({url: urlPrefix, name: 'password'}, function(c_pwd){
+    chrome.cookies.get({url: urlPrefix, name: 'ext_email'}, function(c_email){
+        chrome.cookies.get({url: urlPrefix, name: 'ext_password'}, function(c_pwd){
             if(c_email && c_pwd){
                 console.log(c_email.value, c_pwd.value);
                 login(c_email.value, c_pwd.value);
@@ -102,8 +102,8 @@ function login(email, pwdhash){
             if(resp.success){
                 loginDiv.style.display = "none";
                 shareDiv.style.display = "block";
-                s_cookie('email', email);
-                s_cookie('password', pwdhash);
+                s_cookie('ext_email', email);
+                s_cookie('ext_password', pwdhash);
                 /*
                 c_email = {
                     url: 'http://www.uniqueguoqi.com/*',
@@ -202,8 +202,8 @@ logoutButton.onclick = function() {
     setCookie("password", '', 0);
     */
     // remove cookies
-    chrome.cookies.remove({url: urlPrefix, name: 'email'}, function(c_email){
-        chrome.cookies.remove({url: urlPrefix, name: 'password'}, function(c_pwd){
+    chrome.cookies.remove({url: urlPrefix, name: 'ext_email'}, function(c_email){
+        chrome.cookies.remove({url: urlPrefix, name: 'ext_password'}, function(c_pwd){
             if(c_email && c_pwd){
                 showInfo("logout ");
                 console.log(c_email, c_pwd);
