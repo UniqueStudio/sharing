@@ -23,6 +23,7 @@ account = Blueprint('account', __name__)
 def auth():
     state = str(uuid.uuid4())
     session['state'] = state
+    print 'account/auth', 'state', session['state']
     return make_response(redirect(get_auth_url(state)))
 
 # 验证登陆请求, 并获取个人信息
@@ -55,6 +56,7 @@ def connect():
             # 重定向到添加本站密码的页面
             return make_response(redirect(url_for('account.add_pwd')))
         else:
+            print 'connect'
             raise OutputError('参数错误')
 
 
