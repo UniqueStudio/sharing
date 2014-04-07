@@ -1,6 +1,7 @@
 import urllib
 import urllib2
 import json
+import re
 from flaskext.uploads import UploadSet, ALL
 
 URL_AUTH = 'https://accounts.google.com/o/oauth2/auth'
@@ -98,9 +99,12 @@ def get_user_profile(token):
     profile_json = json.loads(req.request())
 
     display_name = profile_json['name']
+    email = profile_json['email']
+    if not display_name:
+        m = re.match(r'(\w+)@(\S+)', email)
+        display_name = m.group(1)
     image = profile_json['picture']
 
-    email = profile_json['email']
     # for i in emails:
         # if i['type'] == 'account':
             # email = i['value']

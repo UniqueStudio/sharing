@@ -1,6 +1,6 @@
-// var urlPrefix = "http://localhost:5000"
+var urlPrefix = "http://localhost:5000"
 // var urlPrefix = "http://share.hustunique.com"
-var urlPrefix = 'http://www.uniqueguoqi.com'
+//var urlPrefix = 'http://www.uniqueguoqi.com'
 var loginButton = document.getElementById('loginButton');
 var shareButton = document.getElementById('shareButton');
 var logoutButton = document.getElementById('logout');
@@ -12,15 +12,34 @@ var shareDiv = document.getElementById('share');
 
 function init(){
     console.log('init');
+    chrome.cookies.get({url: urlPrefix, name: 'ext_email'}, function(c_email){
+        chrome.cookies.get({url: urlPrefix, name: 'ext_password'}, function(c_pwd){
+            if(c_email && c_pwd){
+                console.log(c_email.value, c_pwd.value);
+                login(c_email.value, c_pwd.value);
+            }else{
+                shareDiv.style.display = "none";
+                loginDiv.style.display = "block";
+            }
+
+        });
+    });
+    chrome.cookies.getAll({}, function(cookies){
+        console.log(cookies);
+    });
+    /*
     loginDiv.style.display = "none";
     var email = getCookie("email");
     var pwd = getCookie("password");
     if(email && pwd){
+        console.log(email, pwd);
         login(email, pwd);
     }else{
+        console.log('heol');
         shareDiv.style.display = "none";
         loginDiv.style.display = "block";
     }
+    */
 }
 
 function showInfo(content){
@@ -38,12 +57,14 @@ function showInfo(content){
 }
 
 function setCookie(c_name, value, expiredays){
+    console.log('set cookie', c_name, value, expiredays);
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + expiredays);
-    console.log(exdate.toGMTString());
     document.cookie = c_name + "=" + escape(value) +
-        ((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
+        ((expiredays==null) ? "" : ";expires="+exdate.toGMTString()) +
+        ";path=/;domain=www.uniqueguoqi.com";
 }
+
 function getCookie(c_name){
     if (document.cookie.length > 0){
         c_start = document.cookie.indexOf(c_name + "=");
@@ -57,8 +78,22 @@ function getCookie(c_name){
     return ""
 }
 
-function login(email, password){
-    var pwdhash = hex_md5(password);
+function s_cookie(name, value){
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + 5);
+    obj = {
+        url: urlPrefix,
+        //url: 'http://www.uniqueguoqi.com',
+        name: name,
+        value: value,
+        expirationDate: exdate.getTime(),
+    }
+    chrome.cookies.set(obj, function(cookie){
+        console.log(cookie);
+    });
+}
+
+function login(email, pwdhash){
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if(xhr.readyState == 4  && xhr.status==200) {
@@ -67,8 +102,33 @@ function login(email, password){
             if(resp.success){
                 loginDiv.style.display = "none";
                 shareDiv.style.display = "block";
+                s_cookie('ext_email', email);
+                s_cookie('ext_password', pwdhash);
+                /*
+                c_email = {
+                    url: 'http://www.uniqueguoqi.com/*',
+                    name: 'email',
+                    value: email
+                }
+                c_pwd = {
+                    url: 'http://www.uniqueguoqi.com/*',
+                    name: 'password',
+                    value: pwdhash, 
+                }
+                chrome.cookies.set(c_pwd, function(pwd){
+                    chrome.cookies.set(c_email, function(email){
+                        if(pwd && email) console.log('ok');
+                    });
+                });
+                chrome.cookies = chrome.cookies || chrome.experimental.cookies;
+                chrome.cookies.set(c_email, function(Cookie cookie){
+                    console.log cookie
+                });
+                */
+                /*
                 setCookie("email", email, 30);
                 setCookie("password", pwdhash, 30);
+                */
             }else if(resp.errorCode == 1){
                 error = "no email found"
                 loginError.innerHTML = error
@@ -88,7 +148,7 @@ function share(parameters){
     var title = parameters.title;
     var explain = parameters.explain;
     var xhr = new XMLHttpRequest();
-    xhr.open("POST",  urlPrefix+"/share/add", true);
+    xhr.open("POST",  urlPrefix+"/extension/add", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xhr.send("url="+url+"&title="+title+"&explain="+explain);
     xhr.onreadystatechange = function() {
@@ -121,8 +181,8 @@ init();
 loginButton.onclick = function() {
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value;
-
-    login(email, password);
+    var pwdhash = hex_md5(password);
+    login(email, pwdhash);
 };
 
 shareButton.onclick = function() {
@@ -137,7 +197,24 @@ shareButton.onclick = function() {
 };
 
 logoutButton.onclick = function() {
-    console.log('sb4');
+    /*
+    setCookie("email", '', 0);
+    setCookie("password", '', 0);
+    */
+    // remove cookies
+    chrome.cookies.remove({url: urlPrefix, name: 'ext_email'}, function(c_email){
+        chrome.cookies.remove({url: urlPrefix, name: 'ext_password'}, function(c_pwd){
+            if(c_email && c_pwd){
+                showInfo("logout ");
+                console.log(c_email, c_pwd);
+            }
+
+        });
+    });
+    chrome.cookies.getAll({}, function(cookies){
+        console.log(cookies);
+    });
+    // clear sessions
     var xhr = new XMLHttpRequest();
     xhr.open("GET", urlPrefix + "/extension/logout", true);
     xhr.send();
@@ -145,9 +222,7 @@ logoutButton.onclick = function() {
         if(xhr.readyState==4 && xhr.status==200) {
             var resp = JSON.parse(xhr.responseText);
             if(resp.status){
-                showInfo("logout ");
-                setCookie("email", email, 0);
-                setCookie("pwd", pwdhash, 0);
+                console.log('logout');
             }
         }
     }

@@ -66,7 +66,7 @@ class User(db.Model):
 
     def check_password(self, password):
         return self.pwdhash == password
-#        return self.pwdhash == md5.new(password).hexdigest()
+        # return self.pwdhash == md5.new(password).hexdigest()
 
     @classmethod
     def is_exist(cls, email):
