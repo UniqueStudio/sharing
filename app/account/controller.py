@@ -5,6 +5,7 @@ import json
 import uuid
 from datetime import datetime, timedelta
 from wtforms.validators import ValidationError
+import md5
 
 from ..filters import check_logged
 # import error
@@ -23,7 +24,7 @@ account = Blueprint('account', __name__)
 def auth():
     state = str(uuid.uuid4())
     session['state'] = state
-    return make_response(redirect(get_auth_url(state)))
+    return make_response(redirect(get_auth_url(state), code=301))
 
 # 验证登陆请求, 并获取个人信息
 
@@ -98,7 +99,7 @@ def login():
         if login_form.validate_on_submit():
             user = User.query.filter(
                 User.email == login_form.email).first() or None
-            if user is not None and user.check_password(login_form.password):
+            if user is not None and user.check_password(md5.new(login_form.password).hexdigest()):
                 session['user_id'] = user.id
                 session['email'] = user.email
                 response = make_response(redirect(url_for('share.list')))
@@ -109,7 +110,7 @@ def login():
                         'user_id', str(user.id), expires=delta)
                 return response
             else:
-                raise ValidationError('用户名或密码错误，请重新输入')
+                login_form.email_field.errors.append('用户名或密码错误，请重新输入')
 
     # 渲染模板
     return render_template('login.html',
@@ -122,6 +123,8 @@ def login():
 
 @account.route('/register', methods=['POST'])
 def register():
+    # 禁掉注册
+    raise OutputError('亲，该功能暂时还没开放哦～')
     register_form = RegisterForm()
 
     # 当表单提交时
@@ -159,8 +162,9 @@ def logout():
     check_logged()
     session.clear()
     resp = make_response(redirect(url_for('account.login')))
-    resp.set_cookie('email', expires=0)
-    resp.set_cookie('user_id', expires=0)
+    delta = datetime.now() - timedelta(days=1)
+    resp.set_cookie('email', '', expires=delta)
+    resp.set_cookie('user_id', '', expires=delta)
     return resp
 
 

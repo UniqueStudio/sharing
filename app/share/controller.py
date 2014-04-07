@@ -12,25 +12,6 @@ import constances
 share = Blueprint('share', __name__)
 
 
-@share.route('/add', methods=['POST'])
-def add():
-    args = request.form
-    result = {}
-    if args.has_key('title') and args.has_key('url'):
-        title = args['title']
-        explain = args['explain'] if args.has_key('explain') else None
-        url = args['url']
-        user_id = g.current_user.id
-
-        # 添加到数据库
-        share = Share(title=title, explain=explain,
-                      url=url, user_id=user_id)
-        db.session.add(share)
-        db.session.commit()
-        result['status'] = True
-        return json.dumps(result)
-    else:
-        raise OutputError('参数错误')
 
 
 @share.route('/list', methods=['GET', 'POST'])
