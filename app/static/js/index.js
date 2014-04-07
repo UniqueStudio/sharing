@@ -444,17 +444,17 @@
         if(idElement1){
             var addCommentNode = idElement1.parentNode.getElementsByClassName("ctCommentShow")[0];
             var commentNum = parseInt(addCommentNode.innerHTML.substring(3));
-            if(commentNum){
-                addCommentNode.innerHTML = "评论("+ (commentNum + 1) + ")";
-            };
+            addCommentNode.innerHTML = "评论("+ (commentNum + 1) + ")";
+            idElement1.parentNode.getElementsByClassName("ctLSMBComment")[0].innerHTML = "评论("+ (commentNum + 1) + ") ";
+            document.getElementsByClassName("SMBComment")[0].innerHTML = "评论("+ (commentNum + 1) + ")";  
         };  
         if(idElement2){
             var addCommentNode = idElement2.parentNode.getElementsByClassName("ctCommentShow")[0];
             var commentNum = parseInt(addCommentNode.innerHTML.substring(3));
-            if(commentNum){
-                addCommentNode.innerHTML = "评论("+ (commentNum + 1) + ")";
-            };
-        };       
+            addCommentNode.innerHTML = "评论("+ (commentNum + 1) + ")";
+            idElement2.parentNode.getElementsByClassName("ctLSMBComment")[0].innerHTML = "评论("+ (commentNum + 1) + ") ";
+            document.getElementsByClassName("SMBComment")[0].innerHTML = "评论("+ (commentNum + 1) + ")";  
+        };           
     };
 
     function ifameWaitStop(){
@@ -507,9 +507,9 @@
                                     +"</p><div class='sharemanBox'><div class='SMBLeft'><div class='SMBSharemanImg' style='background-image:url(" + content.author_image
                                     +")'></div></div><div class='SMBRight'><p class='SMBShareReason'>" + content.author_name 
                                     +": " + content.explain
-                                    +"</p><div class='SMBDetailBox'><span>赞(" + content.likes
-                                    +") 评论(" + content.comments
-                                    +") <span class='ctLSMBTime'>" + content.timestamp
+                                    +"</p><div class='SMBDetailBox'><span><span class='ctLSMBLike'>赞(" + content.likes
+                                    +") </span><span class='ctLSMBComment'>评论(" + content.comments
+                                    +") </span><span class='ctLSMBTime'>" + content.timestamp
                                     +"</span></span></div></div></div></div>";
                         newNode.innerHTML = addElement;
                         newNode.children[0].onclick = function(){
@@ -604,9 +604,9 @@
                                     +"</p><div class='sharemanBox'><div class='SMBLeft'><div class='SMBSharemanImg' style='background-image:url(" + content.author_image
                                     +")'></div></div><div class='SMBRight'><p class='SMBShareReason'>" + content.author_name 
                                     +": " + content.explain
-                                    +"</p><div class='SMBDetailBox'><span>赞(" + content.likes
-                                    +") 评论(" + content.comments
-                                    +") <span class='ctLSMBTime'>" + content.timestamp
+                                    +"</p><div class='SMBDetailBox'><span><span class='ctLSMBLike'>赞(" + content.likes
+                                    +") </span><span class='ctLSMBComment'>评论(" + content.comments
+                                    +") </span><span class='ctLSMBTime'>" + content.timestamp
                                     +"</span></span></div></div></div></div>";
 
                         newNode.innerHTML = addElement;
@@ -887,11 +887,15 @@
                         var newValue = "取消赞(" + (value+1) + ")";
                         if(conObj){
                             conObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                            conObj.parentNode.getElementsByClassName("ctLSMBLike")[0].innerHTML = "赞(" + (value + 1) + ") ";
                         };
                         if(colObj){
                             colObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                            colObj.parentNode.getElementsByClassName("ctLSMBLike")[0].innerHTML = "赞(" + (value + 1) + ") ";
                         };
-                        $("hdRSTDetailBoxShow").getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        if(id === contentId){
+                            $("hdRSTDetailBoxShow").getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        };
                     }
                     else if(json.result == "notlike"){
                         var value;
@@ -906,11 +910,15 @@
                         var newValue = "赞(" + (value-1) + ")";
                         if(conObj){
                             conObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                            conObj.parentNode.getElementsByClassName("ctLSMBLike")[0].innerHTML = newValue + " ";
                         };
                         if(colObj){
                             colObj.parentNode.getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                            colObj.parentNode.getElementsByClassName("ctLSMBLike")[0].innerHTML = newValue + " ";
                         };
-                        $("hdRSTDetailBoxShow").getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        if(id === contentId){
+                            $("hdRSTDetailBoxShow").getElementsByClassName("toggleLike")[0].innerHTML = newValue;
+                        };
                     };
                 };
                
@@ -1141,7 +1149,7 @@
             else{
                 moveDistance = (40+v*(countTime-t1)-0.5*a2*(countTime-t1)*(countTime-t1))*length/100;
             };
-            $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";`)
+            $("contentLeft").style.marginLeft  = (0 - ctLMainWidth + moveDistance) +"px";
             if(countTime < T){
                 ++countTime;
             }
