@@ -97,6 +97,7 @@ def get_user_profile(token):
     req = MyRequest(URL_PEOPLE, data)
     profile_json = json.loads(req.request())
 
+    print 'get_user_profile', profile_json
     display_name = profile_json['name']
     image = profile_json['picture']
 

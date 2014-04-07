@@ -161,8 +161,6 @@ def logout():
     check_logged()
     session.clear()
     resp = make_response(redirect(url_for('account.login')))
-    resp.set_cookie('email', expires=0)
-    resp.set_cookie('user_id', expires=0)
     return resp
 
 
