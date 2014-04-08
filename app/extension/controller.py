@@ -1,12 +1,18 @@
 #encoding: utf-8
 from flask import Blueprint, request, session, send_from_directory, g
 import json, os
+import re
 
 from ..models import db, User, Share
 from ..error import OutputError
+from blacklist import BLACKLIST
 
 
 extension = Blueprint('extension', __name__)
+
+pattern = []
+for item in BLACKLIST:
+    pattern.append(re.compile(item, re.DOTALL))
 
 @extension.route('/add', methods=['POST'])
 def add():
@@ -23,6 +29,10 @@ def add():
         explain = args['explain'] if args.has_key('explain') else None
         url = args['url']
         user_id = g.current_user.id
+        
+        for p in pattern:
+            if p.match(title) is not None:
+                raise OutputError('该条目不允许分享')
         
         if Share.query.filter(Share.url == url).first():
             raise OutputError('该条目已经被分享过了')
