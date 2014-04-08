@@ -1,32 +1,21 @@
 #encoding: utf-8
 from flask import Blueprint, request, session, send_from_directory, g
 import json, os
+import re
 
 from ..models import db, User, Share
 from ..error import OutputError
+from blacklist import BLACKLIST
 
 
 extension = Blueprint('extension', __name__)
 
+pattern = []
+for item in BLACKLIST:
+    pattern.append(re.compile(item, re.DOTALL))
+
 @extension.route('/add', methods=['POST'])
 def add():
-    '''
-    if not session.has_key('ext_user_id') or not session.has_key('ext_email'):
-        if not request.cookies.has_key('email') or not request.cookies.get('password'):
-            raise OutputError('您还未登录，请登录后重试')
-        else:
-            user = User.query.filter(User.email == request.cookies.get('email')).first()
-            if user.password == request.cookies.get('password'):
-                g.current_user = user
-            else:
-                raise OutputError('登录信息有误，请重新登录')
-    else:
-        user = User.query.get(session.get('ext_user_id'))
-        if user.email is session.get('ext_email'):
-            g.current_user = user
-        else:
-            raise OutputError('登录信息有误，请重新登录')
-            '''
     if  session.has_key('ext_user_id'):
         user = User.query.get(session['ext_user_id'])
         g.current_user = user
@@ -40,6 +29,11 @@ def add():
         explain = args['explain'] if args.has_key('explain') else None
         url = args['url']
         user_id = g.current_user.id
+        
+        for p in pattern:
+            print p.match(url), url
+            if p.match(url) is not None:
+                raise OutputError('该条目不允许分享')
         
         if Share.query.filter(Share.url == url).first():
             raise OutputError('该条目已经被分享过了')

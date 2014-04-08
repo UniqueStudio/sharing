@@ -1,6 +1,6 @@
 // var urlPrefix = "http://localhost:5000"
-// var urlPrefix = "http://share.hustunique.com"
-var urlPrefix = 'http://www.uniqueguoqi.com'
+var urlPrefix = "http://share.hustunique.com"
+// var urlPrefix = 'http://www.uniqueguoqi.com'
 var loginButton = document.getElementById('loginButton');
 var shareButton = document.getElementById('shareButton');
 var logoutButton = document.getElementById('logout');
@@ -65,7 +65,7 @@ function login(email, pwdhash){
         if(xhr.readyState == 4  && xhr.status==200) {
             var resp = JSON.parse(xhr.responseText);
             console.log(resp);
-            if(resp.status){
+            if(resp.success){
                 loginDiv.style.display = "none";
                 shareDiv.style.display = "block";
                 s_cookie('ext_email', email);
@@ -81,7 +81,7 @@ function login(email, pwdhash){
     }
     xhr.open("POST",urlPrefix+"/extension/login", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send("email="+email+"&password="+password);
+    xhr.send("email="+email+"&password="+pwdhash);
 }
 
 function share(parameters){
