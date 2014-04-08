@@ -10,23 +10,6 @@ extension = Blueprint('extension', __name__)
 
 @extension.route('/add', methods=['POST'])
 def add():
-    '''
-    if not session.has_key('ext_user_id') or not session.has_key('ext_email'):
-        if not request.cookies.has_key('email') or not request.cookies.get('password'):
-            raise OutputError('您还未登录，请登录后重试')
-        else:
-            user = User.query.filter(User.email == request.cookies.get('email')).first()
-            if user.password == request.cookies.get('password'):
-                g.current_user = user
-            else:
-                raise OutputError('登录信息有误，请重新登录')
-    else:
-        user = User.query.get(session.get('ext_user_id'))
-        if user.email is session.get('ext_email'):
-            g.current_user = user
-        else:
-            raise OutputError('登录信息有误，请重新登录')
-            '''
     if  session.has_key('ext_user_id'):
         user = User.query.get(session['ext_user_id'])
         g.current_user = user
