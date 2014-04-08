@@ -21,10 +21,10 @@
         <div class="loginAndRegister">
             <div class="loginDiv">
                 {% if login_form.errors %}
-                {% for field_name, field_errors in login_form.errors.iteritems() %}
-                {% for error in field_errors %}
-                    <p style="opacity: 1;" class="loginAlert">{{ error }}</p>
-                {% endfor %}
+                {% for field_errors in login_form.errors.itervalues() %}
+                    {% if loop.first %}
+                    <p style="opacity: 1;" class="loginAlert">{{ field_errors[0] }}</p>
+                    {% endif %}
                 {% endfor %}
                 {% endif %}
 
