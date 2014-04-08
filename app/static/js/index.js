@@ -471,6 +471,10 @@
             if (!ctRMain.readyState || ctRMain.readyState == "complete") {  
                 ifameWaitStop();
             };
+            console.log($("ctRMain").document);
+            $("ctRMain").onbeforeunload = function(){
+                return false;
+            };
         };
     };
 
@@ -1302,11 +1306,11 @@
             setScrollBarHide();
         };
     };
-
+/*
     window.onbeforeunload = function(){
         return "确定离开当前页面吗？"
     }
-
+*/
     $("hdL0").onclick = function(){
         if(canHeaderMove){
             if(point !== 0){
