@@ -12,6 +12,7 @@ var shareDiv = document.getElementById('share');
 
 function init(){
     console.log('init');
+    loginDiv.style.display = "none";
     chrome.cookies.get({url: urlPrefix, name: 'ext_email'}, function(c_email){
         chrome.cookies.get({url: urlPrefix, name: 'ext_password'}, function(c_pwd){
             if(c_email && c_pwd){
@@ -24,22 +25,9 @@ function init(){
 
         });
     });
-    chrome.cookies.getAll({}, function(cookies){
+    chrome.cookies.getAll({url: urlPrefix}, function(cookies){
         console.log(cookies);
     });
-    /*
-    loginDiv.style.display = "none";
-    var email = getCookie("email");
-    var pwd = getCookie("password");
-    if(email && pwd){
-        console.log(email, pwd);
-        login(email, pwd);
-    }else{
-        console.log('heol');
-        shareDiv.style.display = "none";
-        loginDiv.style.display = "block";
-    }
-    */
 }
 
 function showInfo(content){
@@ -56,34 +44,12 @@ function showInfo(content){
     }, 1500);
 }
 
-function setCookie(c_name, value, expiredays){
-    console.log('set cookie', c_name, value, expiredays);
-    var exdate = new Date();
-    exdate.setDate(exdate.getDate() + expiredays);
-    document.cookie = c_name + "=" + escape(value) +
-        ((expiredays==null) ? "" : ";expires="+exdate.toGMTString()) +
-        ";path=/;domain=www.uniqueguoqi.com";
-}
-
-function getCookie(c_name){
-    if (document.cookie.length > 0){
-        c_start = document.cookie.indexOf(c_name + "=");
-        if (c_start != -1){
-            c_start = c_start + c_name.length + 1;
-            c_end = document.cookie.indexOf(";", c_start);
-            if (c_end == -1) c_end = document.cookie.length;
-            return unescape(document.cookie.substring(c_start, c_end));
-        }
-    }
-    return ""
-}
 
 function s_cookie(name, value){
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + 5);
     obj = {
         url: urlPrefix,
-        //url: 'http://www.uniqueguoqi.com',
         name: name,
         value: value,
         expirationDate: exdate.getTime(),
@@ -99,36 +65,11 @@ function login(email, pwdhash){
         if(xhr.readyState == 4  && xhr.status==200) {
             var resp = JSON.parse(xhr.responseText);
             console.log(resp);
-            if(resp.success){
+            if(resp.status){
                 loginDiv.style.display = "none";
                 shareDiv.style.display = "block";
                 s_cookie('ext_email', email);
                 s_cookie('ext_password', pwdhash);
-                /*
-                c_email = {
-                    url: 'http://www.uniqueguoqi.com/*',
-                    name: 'email',
-                    value: email
-                }
-                c_pwd = {
-                    url: 'http://www.uniqueguoqi.com/*',
-                    name: 'password',
-                    value: pwdhash, 
-                }
-                chrome.cookies.set(c_pwd, function(pwd){
-                    chrome.cookies.set(c_email, function(email){
-                        if(pwd && email) console.log('ok');
-                    });
-                });
-                chrome.cookies = chrome.cookies || chrome.experimental.cookies;
-                chrome.cookies.set(c_email, function(Cookie cookie){
-                    console.log cookie
-                });
-                */
-                /*
-                setCookie("email", email, 30);
-                setCookie("password", pwdhash, 30);
-                */
             }else if(resp.errorCode == 1){
                 error = "no email found"
                 loginError.innerHTML = error
@@ -140,7 +81,7 @@ function login(email, pwdhash){
     }
     xhr.open("POST",urlPrefix+"/extension/login", true);
     xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhr.send("email="+email+"&password="+pwdhash);
+    xhr.send("email="+email+"&password="+password);
 }
 
 function share(parameters){
@@ -157,20 +98,13 @@ function share(parameters){
             if(resp.status){
                 console.log("shared");
                 showInfo("shared success");
-            // }else if (resp.errorCode == 1){
-                // shareDiv.style.display = "none";
-                // loginDiv.style.display = "block";
-                // error = "you need login"
-                // var text = document.createTextNode(error);
-                // loginError.appendChild(text);
-            // }else if (resp.errorCode == 2){
             }
             else{
                 error = resp.msg
                 showInfo(error);
             }
         }
-        console.log("ok");
+        console.log(xhr.readyState, xhr.status);
     }
 
 };
@@ -197,10 +131,6 @@ shareButton.onclick = function() {
 };
 
 logoutButton.onclick = function() {
-    /*
-    setCookie("email", '', 0);
-    setCookie("password", '', 0);
-    */
     // remove cookies
     chrome.cookies.remove({url: urlPrefix, name: 'ext_email'}, function(c_email){
         chrome.cookies.remove({url: urlPrefix, name: 'ext_password'}, function(c_pwd){
@@ -211,7 +141,7 @@ logoutButton.onclick = function() {
 
         });
     });
-    chrome.cookies.getAll({}, function(cookies){
+    chrome.cookies.getAll({url: urlPrefix}, function(cookies){
         console.log(cookies);
     });
     // clear sessions
@@ -226,6 +156,5 @@ logoutButton.onclick = function() {
             }
         }
     }
-    //showInfo('logout successful');
 };
 

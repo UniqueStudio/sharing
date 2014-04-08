@@ -22,9 +22,9 @@
             <div class="loginDiv">
                 {% if login_form.errors %}
                 {% for field_name, field_errors in login_form.errors.iteritems() %}
-                {% for error in field_errors %}
-                    <p style="opacity: 1;" class="loginAlert">{{ error }}</p>
-                {% endfor %}
+                <!-- {% for error in field_errors %} -->
+                    <p style="opacity: 1;" class="loginAlert">{{ error[0] }}</p>
+                <!-- {% endfor %} -->
                 {% endfor %}
                 {% endif %}
 
