@@ -3,5 +3,5 @@
 
 BLACKLIST = [
         'http://www.uniqueguoqi.com/.*',
-        'http://www.baidu.com/.*'
+        'http://mail.google.com/.*'
         ]
