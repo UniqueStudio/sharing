@@ -19,7 +19,7 @@ def create_messsage(subject='', recipients=[], sender=None, nickname=None,
 @async
 def send_mail():
     # 休眠延时, 每日固定时间发送
-    time.sleep(cal_delay(0))
+    time.sleep(cal_delay(24))
     with app.app_context():
         from models import User, Share
         subject = '[Share]每日精彩分享'
@@ -40,7 +40,7 @@ def cal_delay(hours):
     today = datetime.datetime.today()
     # 获取第二日的目标时间
     dest = datetime.datetime(today.year, today.month, today.day,
-            today.hour + hours, today.minute + 1, today.second)
+            today.hour + hours, today.minute, today.second)
     # 取差，判断今天是否执行过
     delta = dest - today
     # 今天已经执行过, 那么根据实际差值计算休眠的秒数
@@ -49,7 +49,7 @@ def cal_delay(hours):
         delay = delta.total_seconds()
     else:
         dest2 = datetime.datetime(today.year, today.month, today.day,
-                today.hour + hours, today.minute + 1, today.second)
+                today.hour + hours, today.minute, today.second)
         delta2 = dest2 - today
         delay = delta2.total_seconds()
 
