@@ -2,6 +2,6 @@
 #coding: utf8
 
 BLACKLIST = [
-        'www.uniqueguoqi.com/.*',
-        'www.baidu.com/.*'
+        'http://www.uniqueguoqi.com/.*',
+        'http://www.baidu.com/.*'
         ]
