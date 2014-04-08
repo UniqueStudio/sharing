@@ -31,7 +31,8 @@ def add():
         user_id = g.current_user.id
         
         for p in pattern:
-            if p.match(title) is not None:
+            print p.match(url), url
+            if p.match(url) is not None:
                 raise OutputError('该条目不允许分享')
         
         if Share.query.filter(Share.url == url).first():
