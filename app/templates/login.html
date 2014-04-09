@@ -26,49 +26,19 @@
                     <p style="opacity: 1;" class="loginAlert">{{ field_errors[0] }}</p>
                     {% endif %}
                 {% endfor %}
+                {%else%}
+                    <p style="opacity: 0;" class="loginAlert"></p>
                 {% endif %}
 
-                <form action="{{ url_for('account.login') }}" method="post" class="loginForm" onsubmit="return loginJudge()">
+                <form action="{{ url_for('account.login') }}" autocomplete="off" method="post" class="loginForm" onsubmit="return loginJudge()">
                     {{ login_form.hidden_tag() }} {{ render_field(login_form.email_field, class="loginEmail formInput",placeholder="Email") }} {{ render_field(login_form.password_field, class="loginPassword formInput",placeholder = "Password") }}
                     <div class="checkShow"></div>
                     <p class="remenberMe">Remenber me</p>
                     {{ render_field(login_form.remember_me_field, class="remenberBox") }}
                     <input type="submit" class="subitButton" value="Sign In">
                 </form>
-                <div class="signUpInfoDiv">
-                    <p class="signUpInfoP">Don't have an account?</p>
-                    <p class="signUpButton">Sign Up</p>
-
-                </div>
                 <a class="auth" href="{{ url_for('account.auth') }}">使用Google账号登陆</a>
             </div>
-
-            <div class="registerDiv">
-                {% if register_form.errors %}
-                {% for field_name, field_errors in register_form.errors.iteritems() %}
-                {% for error in field_errors %}
-                    <p style="opacity: 1;" class="registerAlert">{{ error }}</p>
-                {% endfor %}
-                {% endfor %}
-                {% endif %}
-
-                <form action="{{ url_for('account.register') }}" method="post" class="registerForm" onsubmit="return registerJudge()">
-                    {{ register_form.hidden_tag() }}
-                    <!-- <input type="text" class="registerUserName formInput" name="nickname" placeholder="Nickname"> -->
-                    {{ render_field(register_form.nickname_field, class='registerUserName formInput', placeholder='Nickname') }}
-                    <!-- <input type="text" class="registerEmail formInput" name="email" placeholder="Email"> -->
-                    {{ render_field(register_form.email_field, class="registerEmail formInput", placeholder='Email') }}
-                    <!-- <input type="password" class="registerPassword formInput" name="password" placeholder="Password"> -->
-                    {{ render_field(register_form.password_field, class="registerPassword formInput", placeholder='Password') }}
-                    <input type="submit" class="subitButton" value="Sign Up">
-                </form>
-                <div class="signUpInfoDiv">
-                    <p class="signUpInfoP">Already have an account?</p>
-                    <p class="signInButton">Sign In</p>
-                </div>
-                <a class="auth" href="{{ url_for('account.auth') }}">使用Google账号登陆</a>
-            </div>
-
         </div>
     </div>
 

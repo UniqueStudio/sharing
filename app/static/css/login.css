@@ -63,7 +63,7 @@ p,a{
 .content{
     display: inline-block;
     width: 100%;
-    height: 360px;
+    height: 315px;
     text-align: center;
 }
 
@@ -84,17 +84,8 @@ p,a{
     top:0px;
     left: 0px;
 }
-.registerDiv{
-    width: 100%;
-    height: 100%;
 
-    position: absolute;
-    top: 100%;
-    left: 0px;
-    opacity: 0;
-}
-
-.loginAlert,.registerAlert{
+.loginAlert{
     text-align: center;
     height: 14px;
     width: 100%;
@@ -103,17 +94,13 @@ p,a{
     margin:0px;
 }
 
-.loginForm,.registerForm{
+.loginForm{
     display: inline-block;
 
-    width: 335px;
+    width: 100%;
     height: 240px;
 
     margin:0px auto;
-}
-
-.registerForm{
-    height: 260px;
 }
 
 .formInput{
