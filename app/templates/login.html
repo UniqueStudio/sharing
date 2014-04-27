@@ -31,13 +31,13 @@
                     <p style="opacity: 0;" class="loginAlert"></p>
                 {% endif %}
 
-                <form action="{{ url_for('account.login') }}" autocomplete="off" method="post" class="loginForm" onsubmit="return loginJudge()">
-                    {{ login_form.hidden_tag() }} {{ render_field(login_form.email_field, class="loginEmail formInput",placeholder="Email") }} {{ render_field(login_form.password_field, class="loginPassword formInput",placeholder = "Password") }}
-                    <div class="checkShow"></div>
-                    <p class="remenberMe">Remenber me</p>
-                    {{ render_field(login_form.remember_me_field, class="remenberBox") }}
-                    <input type="submit" class="subitButton" value="Sign In">
-                </form>
+                <!-- <form action="{{ url_for('account.login') }}" autocomplete="off" method="post" class="loginForm" onsubmit="return loginJudge()"> -->
+                <!--     {{ login_form.hidden_tag() }} {{ render_field(login_form.email_field, class="loginEmail formInput",placeholder="Email") }} {{ render_field(login_form.password_field, class="loginPassword formInput",placeholder = "Password") }} -->
+                <!--     <div class="checkShow"></div> -->
+                <!--     <p class="remenberMe">Remenber me</p> -->
+                <!--     {{ render_field(login_form.remember_me_field, class="remenberBox") }} -->
+                <!--     <input type="submit" class="subitButton" value="Sign In"> -->
+                <!-- </form> -->
                 <a class="auth" href="{{ url_for('account.auth') }}">使用Google账号登陆</a>
             </div>
         </div>
