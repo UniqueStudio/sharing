@@ -16,6 +16,7 @@ share = Blueprint('share', __name__)
 
 @share.route('/list', methods=['GET', 'POST'])
 def list():
+    print 'request cookies', request.cookies
     if request.method == 'GET':
         return render_template('index.html', current_user=g.current_user)
 
