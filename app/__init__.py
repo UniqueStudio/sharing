@@ -12,6 +12,7 @@ from share.controller import share
 from comment.controller import comment
 from extension.controller import extension
 from collection.controller import collection
+from api.controller import api
 
 # import upload
 from account.core import photos
@@ -42,6 +43,7 @@ app.register_blueprint(share, url_prefix = '/share')
 app.register_blueprint(comment, url_prefix = '/comment')
 app.register_blueprint(extension, url_prefix = '/extension')
 app.register_blueprint(collection, url_prefix = '/collection')
+app.register_blueprint(api, url_prefix = '/api')
 
 
 from scheduler import mail 

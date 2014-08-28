@@ -3,18 +3,19 @@
 
   "name": "sharing",
   "description": "sharing",
-  "version": "1.0",
+  "version": "2.1",
 
   "permissions": [
       "tabs",
       "cookies",
-      "http://localhost/*",
-	  "http://www.uniqueguoqi.com/*", 
-      "http://share.hustunique.com/*"
+      "http://localhost:5000/*",
+      "http://share.hustunique.com/*", 
+      "http://162.220.11.231:8000/"
       ],
 
   "browser_action": {
       "default_icon": "img/share.png",
-      "default_popup": "html/popup.html"
+      "default_popup": "html/main.html"
   }
+
 }
