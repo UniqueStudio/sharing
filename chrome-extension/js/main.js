@@ -27,7 +27,7 @@ require([
     $(function($){
         //oauth login
         // var remoteUrl = "http://localhost:5000";
-        var remoteUrl = "http://162.220.11.231:8000";
+        var remoteUrl = "http://www.uniqueguoqi.com:8000";
         console.log('init');
         $.get(remoteUrl + "/api/islogged", function(r){
             console.log('islogged result', r);
