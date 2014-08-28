@@ -94,6 +94,8 @@ def login():
             # 跳转到首页
             return make_response(redirect(url_for('share.list')))
     else:
+        # 禁掉登陆表单
+        raise OutputError('亲，该功能暂时还没开放哦～')
         # Form.validate_on_submit()
         # 等价于 Form.is_submitted() and Form.validate()
         if login_form.validate_on_submit():

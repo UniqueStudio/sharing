@@ -138,24 +138,26 @@
         };
     };
 
-    var ctLMain0Wait;
-    var ctLMain1Wait;
-    var ctLMain2Wait;
-    var ifameWait;
-    var point = 1;
-    var timestampNum = 1;
-    var likesNum = 1;
+    var point               = 1;
+    var timestampNum        = 1;
+    var likesNum            = 1;
     var contentIdLoadBefore = 1;
-    var contentLengthNow = 0;
-    var contentId = 1;
-    var ctLShowJudge = true;
-    var needToLoad = new Array(true,true,true,true); 
-    var canLoad = new Array(true,true,true,true)
-    var canScroll = true;
-    var canHeaderMove = true;
-    var needToCleanComment = false;
-    var username;
-    var userImgUrl;
+    var contentLengthNow    = 0;
+    var contentId           = 1;
+    var clickOrder          = 1;
+    var ctLShowJudge        = true;
+    var needToLoad          = new Array(true,true,true,true); 
+    var canLoad             = new Array(true,true,true,true)
+    var canScroll           = true;
+    var canHeaderMove       = true;
+    var canMain1ShowLoad    = true;
+    var needToCleanComment  = false;
+    var username            = null;
+    var userImgUrl          = null;
+    var ctLMain0Wait        = null;
+    var ctLMain1Wait        = null;
+    var ctLMain2Wait        = null;
+    var iframeWait          = null;
 
     function $(className){
         return document.getElementsByClassName(className)[0];
@@ -219,6 +221,11 @@
                 clearInterval(moveTime);
             }
         },1);
+    };
+
+    function cleanMain1Show(){
+        $("ctLMain1Show").innerHTML = "<div class='ctLMain1WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>"
+        $("ctLMain1Show").style.marginTop = "0px";
     };
 
     function changeScrollBarTop(){
@@ -457,19 +464,19 @@
         };           
     };
 
-    function ifameWaitStop(){
+    function iframeWaitStop(){
         $("ctRWaitBoxBg").style.display = "none";
-        ifameWait.waitingStop();
+        iframeWait.waitingStop();
     };
 
-    function ifameWaitShow(){
-        ifameWait.waitingStop();
+    function iframeWaitShow(){
+        iframeWait.waitingStop();
         $("ctRWaitBoxBg").style.display = "inline-block";
-        ifameWait.waitingShow();
+        iframeWait.waitingShow();
         var ctRMain = $('ctRMain');
         ctRMain.onload = ctRMain.onreadystatechange = function(){
             if (!ctRMain.readyState || ctRMain.readyState == "complete") {  
-                ifameWaitStop();
+                iframeWaitStop();
             };
         };
     };
@@ -562,10 +569,11 @@
     };
 
     function linkContentLoad(type){
-        var json;
-        var content;
-        var addElement;
-        var contentJson;
+        var json             = null;
+        var content          = null;
+        var addElement       = null;
+        var contentJson      = null;
+        var clickOrderNow    = clickOrder;
         var contentObj       = $("ctLMain1Show").children;
         var lengthLoadBefore = contentObj.length;
         var xmlhttp          =new XMLHttpRequest();
@@ -631,23 +639,29 @@
                     var lengthNow = contentObj.length;
                     var i = lengthLoadBefore;
                     var loopTime = setInterval(function(){
-                        if(i < lengthNow){
-                            var obj = contentObj[i];
-                            obj.style.display = "block";
-                            setTimeout(function(){
-                              obj.style.opacity = 1;  
-                            },0);
-
-                            changeScrollBarHeight();
-
-                            ++i;
+                        if(clickOrderNow !== clickOrder){
+                            console.log(clickOrderNow,clickOrder)
+                            clearInterval(loopTime);
                         }
                         else{
-                            setScrollBarHide();
-                            needToLoad[1] = true;
-                            canLoad[1] = true;
-                            clearInterval(loopTime);
-                        };  
+                            if(i < lengthNow){
+                                var obj = contentObj[i];
+                                obj.style.display = "block";
+                                setTimeout(function(){
+                                  obj.style.opacity = 1;  
+                                },0);
+
+                                changeScrollBarHeight();
+
+                                ++i;
+                            }
+                            else{
+                                setScrollBarHide();
+                                needToLoad[1] = true;
+                                canLoad[1] = true;
+                                clearInterval(loopTime);
+                            };  
+                        };                        
                     },100);
                 }
                 else{
@@ -673,7 +687,7 @@
                 canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
-                    ifameWaitShow();
+                    iframeWaitShow();
                     changeNewShare(json.result);
                     contentId = json.result.id;
                     if(point === 2){
@@ -849,7 +863,7 @@
         var objParentNode = obj.parentNode;
         var hdShareBoxObj = $("hdRSTDetailBoxShow");
         contentId = parseInt(obj.id);
-        ifameWaitShow();
+        iframeWaitShow();
         $("ctLMain2Show").innerHTML = "<div class='ctLMain2WaitBox'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>";
         $("ctRMain").src = obj.href;
         $("hdR0").href = obj.href;
@@ -1271,8 +1285,8 @@
         ctLMain0Wait     = new waitingDot("ctLMain0WaitBox");
         ctLMain1Wait     = new waitingDot("ctLMain1WaitBox");
         ctLMain2Wait     = new waitingDot("ctLMain2WaitBox");
-        ifameWait        = new  waitingDot("ctRWaitBox");
-        ifameWait.changeWaitBox();
+        iframeWait        = new  waitingDot("ctRWaitBox");
+        iframeWait.changeWaitBox();
         var ctRMainWidth = parseFloat(window.getComputedStyle(document.getElementsByTagName("body")[0],false).width) - parseFloat(getCss("headerLeft").width);
         $("arrowLeft").style.width = (point*25) + "%";
         $("arrowRight").style.width = (3-point)*25 + "%";
@@ -1291,7 +1305,7 @@
         ctLMain0Wait.changeWaitBox();
         ctLMain1Wait.changeWaitBox();
         ctLMain2Wait.changeWaitBox();
-        ifameWait.changeWaitBox();
+        iframeWait.changeWaitBox();
     };
 
     document.onmouseup = function(){
@@ -1302,11 +1316,11 @@
             setScrollBarHide();
         };
     };
-
+/*
     window.onbeforeunload = function(){
         return "确定离开当前页面吗？"
     }
-
+*/
     $("hdL0").onclick = function(){
         if(canHeaderMove){
             if(point !== 0){
@@ -1385,7 +1399,7 @@
                 canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
-                    ifameWaitShow();
+                    iframeWaitShow();
                     changeNewShare(json.result);
                     --contentId;
                     needToCleanComment = true;
@@ -1410,7 +1424,7 @@
                 canLoad[2] = true;
                 var json  = JSON.parse(xmlhttp.responseText);
                 if(json.status){
-                    ifameWaitShow();
+                    iframeWaitShow();
                     changeNewShare(json.result);
                     ++contentId;
                     needToCleanComment = true;
@@ -1514,7 +1528,7 @@
     };
 
     $("ctRWaitBoxBg").onclick = function(){
-        ifameWaitStop();
+        iframeWaitStop();
     };
 
     $("ctLScroll").onmouseover = function(){
@@ -1523,5 +1537,22 @@
 
     $("ctLScroll").onmouseout = function(){
         setScrollBarHide();
+    };
+
+    document.getElementById("lastContent").onclick = function(){
+        clickOrder++;
+        timestampNum = 1;
+        this.className = "freshBoxChoose";
+        document.getElementById("hotContent").className = "freshBoxNotChoose";
+        cleanMain1Show();
+        setTimeout(function(){linkContentLoad("timestamp");},0);
+    };
+    document.getElementById("hotContent").onclick = function(){
+        clickOrder++;
+        likesNum = 1;
+        this.className = "freshBoxChoose";
+        document.getElementById("lastContent").className = "freshBoxNotChoose";
+        cleanMain1Show();
+        setTimeout(function(){linkContentLoad("likes");},0);
     };
 })()
