@@ -10,7 +10,7 @@
       "cookies",
       "http://localhost:5000/*",
       "http://share.hustunique.com/*", 
-      "http://162.220.11.231:8000/"
+      "http://162.220.11.231:8000/*"
       ],
 
   "browser_action": {
