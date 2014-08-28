@@ -10,7 +10,7 @@
       "cookies",
       "http://localhost:5000/*",
       "http://share.hustunique.com/*", 
-      "http://www.uniqueguoqi.com:8000/*"
+      "http://www.uniqueguoqi.com:5000/*"
       ],
 
   "browser_action": {
