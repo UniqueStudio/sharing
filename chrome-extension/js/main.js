@@ -23,13 +23,15 @@ require.config({
 require([
     'controller',
     'jquery',
-], function(controller, $){
+    'config'
+], function(controller, $, config){
     $(function($){
         //oauth login
-        // var remoteUrl = "http://localhost:5000";
-        var remoteUrl = "http://www.uniqueguoqi.com:5000";
+        //var remoteUrl = "http://www.uniqueguoqi.com:5000";
         console.log('init');
-        $.get(remoteUrl + "/api/islogged", function(r){
+        var isloggedUrl = config.remoteUrl + "/api/islogged";
+        console.log('logged url', isloggedUrl);
+        $.get(config.remoteUrl + "/api/islogged", function(r){
             console.log('islogged result', r);
             result = $.parseJSON(r);
             if(result.logged){
@@ -37,7 +39,7 @@ require([
                 controller.init();
             }else{
                 console.log('not logged');
-                chrome.tabs.create({url: 'http://localhost:5000'});
+                chrome.tabs.create({url: config.remoteUrl});
             }
 
         })

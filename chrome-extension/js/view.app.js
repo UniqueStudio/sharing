@@ -4,10 +4,12 @@
 **/
 define([
     'backbone',
-    'view.share'
+    'view.share',
+    'config'
 ], function(
     Backbone,
-    ShareView
+    ShareView,
+    config
 ){
     var AppView;
 
@@ -51,7 +53,8 @@ define([
                 parameters.explain = explain;
                 console.log('parameters', parameters);
 
-                $.post("http://localhost:5000/api/add", parameters).done(function(r){
+                var postUrl = config.remoteUrl + '/api/add';
+                $.post(postUrl, parameters).done(function(r){
                     var result = $.parseJSON(r);
                     console.log('result', result);
                     if(result.status){

@@ -5,11 +5,13 @@
 define([
     'backbone',
     'view.share',
-    'model.share'
+    'model.share',
+    'config'
 ], function(
     Backbone,
     ShareView,
-    Share
+    Share,
+    config
 ){
     var ShareCollection;
 
@@ -20,7 +22,7 @@ define([
     ShareCollection = Backbone.Collection.extend({
         model: Share,
 
-        url: 'http://localhost:5000/api/list',
+        url: config.remoteUrl + '/api/list',
         initialize: function(){
             console.log('new share collection');
 
