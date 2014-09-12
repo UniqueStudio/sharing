@@ -48,13 +48,22 @@ def connect():
                                          user_profile['email']).first()
                 session['user_id'] = user.id
                 session['email'] = user.email
-                return make_response(redirect(url_for('share.list')))
+            else:
+				email = user_profile['email']
+				nickname = user_profile['nickname']
+				image = user_profile['image']
+				user = User(email, '123', nickname, image)
+				db.session.add(user)
+				db.session.commit()
+				session['user_id'] = user.id
+				session['email'] = user.email
+            return make_response(redirect(url_for('share.list')))
 
             # 删除state, 并加入user_profile
-            session.pop('state')
-            session['user_profile'] = user_profile
+# session.pop('state')
+#            session['user_profile'] = user_profile
             # 重定向到添加本站密码的页面
-            return make_response(redirect(url_for('account.add_pwd')))
+#            return make_response(redirect(url_for('account.add_pwd')))
         else:
             raise OutputError('参数错误')
 

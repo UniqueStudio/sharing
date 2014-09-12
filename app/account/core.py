@@ -26,7 +26,7 @@ photos = UploadSet('photos', ALL, default_dest=lambda app: 'app/static/uploads')
 PHOTO_PREFIX = '../static/uploads/'
 
 
-f = open('app/client_secret.json', 'r')
+f = open('app/client.json', 'r')
 web = json.loads(f.read())['web']
 f.close()
 CLIENT_SECRET = web['client_secret']

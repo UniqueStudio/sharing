@@ -3,9 +3,9 @@ mail_config = {
         'MAIL_SERVER': 'smtp.gmail.com',
         'MAIL_PORT': 587, 
         'MAIL_USE_TLS': True,
-        'MAIL_USERNAME': '',
-        'MAIL_PASSWORD': '', 
-        'MAIL_DEFAULT_SENDER': ''
+        'MAIL_USERNAME': 'share@hustunique.com',
+        'MAIL_PASSWORD': 'hustshare', 
+        'MAIL_DEFAULT_SENDER': ('Share', 'share@hustunique.com')
 }
 
 constance = {
@@ -21,3 +21,6 @@ constance = {
 }
 
 
+
+TEST_URL = 'http://www.uniqueguoqi.com:5000'
+# TEST_URL = 'http://share.hustunique.com'

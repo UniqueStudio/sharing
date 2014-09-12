@@ -132,7 +132,7 @@ def detail():
             result['result']['is_collection'] = True
     else:
         result['status'] = False
-        result['msg'] = '未找到前一项'
+        result['msg'] = '未找到下一项'
 
     return json.dumps(result)
         

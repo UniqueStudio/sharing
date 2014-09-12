@@ -151,7 +151,10 @@ class Share(db.Model):
             index = shares.index(self)
         except ValueError:
             return None
-        return shares.pop(index - 1)
+        if (index-1) > 0:
+            return shares.pop(index - 1)
+        else:
+            return None
 
 
     def after(self):
@@ -160,7 +163,10 @@ class Share(db.Model):
             index = shares.index(self)
         except ValueError:
             return None
-        return shares.pop(index + 1)
+        if (index+1) < len(shares):
+            return shares.pop(index + 1)
+        else:
+            return None
 
 
 

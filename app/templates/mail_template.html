@@ -1,9 +1,8 @@
-<h3>{{ nickname }}， 你好！</h3>
-<p> 今日分享<a href="http://share.hustunique.com">share  -- UniqueStudio</a></p>
+<p> 今日分享<a href="{{ url }}">share  -- UniqueStudio</a></p>
 <ul>
-    {% for item in shares.items %}
+    {% for item in shares %}
     <li><a href="{{ item.url }}">{{ item.title }}</a></li>
     {% endfor %}
 </ul>
-<p> chrome插件下载<a href="http://share.hustunique.com/extension/download_ext">
+<p> chrome插件下载<a href="{{ url }}/extension/download_ext">
     chrome extension</a></p>
