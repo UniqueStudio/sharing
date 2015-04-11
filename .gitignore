@@ -5,3 +5,4 @@ config.py
 *.out
 logs/error.log
 logs/access.log
+.idea
