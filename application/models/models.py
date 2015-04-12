@@ -200,13 +200,13 @@ class User(Document):
         """
         pass
 
-    def remove_group(self, user, group):
+    def remove_user_from_group(self, user, group):
         """
             从group中删除user
         """
         pass
 
-    def remove_share_group(self, share, group):
+    def remove_share_from_group(self, share, group):
         """
             删除该用户在group中分享的share
         """
