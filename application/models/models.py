@@ -17,6 +17,10 @@ class Comment(Document):
     def is_exist(cls, id):
         return Comment.objects(id=id).first() is not None
 
+    def comment_delete(self):
+        self.is_delete = True
+        self.save()
+
 class Share(Document):
     """
         区分是否是同一个share的方法是判断url和own_group是否相等
@@ -109,7 +113,7 @@ class User(Document):
     manager_groups = ListField(ReferenceField(ShareGroup), default=list)
 
 
-    def __repr__(self):
+    def __str__(self):
         return '<User :%s\n email:%s>' % (self.nickname, self.email)
 
     @classmethod
@@ -135,31 +139,69 @@ class User(Document):
     def is_gratitude(self, share):
         return share in self.gratitude_shares
 
-    def gratitude(self, share, group):     #感谢分享到group的share
-        pass
+    def gratitude(self, share):     #感谢分享到group的share(每个share都有独立的分组)
+        share.gratitude(self)
+        self.gratitude_shares.append(share)
+        self.save()
 
     #个人分享部分
     def is_share(self, share, group):   #是否分享到某个组
         return share in self.self_shares and share.own_group == group
 
     def share_to_group(self, share, group):     #将share分享到group中
-        pass
+        if not self.is_share(share, group):
+            if Share.is_exist(share.url, group):
+                share = Share.objects(url=share.url, group=group).first()
+            share.share_users.append(self)
+            share.save()
+            self.self_shares.append(share)
+            self.save()
+        else:
+            print '已分享'
+
 
     def remove_share_to_group(self, share, group):  #从group删除分享了的share
-        pass
+        if self.is_share(share, group):
+            if Share.is_exist(share.url, group):
+                share = Share.objects(url=share.url, group=group).first()
+                if len(share.share_users) == 1: #该条share只有一个分享者直接删除
+                    share.delete()
+                    self.self_shares.remove(share)
+                    self.save()
+                else:
+                    if self in share.share_users:
+                        share.share_users.remove(self)
+                        share.save()
+                        self.self_shares.remove(share)
+                        self.save()
+                    else:
+                        print '并没有分享过'
+            else:
+                print '该share不存在'
 
     #添加评论部分
-    def add_comment_to_share(self, share, comment):
+    def add_comment_to_share(self, share, comment_content):
         """
             向某个share(每个group的share在数据库表现是独立的)添加comment
+            :param comment_content:添加的评论内容
         """
-        pass
+        comment = Comment(user=self, content=comment_content, share=share).save()
+        share.comments.append(comment)
+        share.save()
+        self.comments.append(comment)
+        self.save()
 
-    def remove_comment_to_share(self, share, comment):
+    def remove_comment_to_share(self, share, comment_id):
         """
             向某个share(每个group的share在数据库表现是独立的)删除comment
+            :param comment_id:删除评论的id
         """
-        pass
+        comment = Comment.objects(id=comment_id).first()
+        share.comments.remove(comment)
+        share.save()
+        self.comments.remove(comment)
+        self.save()
+        comment.comment_delete()
 
     #关注拉黑部分
     def add_attention(self, user):
@@ -180,18 +222,13 @@ class User(Document):
         if User.is_exist(user.mail) and user in self.black_users:
             self.black_users.remove(user)
 
-    #修改个人信息部分
-    def modify_gender(self, is_man):
+    #修改个人信息部分, 修改个人信息在一个请求中调用
+    def modify_information(self, is_man, brief, education_information, phone_number):
         self.is_man = is_man
-
-    def modify_brief(self, brief):
         self.brief = brief
-
-    def modify_education_information(self, education_information):
         self.education_information = education_information
-
-    def modify_phone_number(self, phone_number):
         self.phone_number = phone_number
+        self.save()
 
     #以下均为管理员方法，具体是否整理为单独一个类后行考虑
     def is_admin(self, group):
@@ -220,8 +257,8 @@ class User(Document):
 
 if __name__ == '__main__':
     print 'Test script to be finished'
-    # from mongoengine import connect
-    # conn = connect('share')
+    from mongoengine import connect
+    conn = connect('share')
 
     # #测试user存储
     # user1 = User(email='test0@qq.com', password='123456', nickname='user1').save()
@@ -273,3 +310,8 @@ if __name__ == '__main__':
     # print user.is_gratitude(share)
 
     # print ShareGroup.is_exist('tet')
+
+
+    # user = User.objects(email='498283580@qq.com').first()
+    # comment = Comment.objects(id='552a0d15421aa930e8ad0111').first()
+    # print comment.content
