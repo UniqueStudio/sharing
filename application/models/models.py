@@ -1,10 +1,11 @@
-#encoding:utf-8
+# encoding:utf-8
 __author__ = 'bing'
 
 from mongoengine import Document
 from mongoengine.fields import *
 
 import datetime
+
 
 class Comment(Document):
     user = ReferenceField('User', required=True)
@@ -21,6 +22,7 @@ class Comment(Document):
         self.is_delete = True
         self.save()
 
+
 class Share(Document):
     """
         区分是否是同一个share的方法是判断url和own_group是否相等
@@ -29,7 +31,7 @@ class Share(Document):
     explain = StringField(required=True)
     url = URLField(required=True)
     own_group = ReferenceField('ShareGroup')
-    share_users = ListField(ReferenceField('User'), default=list) #单个组分析用户
+    share_users = ListField(ReferenceField('User'), default=list)  #单个组分析用户
     share_time = DateTimeField(required=True, default=datetime.datetime.now)
     gratitude_num = IntField(required=True, default=0)
 
@@ -39,7 +41,7 @@ class Share(Document):
     is_delete = BooleanField(required=True, default=False)
 
     @classmethod
-    def is_exist(cls, url, group):    #是否在group中存在url的share
+    def is_exist(cls, url, group):  #是否在group中存在url的share
         return Share.objects(url=url, own_group=group, is_delete=False).first() is not None
 
     def gratitude(self, user):
@@ -53,7 +55,7 @@ class Share(Document):
             self.own_group = group
             self.save()
 
-    def add_share_user(self, user): #添加分享用户
+    def add_share_user(self, user):  #添加分享用户
         self.share_users.append(user)
         self.save()
 
@@ -65,12 +67,12 @@ class Share(Document):
         self.is_delete = True
         self.save()
 
-    def remove_share_user(self, user, group):   #删除分享的用户
+    def remove_share_user(self, user, group):  #删除分享的用户
         if Share.is_exist(self.url, group):
             self.share_users.remove(user)
             self.save()
 
-    def add_comment(self, comment):     #添加评论
+    def add_comment(self, comment):  #添加评论
         self.comments.append(comment)
         self.save()
 
@@ -78,6 +80,7 @@ class Share(Document):
         self.comments.remove(comment)
         self.save()
         comment.comment_delete()
+
 
 class ShareGroup(Document):
     name = StringField(required=True, unique=True)
@@ -96,7 +99,7 @@ class ShareGroup(Document):
     def is_admin(self, user):
         return user in self.administrators
 
-    def add_user(self, user):   #用户加入group中，逻辑上应该是group做的事
+    def add_user(self, user):  #用户加入group中，逻辑上应该是group做的事
         if User.is_exist(user.email) and ShareGroup.is_exist(self.name):
             user.groups.append(self)
             self.save()
@@ -126,7 +129,6 @@ class ShareGroup(Document):
         if user in self.administrators:
             self.administrators.remove(user)
             self.save()
-
 
 
 class User(Document):
@@ -171,7 +173,7 @@ class User(Document):
         self.save()
 
     def remove_the_group(self, group):  #退组,与管理员身份无关
-        if self.is_in_the_group(group)and ShareGroup.is_exist(group.name):
+        if self.is_in_the_group(group) and ShareGroup.is_exist(group.name):
             self.groups.remove(group)
             group.users.remove(self)
             #如果是管理员也删除
@@ -184,16 +186,16 @@ class User(Document):
     def is_gratitude(self, share):
         return share in self.gratitude_shares
 
-    def gratitude(self, share):     #感谢分享到group的share(每个share都有独立的分组)
+    def gratitude(self, share):  #感谢分享到group的share(每个share都有独立的分组)
         share.gratitude(self)
         self.gratitude_shares.append(share)
         self.save()
 
     #个人分享部分
-    def is_share(self, share, group):   #是否分享到某个组
+    def is_share(self, share, group):  #是否分享到某个组
         return share in self.self_shares and share.own_group == group
 
-    def share_to_group(self, share, group):     #将share分享到group中
+    def share_to_group(self, share, group):  #将share分享到group中
         if not self.is_share(share, group):
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, group=group).first()
@@ -210,7 +212,7 @@ class User(Document):
         if self.is_share(share, group):
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, group=group).first()
-                if len(share.share_users) == 1: #该条share只有一个分享者直接删除
+                if len(share.share_users) == 1:  #该条share只有一个分享者直接删除
                     share.share_delete()
                     self.self_shares.remove(share)
                     self.save()
@@ -241,7 +243,7 @@ class User(Document):
             :param comment_id:删除评论的id
         """
         comment = Comment.objects(id=comment_id).first()
-        share.remove_comment(comment)   #comment的删除在里面操作了
+        share.remove_comment(comment)  #comment的删除在里面操作了
         self.comments.remove(comment)
         self.save()
 
@@ -287,7 +289,7 @@ class User(Document):
         """
             从group中删除user
         """
-        if self.is_admin(group) and not user.is_admin(group):   #管理员不能删除管理员
+        if self.is_admin(group) and not user.is_admin(group):  #管理员不能删除管理员
             user.remove_the_group(group)
             group.remove_user(user=user)
 
@@ -317,13 +319,14 @@ class User(Document):
 if __name__ == '__main__':
     print 'Test script to be finished'
     from mongoengine import connect
+
     conn = connect('share')
 
     # #测试user存储
     # user1 = User(email='test0@qq.com', password='123456', nickname='user1').save()
     # user2 = User(email='test1@qq.com', password='123456', nickname='user2').save()
     # user3 = User(email='test2@qq.com', password='123456', nickname='user3').save()
-    
+
     # #测试group存储，并指定创建者和管理员
     # group = ShareGroup(name='test', create_user=user1, administrators=[user1]).save()
     # user1.manager_groups.append(group)
@@ -351,7 +354,7 @@ if __name__ == '__main__':
     # share.gratitude_num += 1
     # user1.gratitude_shares.append(share)
     # share.gratitude_users.append(user1)
-    
+
     # user1.save()
     # user2.save()
     # user3.save()
