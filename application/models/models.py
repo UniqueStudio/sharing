@@ -25,11 +25,11 @@ class Share(Document):
     explain = StringField(required=True)
     url = URLField(required=True)
     own_group = ReferenceField('ShareGroup')
-    share_users = ListField(ReferenceField('User'), default=[]) #单个组分析用户
+    share_users = ListField(ReferenceField('User'), default=list) #单个组分析用户
     share_time = DateTimeField(required=True, default=datetime.datetime.now)
     gratitude_num = IntField(required=True, default=0)
 
-    gratitude_users = ListField(ReferenceField('User'), default=[])
+    gratitude_users = ListField(ReferenceField('User'), default=list)
     comments = ListField(ReferenceField(Comment))
 
     @classmethod
@@ -59,7 +59,7 @@ class ShareGroup(Document):
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     shares = ListField(ReferenceField(Share))
-    users = ListField(ReferenceField('User'), default=[])
+    users = ListField(ReferenceField('User'), default=list)
 
     @classmethod
     def is_exist(cls, name):
@@ -97,16 +97,16 @@ class User(Document):
     brief = StringField()
     inviter = ReferenceField('self')
 
-    self_shares = ListField(ReferenceField(Share), default=[])
-    gratitude_shares = ListField(ReferenceField(Share), default=[])
+    self_shares = ListField(ReferenceField(Share), default=list)
+    gratitude_shares = ListField(ReferenceField(Share), default=list)
 
-    comments = ListField(ReferenceField(Comment), default=[])
-    black_users = ListField(ReferenceField('self'), default=[])
-    attention_users = ListField(ReferenceField('self'), default=[])
+    comments = ListField(ReferenceField(Comment), default=list)
+    black_users = ListField(ReferenceField('self'), default=list)
+    attention_users = ListField(ReferenceField('self'), default=list)
 
-    groups = ListField(ReferenceField(ShareGroup), default=[])
+    groups = ListField(ReferenceField(ShareGroup), default=list)
 
-    manager_groups = ListField(ReferenceField(ShareGroup), default=[])
+    manager_groups = ListField(ReferenceField(ShareGroup), default=list)
 
 
     def __repr__(self):
@@ -219,56 +219,57 @@ class User(Document):
         pass
 
 if __name__ == '__main__':
-    from mongoengine import connect
-    conn = connect('share')
+    print 'Test script to be finished'
+    # from mongoengine import connect
+    # conn = connect('share')
 
-    #测试user存储
-    user1 = User(email='test0@qq.com', password='123456', nickname='user1').save()
-    user2 = User(email='test1@qq.com', password='123456', nickname='user2').save()
-    user3 = User(email='test2@qq.com', password='123456', nickname='user3').save()
+    # #测试user存储
+    # user1 = User(email='test0@qq.com', password='123456', nickname='user1').save()
+    # user2 = User(email='test1@qq.com', password='123456', nickname='user2').save()
+    # user3 = User(email='test2@qq.com', password='123456', nickname='user3').save()
     
-    #测试group存储，并指定创建者和管理员
-    group = ShareGroup(name='test', create_user=user1, administrators=[user1]).save()
-    user1.manager_groups.append(group)
-    #为group添加user
-    group.users.append(user1)
-    group.users.append(user2)
-    user1.groups.append(group)
-    #测试添加share
-    share = Share(title='test', explain='test', url='http://www.baidu.com').save()
-    group.shares.append(share)
-    share.own_group=group
-    share.share_users.append(user1)
-    user1.self_shares.append(share)
-    #测试share加评论，comment的user和share指定
-    comment = Comment(user=user1, content='test', share=share).save()
-    share.comments.append(comment)
-    user1.comments.append(comment)
-    #测试user黑名单
-    user1.black_users.append(user2)
-    #测试user特别关注
-    user1.attention_users.append(user3)
-    #测试添加邀请人
-    user3.inviter = user1
-    #测试感谢share
-    share.gratitude_num += 1
-    user1.gratitude_shares.append(share)
-    share.gratitude_users.append(user1)
+    # #测试group存储，并指定创建者和管理员
+    # group = ShareGroup(name='test', create_user=user1, administrators=[user1]).save()
+    # user1.manager_groups.append(group)
+    # #为group添加user
+    # group.users.append(user1)
+    # group.users.append(user2)
+    # user1.groups.append(group)
+    # #测试添加share
+    # share = Share(title='test', explain='test', url='http://www.baidu.com').save()
+    # group.shares.append(share)
+    # share.own_group=group
+    # share.share_users.append(user1)
+    # user1.self_shares.append(share)
+    # #测试share加评论，comment的user和share指定
+    # comment = Comment(user=user1, content='test', share=share).save()
+    # share.comments.append(comment)
+    # user1.comments.append(comment)
+    # #测试user黑名单
+    # user1.black_users.append(user2)
+    # #测试user特别关注
+    # user1.attention_users.append(user3)
+    # #测试添加邀请人
+    # user3.inviter = user1
+    # #测试感谢share
+    # share.gratitude_num += 1
+    # user1.gratitude_shares.append(share)
+    # share.gratitude_users.append(user1)
     
-    user1.save()
-    user2.save()
-    user3.save()
-    group.save()
-    share.save()
-    comment.save()
+    # user1.save()
+    # user2.save()
+    # user3.save()
+    # group.save()
+    # share.save()
+    # comment.save()
 
-    user = User.objects(email='test1@qq.com').first()
-    share = Share.objects(title='test').first()
-    group = ShareGroup.objects(name='test').first()
-    print Share.is_exist('http://www.baidu.com', group)
-    comment = Comment.objects(user=user).first()
-    assert comment is None
-    print user.is_in_the_group(group)
-    print user.is_gratitude(share)
+    # user = User.objects(email='test1@qq.com').first()
+    # share = Share.objects(title='test').first()
+    # group = ShareGroup.objects(name='test').first()
+    # print Share.is_exist('http://www.baidu.com', group)
+    # comment = Comment.objects(user=user).first()
+    # assert comment is None
+    # print user.is_in_the_group(group)
+    # print user.is_gratitude(share)
 
-    print ShareGroup.is_exist('tet')
+    # print ShareGroup.is_exist('tet')
