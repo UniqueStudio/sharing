@@ -36,9 +36,11 @@ class Share(Document):
     gratitude_users = ListField(ReferenceField('User'), default=list)
     comments = ListField(ReferenceField(Comment))
 
+    is_delete = BooleanField(required=True, default=False)
+
     @classmethod
     def is_exist(cls, url, group):    #是否在group中存在url的share
-        return Share.objects(url=url, own_group=group).first() is not None
+        return Share.objects(url=url, own_group=group, is_delete=False).first() is not None
 
     def gratitude(self, user):
         self.gratitude_num += 1
@@ -51,10 +53,31 @@ class Share(Document):
             self.own_group = group
             self.save()
 
+    def add_share_user(self, user): #添加分享用户
+        self.share_users.append(user)
+        self.save()
+
+    def remove_share_user(self, user):  #删除分享用户
+        self.share_users.remove(user)
+        self.save()
+
+    def share_delete(self):
+        self.is_delete = True
+        self.save()
+
     def remove_share_user(self, user, group):   #删除分享的用户
         if Share.is_exist(self.url, group):
             self.share_users.remove(user)
             self.save()
+
+    def add_comment(self, comment):     #添加评论
+        self.comments.append(comment)
+        self.save()
+
+    def remove_comment(self, comment):  #删除评论
+        self.comments.remove(comment)
+        self.save()
+        comment.comment_delete()
 
 class ShareGroup(Document):
     name = StringField(required=True, unique=True)
@@ -74,19 +97,37 @@ class ShareGroup(Document):
         return user in self.administrators
 
     def add_user(self, user):   #用户加入group中，逻辑上应该是group做的事
-        if User.is_exist(user.email) and not user.is_in_the_group(self) \
-                and ShareGroup.is_exist(self.name):
+        if User.is_exist(user.email) and ShareGroup.is_exist(self.name):
             user.groups.append(self)
-            self.users.append(user)
             self.save()
-            user.save()
 
-    def remove(self, user):
+    def remove_user(self, user):
         """
             这个方法仅是从group删除用户，具体是管理员删除或是用户自行退组不管
         """
         self.users.remove(user)
         self.save()
+
+    def remove_share(self, share):
+        """
+        删除已经分享了的share
+        :param share:
+        :return:
+        """
+        self.shares.remove(share)
+        self.save()
+
+    def remove_administrators(self, user):
+        """
+        删除管理员
+        :param user:管理员
+        :return:
+        """
+        if user in self.administrators:
+            self.administrators.remove(user)
+            self.save()
+
+
 
 class User(Document):
     email = EmailField(required=True, unique=True)
@@ -125,14 +166,18 @@ class User(Document):
     def is_in_the_group(self, group):
         return group in self.groups
 
+    def add_the_group(self, group):
+        self.groups.append(group)
+        self.save()
+
     def remove_the_group(self, group):  #退组,与管理员身份无关
         if self.is_in_the_group(group)and ShareGroup.is_exist(group.name):
             self.groups.remove(group)
             group.users.remove(self)
             #如果是管理员也删除
-            if self in group.administrators:
-                group.administrators.remove(self)
-                group.save()
+            if self.is_admin(group):
+                group.remove_administrators(user=self)
+                self.manager_groups.remove(group)
             self.save()
 
     #感谢部分
@@ -152,26 +197,26 @@ class User(Document):
         if not self.is_share(share, group):
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, group=group).first()
-            share.share_users.append(self)
-            share.save()
+                share.add_share_user()
+            else:
+                share.add_share(self, group)
             self.self_shares.append(share)
             self.save()
         else:
             print '已分享'
 
 
-    def remove_share_to_group(self, share, group):  #从group删除分享了的share
+    def remove_share_to_group(self, share, group):  #从group删除自己分享了的share
         if self.is_share(share, group):
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, group=group).first()
                 if len(share.share_users) == 1: #该条share只有一个分享者直接删除
-                    share.delete()
+                    share.share_delete()
                     self.self_shares.remove(share)
                     self.save()
                 else:
                     if self in share.share_users:
-                        share.share_users.remove(self)
-                        share.save()
+                        share.remove_share_user()
                         self.self_shares.remove(share)
                         self.save()
                     else:
@@ -186,8 +231,7 @@ class User(Document):
             :param comment_content:添加的评论内容
         """
         comment = Comment(user=self, content=comment_content, share=share).save()
-        share.comments.append(comment)
-        share.save()
+        share.add_comment(comment)
         self.comments.append(comment)
         self.save()
 
@@ -197,30 +241,32 @@ class User(Document):
             :param comment_id:删除评论的id
         """
         comment = Comment.objects(id=comment_id).first()
-        share.comments.remove(comment)
-        share.save()
+        share.remove_comment(comment)   #comment的删除在里面操作了
         self.comments.remove(comment)
         self.save()
-        comment.comment_delete()
 
     #关注拉黑部分
     def add_attention(self, user):
         if User.is_exist(user.mail) and user not in self.attention_users:
             self.remove_block(user)
             self.attention_users.append(user)
+            self.save()
 
     def block(self, user):
         if User.is_exist(user.mail) and user not in self.black_users:
             self.remove_attention(user)
             self.black_users.append(user)
+            self.save()
 
     def remove_attention(self, user):
         if User.is_exist(user.mail) and user in self.attention_users:
             self.attention_users.remove(user)
+            self.save()
 
     def remove_block(self, user):
         if User.is_exist(user.mail) and user in self.black_users:
             self.black_users.remove(user)
+            self.save()
 
     #修改个人信息部分, 修改个人信息在一个请求中调用
     def modify_information(self, is_man, brief, education_information, phone_number):
@@ -235,25 +281,38 @@ class User(Document):
         """
             是否是group的管理员
         """
-        pass
+        return group in self.manager_groups and self in group.administrators
 
     def remove_user_from_group(self, user, group):
         """
             从group中删除user
         """
-        pass
+        if self.is_admin(group) and not user.is_admin(group):   #管理员不能删除管理员
+            user.remove_the_group(group)
+            group.remove_user(user=user)
 
     def remove_share_from_group(self, share, group):
         """
-            删除该用户在group中分享的share
+            删除group中分享的share
         """
-        pass
+        if self.is_admin(group) and Share.is_exist(share.url, group):
+            share.share_delete()
+            group.remove_share(share)
 
-    def add_user(self, user, group):
+    def remove_comment_from_share(self, share, comment_id, user):
+        if self.is_admin(group=share.own_group):
+            user.remove_comment_to_share(share=share, comment_id=comment_id)
+
+
+    def allow_user_entry(self, user, group):
         """
             使user加入group
+            :param user:该user应该是在传进来之前被验证过且在数据库中的
         """
-        pass
+        if not user.is_in_the_group() and self.is_admin(group):
+            user.add_the_group()
+            group.add_user(user)
+
 
 if __name__ == '__main__':
     print 'Test script to be finished'
@@ -313,5 +372,7 @@ if __name__ == '__main__':
 
 
     # user = User.objects(email='498283580@qq.com').first()
+    # share = user.self_shares[0]
+    # comment = Comment(user=user, content='test', share=share).save()
     # comment = Comment.objects(id='552a0d15421aa930e8ad0111').first()
     # print comment.content
