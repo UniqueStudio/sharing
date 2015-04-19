@@ -3,20 +3,26 @@ __author__ = 'bing'
 
 import tornado.web
 import tornado.httpclient
+from application.base import BaseHandle
 
-class Login(tornado.web.RequestHandler):
+class NoLogin(BaseHandle):
+    def get(self):
+        self.write('未登陆')
+
+class Login(BaseHandle):
     @tornado.web.asynchronous
     def post(self):
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.login)
 
+    @tornado.web.authenticated
     def login(self, response):
         email = self.get_body_argument('email')
         password = self.get_body_argument('password')
         self.write(email + '-' + password)
         self.finish()
 
-class Register(tornado.web.RequestHandler):
+class Register(BaseHandle):
     @tornado.web.asynchronous
     def post(self):
         client = tornado.httpclient.AsyncHTTPClient()
@@ -35,22 +41,24 @@ class Register(tornado.web.RequestHandler):
         self.write(email)
         self.finish()
 
-class Homepage(tornado.web.RequestHandler):
+class Homepage(BaseHandle):
     @tornado.web.asynchronous
-    def post(self):
+    def get(self):
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.get_homepage)
 
+    @tornado.web.authenticated
     def get_homepage(self, response):
         self.write('homepage_information')
         self.finish()
 
-class ModifyMyInformation(tornado.web.RequestHandler):
+class ModifyMyInformation(BaseHandle):
     @tornado.web.asynchronous
     def post(self):
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.modify_information)
 
+    @tornado.web.authenticated
     def modify_information(self, response):
         phone_number = self.get_body_argument('phone_number', default=None)
         is_man = self.get_body_argument('is_man', default=True)
