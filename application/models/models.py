@@ -91,15 +91,14 @@ class Share(Document):
 class ShareGroup(Document):
     name = StringField(required=True, unique=True)
     create_user = ReferenceField('User', required=True)
-    administrators = ListField(ReferenceField('User'), required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     shares = ListField(ReferenceField(Share))
     users = ListField(ReferenceField('User'), default=list)
 
     def __str__(self):
-        return '<Group: \nname:%s, \ncreate_user:%s, \nadministrators:%s>' \
-               % (self.name, self.create_user, self.administrators)
+        return '<Group: \nname:%s, \ncreate_user:%s>' \
+               % (self.name, self.create_user)
 
     @classmethod
     def is_exist(cls, name):
@@ -107,7 +106,7 @@ class ShareGroup(Document):
         return groups != None
 
     def is_admin(self, user):
-        return user in self.administrators
+        return user==self.create_user
 
     def add_user(self, user):  #用户加入group中，逻辑上应该是group做的事
         if User.is_exist(user.email) and ShareGroup.is_exist(self.name):
@@ -129,16 +128,6 @@ class ShareGroup(Document):
         """
         self.shares.remove(share)
         self.save()
-
-    def remove_administrators(self, user):
-        """
-        删除管理员
-        :param user:管理员
-        :return:
-        """
-        if user in self.administrators:
-            self.administrators.remove(user)
-            self.save()
 
     def is_create_user(self, user):
         return self.create_user == user
@@ -185,15 +174,11 @@ class User(Document):
         self.groups.append(group)
         self.save()
 
-    def remove_the_group(self, group):  #退组,与管理员身份无关
+    def remove_the_group(self, group):  #退组,管理员另处理
         if not group.is_create_user(self):
             if self.is_in_the_group(group) and ShareGroup.is_exist(group.name):
                 self.groups.remove(group)
                 group.users.remove(self)
-                #如果是管理员也删除
-                if self.is_admin(group):
-                    group.remove_administrators(user=self)
-                    self.manager_groups.remove(group)
                 self.save()
         else:
             print '暂时不处理组创建人退组行为'
@@ -215,7 +200,7 @@ class User(Document):
         return share in self.self_shares and share.own_group == group
 
     def share_to_group(self, share, group):  #将share分享到group中
-        if not self.is_share(share, group):
+        if not self.is_share(share, group) and self.is_in_the_group(group):
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, group=group).first()
                 share.add_share_user()
@@ -224,11 +209,11 @@ class User(Document):
             self.self_shares.append(share)
             self.save()
         else:
-            print '已分享'
+            print '已分享或不是该组成员'
 
 
     def remove_share_to_group(self, share, group):  #从group删除自己分享了的share
-        if self.is_share(share, group):
+        if self.is_share(share, group) and self.is_in_the_group(group):
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, group=group).first()
                 if len(share.share_users) == 1:  #该条share只有一个分享者直接删除
@@ -305,7 +290,7 @@ class User(Document):
         """
             是否是group的管理员
         """
-        return group in self.manager_groups and self in group.administrators
+        return group in self.manager_groups and group.is_create_user(self)
 
     def admin_remove_user_from_group(self, user, group):
         """
@@ -351,12 +336,10 @@ if __name__ == '__main__':
     # user2 = User(email='test1@qq.com', password='123456', nickname='user2').save()
     # user3 = User(email='test2@qq.com', password='123456', nickname='user3').save()
     #
-    # #测试group存储，并指定创建者和管理员
-    # group = ShareGroup(name='test', create_user=user1, users=[user1], administrators=[user1]).save()
+    # #创建组
+    # group = ShareGroup(name='test', create_user=user1, users=[user1]).save()
     # user1.manager_groups.append(group)
-    #
-    # #为group添加user
-    # user1.allow_user_entry(user=user2, group=group)
+    # user1.add_the_group(group)
     #
     # #测试添加share
     # share = Share(title='test', explain='test', url='http://www.baidu.com').save()
@@ -368,10 +351,10 @@ if __name__ == '__main__':
 
 
     #得到测试的user1，user2, share, group
-    # admin = User.objects(email='test0@qq.com').first()
-    # user = User.objects(email='test1@qq.com').first()
-    # group = ShareGroup.objects(name='test').first()
-    # share = Share.objects(url='http://www.baidu.com').first()
+    admin = User.objects(email='test0@qq.com').first()
+    user = User.objects(email='test1@qq.com').first()
+    group = ShareGroup.objects(name='test').first()
+    share = Share.objects(url='http://www.baidu.com').first()
     # print admin.nickname, user.nickname
     # print group.name
     # print share.url
@@ -382,10 +365,13 @@ if __name__ == '__main__':
     # user.gratitude(share)
     # print share.gratitude_num, share.gratitude_users
 
-    # #测试退组,管理员也可以退，但是应该保留最少一个，或者是说保留创建人，创建人退了等于解散组,这儿并没有完成
+    # #测试退组,管理员退组时候需要选择解散或是指派管理员
     # print group.users
     # user.remove_the_group(group)
     # print user.groups
+    # print group.users
+    # admin.remove_the_group(group)
+    # print admin.groups
 
     # #管理员加人
     # admin.admin_allow_user_entry(user=user, group=group)
