@@ -4,5 +4,5 @@ __author__ = 'bing'
 import tornado.web
 
 class BaseHandle(tornado.web.RequestHandler):
-    def get_current_user(self):
-        return self.get_secure_cookie('user_email')
+    def get_current_user(self): #接口，测试时候全返回True
+        return True

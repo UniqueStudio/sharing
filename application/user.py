@@ -5,11 +5,12 @@ import tornado.web
 import tornado.httpclient
 from application.base import BaseHandle
 
-class NoLogin(BaseHandle):
+class Login(BaseHandle):
     def get(self):
+        self.xsrf_token
+        print self.get_cookie('_xsrf')
         self.write('未登陆')
 
-class Login(BaseHandle):
     @tornado.web.asynchronous
     def post(self):
         client = tornado.httpclient.AsyncHTTPClient()
