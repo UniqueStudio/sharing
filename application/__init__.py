@@ -4,6 +4,17 @@ __author__ = 'Bing'
 import tornado.web
 from tornado.web import url
 from application.user import Login, Register, ModifyMyInformation, Homepage
+from application.base import BaseHandle
+
+class Test(BaseHandle):
+    def get(self):
+        if self.get_argument('action') == 'create':
+            self.get_session()
+            self.session['test'] = 'test'
+            self.session.save()
+        else:
+            self.get_session()
+            self.write(self.session['test'])
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -12,7 +23,8 @@ class Application(tornado.web.Application):
             url(r'/login', Login),
             url(r'/register', Register),
             url(r'/modify_info', ModifyMyInformation),
-            url(r'/homepage', Homepage)
+            url(r'/homepage', Homepage),
+            url(r'/test', Test)
         ]
 
         settings = {

@@ -4,6 +4,7 @@ __author__ = 'bing'
 import tornado.web
 import tornado.httpclient
 from application.base import BaseHandle
+from application.models import User
 
 class Login(BaseHandle):
     def get(self):
@@ -33,13 +34,8 @@ class Register(BaseHandle):
         email = self.get_body_argument('email')
         password = self.get_body_argument('password')
         nickname = self.get_body_argument('nickname')
-        phone_number = self.get_body_argument('phone_number', default=None)
-        is_man = self.get_body_argument('is_man', default=True)
-        education_information = self.get_body_argument('education_information')
-        avatar = self.get_body_argument('avatar')
-        brief = self.get_body_argument('brief')
-        inviter = self.get_body_argument('inviter')
-        self.write(email)
+        if User.is_exist(email):
+            raise "email已经被占用了"
         self.finish()
 
 class Homepage(BaseHandle):

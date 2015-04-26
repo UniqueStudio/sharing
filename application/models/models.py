@@ -3,6 +3,7 @@ __author__ = 'bing'
 
 from mongoengine import Document
 from mongoengine.fields import *
+import md5
 
 import datetime
 
@@ -157,6 +158,13 @@ class User(Document):
 
     manager_groups = ListField(ReferenceField(ShareGroup), default=list)
 
+    def __init__(self, email, password, nickname=None):
+        self.email = email
+        self.set_password(password)
+        self.nickname = nickname
+
+    def set_password(self, password):
+        self.password = md5.new(password).hexdigest()
 
     def __str__(self):
         return '<User: \nnickname:%s, \nemail:%s>' % (self.nickname, self.email)
