@@ -36,6 +36,7 @@ class Register(BaseHandle):
         nickname = self.get_body_argument('nickname')
         if User.is_exist(email):
             raise "email已经被占用了"
+        user = User()
         self.finish()
 
 class Homepage(BaseHandle):
