@@ -4,6 +4,7 @@ __author__ = 'bing'
 from mongoengine import Document
 from mongoengine.fields import *
 import md5
+from mongoengine import connect
 
 import datetime
 
@@ -158,21 +159,26 @@ class User(Document):
 
     manager_groups = ListField(ReferenceField(ShareGroup), default=list)
 
-    def __init__(self, email, password, nickname=None):
-        self.email = email
-        self.set_password(password)
-        self.nickname = nickname
+    def __init__(self, email, password, nickname=None, *args, **kwargs):
+        super(User, self).__init__(email=email, password=self.set_password(password),
+                                   nickname=nickname, *args, **kwargs)
 
     def set_password(self, password):
-        self.password = md5.new(password).hexdigest()
+        return md5.new(password).hexdigest()
+
+    def check_password(self, password):
+        """
+            由于这个框架获得数据的时候会再经过一次__init__方法（猜测），所有password会经过两次加密，
+            第二次加密是对于数据库中的密码提取后的加密，所有检查密码是否正确要对原密码进行两次加密
+        """
+        return self.set_password(self.set_password(password)) == self.password
 
     def __str__(self):
         return '<User: \nnickname:%s, \nemail:%s>' % (self.nickname, self.email)
 
     @classmethod
     def is_exist(cls, email):
-        users = cls.objects(email=email)
-        return users.count() > 0
+        return cls.objects(email=email).first() is not None
 
     #组部分
     def is_in_the_group(self, group):
@@ -331,6 +337,21 @@ class User(Document):
             group.add_user(user)
         else:
             print '没有成功加入，或许是权限不够或许是user已经在组内'
+
+    #异常部分
+    class UserException(Exception):
+        def __init__(self, description=None):
+            self.description = description
+
+        def __str__(self):
+            return self.description
+
+        def __repr__(self):
+            return self.description
+
+def getConnection():
+
+    conn = connect('share')
 
 
 if __name__ == '__main__':
