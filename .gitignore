@@ -6,4 +6,4 @@ config.py
 logs/error.log
 logs/access.log
 .idea
-./application/avatar/*
+application/avatar/*
