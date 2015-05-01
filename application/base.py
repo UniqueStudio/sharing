@@ -9,6 +9,7 @@ class BaseHandle(tornado.web.RequestHandler):
     mrg = application.help.session.MemcacheSessionManager()
 
     def get_current_user(self): #接口，测试时候全返回True
+        #TODO:测试session存在以判断当前是否有user登陆
         return True
 
     def get_session(self):
@@ -27,3 +28,13 @@ class BaseHandle(tornado.web.RequestHandler):
                 create_session()
 
         return self.session
+
+    def recode_status_login(self, user):
+        """
+            记录user登陆状态
+        """
+        self.session = self.get_session()
+        self.session['nickname'] = user.nickname
+        self.session['_id'] = user.id
+        self.session['email'] = user.email
+        self.session.save()

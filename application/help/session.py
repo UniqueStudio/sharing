@@ -97,7 +97,7 @@ class MemcacheSessionManager(SessionManageBase):
         self.conn.set(key=session.get_session_id(), val=session_data, time=60*60*24)
 
     def create_new(self, session_id):
-        return BaseSession(session_id=session_id, mgr=self, data={'create':'test'})
+        return BaseSession(session_id=session_id, mgr=self, data={})
 
     def load_session(self, session_id=None):
         data = {}

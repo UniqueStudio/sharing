@@ -3,7 +3,7 @@ __author__ = 'Bing'
 
 import tornado.web
 from tornado.web import url
-from application.user import Login, Register, ModifyMyInformation, Homepage
+from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage
 from application.base import BaseHandle
 
 class Test(BaseHandle):
@@ -24,6 +24,7 @@ class Application(tornado.web.Application):
             url(r'/register', Register),
             url(r'/modify_info', ModifyMyInformation),
             url(r'/homepage', Homepage),
+            url(r'/upload_image', UploadImage),
             url(r'/test', Test)
         ]
 
