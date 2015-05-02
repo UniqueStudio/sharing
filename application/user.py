@@ -3,7 +3,7 @@ __author__ = 'bing'
 
 import tornado.web
 import tornado.httpclient
-from application.base import BaseHandle
+from application.base import BaseHandler
 from application.models import User, getConnection, Share, ShareGroup, Comment
 
 import json
@@ -13,7 +13,7 @@ import hashlib
 
 getConnection()
 
-class Login(BaseHandle):
+class Login(BaseHandler):
     def get(self):
         self.xsrf_token
         print self.get_cookie('_xsrf')
@@ -38,7 +38,7 @@ class Login(BaseHandle):
             print '登陆成功'
         self.finish()
 
-class Register(BaseHandle):
+class Register(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         client = tornado.httpclient.AsyncHTTPClient()
@@ -55,7 +55,7 @@ class Register(BaseHandle):
         self.recode_status_login(user)
         self.finish()
 
-class Homepage(BaseHandle):
+class Homepage(BaseHandler):
     @tornado.web.asynchronous
     def get(self):
         client = tornado.httpclient.AsyncHTTPClient()
@@ -87,7 +87,7 @@ class Homepage(BaseHandle):
             raise User.UserException('该用户未登陆')
         self.finish()
 
-class ModifyMyInformation(BaseHandle):
+class ModifyMyInformation(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         client = tornado.httpclient.AsyncHTTPClient()
@@ -111,7 +111,7 @@ class ModifyMyInformation(BaseHandle):
         self.finish()
 
 
-class UploadImage(BaseHandle):
+class UploadImage(BaseHandler):
 
     def get(self):
         self.write(
@@ -149,7 +149,7 @@ class UploadImage(BaseHandle):
             up.write(file['body'])
         user.set_avatar(save_file_name)
 
-class OperateMyShare(BaseHandle):
+class OperateMyShare(BaseHandler):
 
     @tornado.web.asynchronous
     def post(self):
@@ -191,7 +191,7 @@ class OperateMyShare(BaseHandle):
 
 
 
-class OperateMyGroup(BaseHandle):
+class OperateMyGroup(BaseHandler):
 
     @tornado.web.asynchronous
     def post(self):
@@ -216,7 +216,7 @@ class OperateMyGroup(BaseHandle):
         #TODO:接收某个组的邀请
         pass
 
-class Invite(BaseHandle):
+class Invite(BaseHandler):
 
     @tornado.web.asynchronous
     def post(self):

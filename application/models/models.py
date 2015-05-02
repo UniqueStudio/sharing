@@ -34,7 +34,6 @@ class Share(Document):
         区分是否是同一个share的方法是判断url和own_group是否相等
     """
     title = StringField(required=True)
-    explain = StringField(required=True)
     url = URLField(required=True)
     own_group = ReferenceField('ShareGroup')
     share_users = ListField(ReferenceField('User'), default=list)  #单个组分析用户
@@ -65,8 +64,7 @@ class Share(Document):
             self.own_group = group
             self.save()
 
-    def add_share_user(self, user):  #添加分享用户
-        self.share_users.append(user)
+    def add_share_user(self, user):  #添加分享用户 self.share_users.append(user)
         self.save()
 
     def remove_share_user(self, user):  #删除分享用户
@@ -213,13 +211,15 @@ class User(Document):
     def is_share(self, share, group):  #是否分享到某个组
         return share in self.self_shares and share.own_group == group
 
-    def share_to_group(self, share, group):  #将share分享到group中
+    def share_to_group(self, share, group, comment=None):  #将share分享到group中
         if not self.is_share(share, group) and self.is_in_the_group(group):
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, group=group).first()
                 share.add_share_user()
             else:
                 share.add_share(self, group)
+            if comment:
+                self.add_comment_to_share(share, comment)
             self.self_shares.append(share)
             self.save()
         else:

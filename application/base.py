@@ -4,13 +4,14 @@ __author__ = 'bing'
 import tornado.web
 import application.help.session
 
-class BaseHandle(tornado.web.RequestHandler):
+class BaseHandler(tornado.web.RequestHandler):
     session = None
     mrg = application.help.session.MemcacheSessionManager()
 
     def get_current_user(self): #接口，测试时候全返回True
         #TODO:测试session存在以判断当前是否有user登陆
-        return True
+        self.get_session()
+        return True if self.session['_id'] else False
 
     def get_session(self):
         session_id = self.get_secure_cookie('session_id')

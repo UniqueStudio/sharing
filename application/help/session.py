@@ -64,28 +64,28 @@ class BaseSession(dict):
         self.__change = True
         super(BaseSession, self).__setitem__(key, val)
 
-class MongoSessionManager(SessionManageBase):
-    def __init__(self):
-        import pymongo
-        conn = pymongo.Connection("localhost", 27017)
-        db = conn['session_manager']
-        self._collection = db['session']
+# class MongoSessionManager(SessionManageBase):
+#     def __init__(self):
+#         import pymongo
+#         conn = pymongo.Connection("localhost", 27017)
+#         db = conn['session_manager']
+#         self._collection = db['session']
 
-    def save_session(self, session):
-        self._collection.save({'_id':session.get_session_id(), 'data':session})
+#     def save_session(self, session):
+#         self._collection.save({'_id':session.get_session_id(), 'data':session})
 
-    def create_new(self, session_id):
-        return BaseSession(session_id, self, {})
+#     def create_new(self, session_id):
+#         return BaseSession(session_id, self, {})
 
-    def load_session(self, session_id=None):
-        data = {}   #默认为空的session
-        if session_id:
-            session_data = self._collection.find_one({'_id':session_id})
-            if session_data:
-                #防止数据错误
-                data = session_data['data']
+#     def load_session(self, session_id=None):
+#         data = {}   #默认为空的session
+#         if session_id:
+#             session_data = self._collection.find_one({'_id':session_id})
+#             if session_data:
+#                 #防止数据错误
+#                 data = session_data['data']
 
-        return BaseSession(session_id, self, data)
+#         return BaseSession(session_id, self, data)
 
 class MemcacheSessionManager(SessionManageBase):
     def __init__(self):

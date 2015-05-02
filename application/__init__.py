@@ -5,9 +5,10 @@ import tornado.web
 from tornado.web import url
 from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage, \
     OperateMyShare, OperateMyGroup
-from application.base import BaseHandle
+from application.share import ShareHandler
+from application.base import BaseHandler
 
-class Test(BaseHandle):
+class Test(BaseHandler):
     def get(self):
         if self.get_argument('action') == 'create':
             self.get_session()
@@ -28,13 +29,15 @@ class Application(tornado.web.Application):
             url(r'/upload_image', UploadImage),
             url(r'/operate_my_share', OperateMyShare),
             url(r'/operate_my_group', OperateMyGroup),
-            url(r'/test', Test)
+            url(r'/test', Test),
+            url(r'/share', ShareHandler),
         ]
 
         settings = {
             "cookie_secret": "bZJc2sWbQLKos6GkHn/VB9oXwQt8S0R0kRvJ5/xJ89E=",
             "login_url": "/login",
             "xsrf_cookies": False,
+            "debug": True,
         }
 
         tornado.web.Application.__init__(self, handlers, **settings)
