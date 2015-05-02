@@ -299,6 +299,10 @@ class User(Document):
         self.phone_number = phone_number
         self.save()
 
+    def set_avatar(self, avatar_path):
+        self.avatar = avatar_path
+        self.save()
+
     #以下均为管理员方法，具体是否整理为单独一个类后行考虑
     def is_admin(self, group):
         """

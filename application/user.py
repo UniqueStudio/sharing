@@ -4,10 +4,12 @@ __author__ = 'bing'
 import tornado.web
 import tornado.httpclient
 from application.base import BaseHandle
-from application.models import User, getConnection
+from application.models import User, getConnection, Share, ShareGroup, Comment
 
 import json
 import os
+import time
+import hashlib
 
 getConnection()
 
@@ -96,7 +98,6 @@ class ModifyMyInformation(BaseHandle):
         phone_number = self.get_body_argument('phone_number', default=None)
         is_man = self.get_body_argument('is_man', default=True)
         education_information = self.get_body_argument('education_information')
-        avatar = self.get_body_argument('avatar')
         brief = self.get_body_argument('brief')
         id = self.session['_id']
         if id:
@@ -104,7 +105,6 @@ class ModifyMyInformation(BaseHandle):
             user.modify_information(is_man=is_man, brief=brief,
                                     education_information=education_information,
                                     phone_number=phone_number)
-            #TODO:修改头像
         else:
             raise User.UserException('该用户未登陆')
         self.write('modify_information')
@@ -129,15 +129,109 @@ class UploadImage(BaseHandle):
         )
 
     def post(self):
-        upload_path = os.path.join(os.path.dirname(__file__), 'avatar')
-        if self.request.files:
-            avatar = self.request.files['avatar'][0]
-            self.save_file(avatar, upload_path)
-            print 'success'
+        self.session = self.get_session()
+        id = self.session['_id']
+        if id:
+            user = User.objects(id=id).first()
+            upload_path = os.path.join(os.path.dirname(__file__), 'avatar')
+            if self.request.files:
+                avatar = self.request.files['avatar'][0]
+                self.save_file(avatar, upload_path, user)
+                print 'success'
         self.write('finish')
 
-    def save_file(self, file, save_dir):
-        file_name = file['filename']
-        save_file = os.path.join(save_dir, file_name)
-        with open(save_file, 'wb') as up:
+    def save_file(self, file, save_dir, user):
+        file_name = file['filename'] + str(time.time())
+        file_name = hashlib.md5(file_name).hexdigest()
+        save_file_name = os.path.join(save_dir, file_name)
+        #TODO:对图片进行压缩处理
+        with open(save_file_name, 'wb') as up:
             up.write(file['body'])
+        user.set_avatar(save_file_name)
+
+class OperateMyShare(BaseHandle):
+
+    @tornado.web.asynchronous
+    def post(self):
+        self.session = self.get_session()
+        id = self.session['_id']
+        if id:
+            user = User.objects(id=id).first()
+            operate = self.get_body_argument('operate')
+            client = tornado.httpclient.AsyncHTTPClient()
+            if operate == 'delete':
+                print 'test-----'
+                client.fetch(request=self.request, callback=self.delete_share)
+            elif operate == 'add':
+                client.fetch(request=self.request, callback=self.add_share)
+            elif operate == 'gratitude':
+                client.fetch(request=self.request, callback=self.gratitude)
+            else:
+                raise OperateException('没有该操作')
+        else:
+            raise User.UserException('该用户未登陆')
+        self.finish()
+
+
+    def delete_share(self, response):
+        share_id = self.get_body_argument('share_id')
+        group_id = self.get_body_argument('group_id')
+        share = Share.objects(id=share_id).first()
+        group = ShareGroup.objects(id=group_id).first()
+        self.write(share.title + ' ' + group.name)
+        self.finish()
+
+    def add_share(self, response):
+        #TODO:添加一个新的share
+        pass
+
+    def gratitude(self, response):
+        #TODO:感谢某个share
+        pass
+
+
+
+class OperateMyGroup(BaseHandle):
+
+    @tornado.web.asynchronous
+    def post(self):
+        self.session = self.get_session()
+        id = self.session['_id']
+        if id:
+            user = User.objects(id=id).first()
+            operate = self.get_body_argument('operate')
+            client = tornado.httpclient.AsyncHTTPClient()
+            if operate == 'quit':
+                client.fetch(request=self.request, callback=self.quit_group)
+            elif operate == 'accept_invite':
+                client.fetch(request=self.request, callback=self.accept_invite_group)
+            else:
+                raise OperateException('没有该操作')
+
+    def quit_group(self, response):
+        #TODO:退组
+        pass
+
+    def accept_invite_group(self, response):
+        #TODO:接收某个组的邀请
+        pass
+
+class Invite(BaseHandle):
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.invite)
+
+    def invite(self):
+        pass
+
+class OperateException(Exception):
+    def __init__(self, description=None):
+        self.description = description
+
+    def __str__(self):
+        return self.description
+
+    def __repr__(self):
+        return self.description
