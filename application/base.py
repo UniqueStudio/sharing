@@ -3,10 +3,20 @@ __author__ = 'bing'
 
 import tornado.web
 import application.help.session
+import json
 
 class BaseHandler(tornado.web.RequestHandler):
     session = None
     mrg = application.help.session.MemcacheSessionManager()
+
+    def get_body_argument(self, *args, **kw):
+        # handle MissingArgumentError
+        try:
+            return super(BaseHandler, self).get_body_argument(*args, **kw)
+        except tornado.web.MissingArgumentError as e:
+            self.write(json.dumps({'message': 'missing ' + e.arg_name}))
+            self.finish()
+        
 
     def get_current_user(self): #接口，测试时候全返回True
         #TODO:测试session存在以判断当前是否有user登陆

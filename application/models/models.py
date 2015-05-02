@@ -5,8 +5,11 @@ from mongoengine import Document
 from mongoengine.fields import *
 import md5
 from mongoengine import connect
+from mongoengine.queryset import CASCADE
 
 import datetime
+
+from application.exception import BaseException
 
 
 class Comment(Document):
@@ -14,18 +17,17 @@ class Comment(Document):
     content = StringField(required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
     share = ReferenceField('Share')
-    is_delete = BooleanField(required=True, default=False)  #删除标记
 
     def __str__(self):
-        return '<comment: \nuser:%s, \nshare:%s, \ncontent:%s, \ncomment_is_delete:%s>' \
-                    % (self.user, self.share, self.content, self.is_delete)
+        return '<comment: \nuser:%s, \nshare:%s, \ncontent:%s>' \
+                    % (self.user, self.share, self.content)
 
     @classmethod
     def is_exist(cls, id):
         return Comment.objects(id=id).first() is not None
 
     def comment_delete(self):
-        self.is_delete = True
+        self.delete()
         self.save()
 
 
@@ -41,17 +43,15 @@ class Share(Document):
     gratitude_num = IntField(required=True, default=0)
 
     gratitude_users = ListField(ReferenceField('User'), default=list)
-    comments = ListField(ReferenceField(Comment))
-
-    is_delete = BooleanField(required=True, default=False)
+    comments = ListField(ReferenceField(Comment, reverse_delete_rule=CASCADE))
 
     def __str__(self):
-        return '<Share: \nurl:%s \nown_group:%s \nshare_is_delete:%s>' \
-                    % (self.url, self.own_group, self.is_delete)
+        return '<Share: \nurl:%s \nown_group:%s \n>' \
+                    % (self.url, self.own_group)
 
     @classmethod
     def is_exist(cls, url, group):  #是否在group中存在url的share
-        return Share.objects(url=url, own_group=group, is_delete=False).first() is not None
+        return Share.objects(url=url, own_group=group).first() is not None
 
     def gratitude(self, user):
         self.gratitude_num += 1
@@ -64,7 +64,8 @@ class Share(Document):
             self.own_group = group
             self.save()
 
-    def add_share_user(self, user):  #添加分享用户 self.share_users.append(user)
+    def add_share_user(self, user):  #添加分享用户 
+        self.share_users.append(user)
         self.save()
 
     def remove_share_user(self, user):  #删除分享用户
@@ -72,7 +73,7 @@ class Share(Document):
         self.save()
 
     def share_delete(self):
-        self.is_delete = True
+        self.delete()
         self.save()
 
     def remove_share_user(self, user, group):  #删除分享的用户
@@ -89,6 +90,8 @@ class Share(Document):
 
 
 class ShareGroup(Document):
+    default_group_name = 'c21f969b5f03d33' # include all users
+
     name = StringField(required=True, unique=True)
     create_user = ReferenceField('User', required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
@@ -211,19 +214,25 @@ class User(Document):
     def is_share(self, share, group):  #是否分享到某个组
         return share in self.self_shares and share.own_group == group
 
-    def share_to_group(self, share, group, comment=None):  #将share分享到group中
+    def share_to_group(self, share, group, comment_content=None):  #将share分享到group中
         if not self.is_share(share, group) and self.is_in_the_group(group):
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, group=group).first()
                 share.add_share_user()
             else:
+                print 'add share'
                 share.add_share(self, group)
-            if comment:
-                self.add_comment_to_share(share, comment)
+            if comment_content:
+                self.add_comment_to_share(share, comment_content)
+            print 'saved'
             self.self_shares.append(share)
             self.save()
         else:
             print '已分享或不是该组成员'
+
+    def share_to_default_group(self, share, comment_content=None):  #添加share到默认group
+        group = ShareGroup.objects(name=ShareGroup.default_group_name).first()
+        return self.share_to_group(share, group, comment_content)
 
 
     def remove_share_to_group(self, share, group):  #从group删除自己分享了的share
@@ -265,6 +274,12 @@ class User(Document):
             share.remove_comment(comment)  #comment的删除在里面操作了
         else:
             print '只能删除自己的'
+
+    def add_default_group(self, group):  #添加到默认组中
+        if not self.is_in_the_group(group=group):
+            self.add_the_group(group=group)
+            group.add_user(self)
+        print '已添加到默认组'
 
     #关注拉黑部分
     def add_attention(self, user):
@@ -343,15 +358,8 @@ class User(Document):
             print '没有成功加入，或许是权限不够或许是user已经在组内'
 
     #异常部分
-    class UserException(Exception):
-        def __init__(self, description=None):
-            self.description = description
-
-        def __str__(self):
-            return self.description
-
-        def __repr__(self):
-            return self.description
+    class UserException(BaseException):
+        pass
 
 def getConnection():
 

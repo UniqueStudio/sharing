@@ -4,6 +4,7 @@ __author__ = 'bing'
 import tornado.web
 import tornado.httpclient
 from application.base import BaseHandler
+from application.exception import OperateException
 from application.models import User, getConnection, Share, ShareGroup, Comment
 
 import json
@@ -24,7 +25,6 @@ class Login(BaseHandler):
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.login)
 
-    @tornado.web.authenticated
     def login(self, response):
         email = self.get_body_argument('email')
         password = self.get_body_argument('password')
@@ -51,6 +51,8 @@ class Register(BaseHandler):
         if User.is_exist(email):
             raise User.UserException('Email已经被占用')
         user = User(email=email, password=password, nickname=nickname)
+        group = ShareGroup.objects(name=ShareGroup.default_group_name).first()
+        user.add_default_group(group)
         user.save()
         self.recode_status_login(user)
         self.finish()
@@ -225,13 +227,3 @@ class Invite(BaseHandler):
 
     def invite(self):
         pass
-
-class OperateException(Exception):
-    def __init__(self, description=None):
-        self.description = description
-
-    def __str__(self):
-        return self.description
-
-    def __repr__(self):
-        return self.description
