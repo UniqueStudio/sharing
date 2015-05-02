@@ -13,6 +13,7 @@ post：
 
 - email:用户的email
 - password:用户的密码
+
 ####返回结果
 登陆成功：将用户的id, nickname, email 记录到session中
 登陆失败：抛出UserException
@@ -30,6 +31,7 @@ post:
 - email:用户的email
 - password:用户的密码
 - nickname:用户的用户名
+
 ####返回结果
 注册成功：无返回
 注册失败：抛出UserException
@@ -63,6 +65,7 @@ post:
 - is_man:性别是否为男
 - education:教育背景
 - brief:简介
+
 ####返回结果
 成功：返回'modify_information'(暂时)
 失败：抛出UserException
@@ -79,6 +82,7 @@ save:存储文件
 post:
 
 - avatar:头像图像
+
 ####返回结果
 成功：控制台输出'success'(暂时)，返回'finish'，图片存储在application/avatar
 失败：返回'finish'
@@ -102,6 +106,7 @@ post:
     - delete:
         - share_id:删除的share的id
         - group_id:删除的share所属组的id
+
 ####返回结果
 未完成
 ###OperateMyGroup
