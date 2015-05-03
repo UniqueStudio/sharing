@@ -35,7 +35,7 @@ class InboxShare(Document):
     """
     title = StringField(required=True)
     url = URLField(required=True)
-    owu_user = ReferenceField('User')
+    own_user = ReferenceField('User')
     send_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     def __str__(self):
@@ -44,20 +44,21 @@ class InboxShare(Document):
 
     @classmethod
     def is_exist(cls, url, own_user):
-        return cls.objects(url=url, own_user=own_user).first is not None
+        return cls.objects(url=url, own_user=own_user).first() is not None
 
     def _add_inbox(self, user):
         if not InboxShare.is_exist(self.url, user):
-            self.owu_user = user
+            self.own_user = user
             self.save()
         else:
-            raise self.InboxShareException('share已经在inbox存在')
+            print InboxShare.is_exist(self.url, user)
+            raise InboxShare.InboxShareException('share已经在inbox存在')
 
     def _delete_from_inbox(self):
         if InboxShare.is_exist(self.url, user):
             self.delete()
         else:
-            raise self.InboxShareException('share已经在inbox被删除')
+            raise InboxShare.InboxShareException('share已经在inbox被删除')
 
     class InboxShareException(BaseException):
         pass
@@ -99,8 +100,11 @@ class Share(Document):
             group._add_share(self)
 
     def _add_share_user(self, user):  #添加分享用户
-        self.share_users.append(user)
-        self.save()
+        if user not in self.share_users:
+            self.share_users.append(user)
+            self.save()
+        else:
+            raise Share.ShareException('user已存在')
 
     def _share_delete(self):
         self.delete()
@@ -116,6 +120,9 @@ class Share(Document):
 
     def _remove_comment(self, comment):  #删除评论,形式上的删除
         comment._comment_delete()
+
+    class ShareException(BaseException):
+        pass
 
 
 class ShareGroup(Document):
@@ -182,7 +189,7 @@ class User(Document):
     inviter = ReferenceField('self')
 
     self_shares = ListField(ReferenceField(Share), default=list)
-    self_inbox_shares = ListField(ReferenceField(Share), default=list)
+    self_inbox_shares = ListField(ReferenceField(InboxShare), default=list)
     gratitude_shares = ListField(ReferenceField(Share), default=list)
 
     comments = ListField(ReferenceField(Comment), default=list)
@@ -248,10 +255,10 @@ class User(Document):
         return share in self.self_shares and share.own_group == group
 
     def share_to_group(self, share, group, comment_content=None):  #将share分享到group中
-        if not self.is_share(share, group) and self.is_in_the_group(group):
+        if not self.is_share(share, group) and self.is_in_the_group(group) and share not in self.self_shares:
             if Share.is_exist(share.url, group):
-                share = Share.objects(url=share.url, group=group).first()
-                share._add_share_user()
+                share = Share.objects(url=share.url, own_group=group).first()
+                share._add_share_user(self)
             else:
                 print 'add share'
                 share._add_share(self, group)

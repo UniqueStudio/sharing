@@ -2,6 +2,7 @@
 
 - 框架：Tornado
 - 数据库：MongoDB——mongoengine
+- 缓存：Memcached
 
 ##安装
 `pip install -r request.txt`
