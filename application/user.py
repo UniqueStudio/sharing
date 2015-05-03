@@ -51,8 +51,6 @@ class Register(BaseHandler):
         if User.is_exist(email):
             raise User.UserException('Email已经被占用')
         user = User(email=email, password=password, nickname=nickname)
-        group = ShareGroup.objects(name=ShareGroup.default_group_name).first()
-        user.add_default_group(group)
         user.save()
         self.recode_status_login(user)
         self.finish()

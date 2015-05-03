@@ -24,6 +24,9 @@ class OperateGroup(BaseHandler):
             create_user = User.objects(id=id).first()
             if not ShareGroup.is_exist(name):
                 group = ShareGroup(name=name, create_user=create_user)
+                group.save()
+                create_user.manager_groups.append(create_user)
+                create_user.admin_allow_user_entry(create_user, group)
                 self.write(json.dumps({'message':'success'}))
             else:
                 self.write(json.dumps({'message':'failure',

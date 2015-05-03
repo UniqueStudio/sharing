@@ -5,6 +5,7 @@ import tornado.web
 from tornado.web import url
 from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage, \
     OperateMyShare, OperateMyGroup
+from application.share_group import OperateGroup
 from application.share import ShareHandler
 from application.base import BaseHandler
 
@@ -31,6 +32,7 @@ class Application(tornado.web.Application):
             url(r'/operate_my_group', OperateMyGroup),
             url(r'/test', Test),
             url(r'/share', ShareHandler),
+            url(r'/operate_group', OperateGroup),
         ]
 
         settings = {
