@@ -414,7 +414,7 @@ class User(Document):
             user.add_the_group(group=group)
             group._add_user(user)
         else:
-            print '没有成功加入，或许是权限不够或许是user已经在组内'
+            print '没有成功加入，或许是权限不够或许是user已经在组内', user.is_in_the_group(group=group)
 
     #异常部分
     class UserException(BaseException):
