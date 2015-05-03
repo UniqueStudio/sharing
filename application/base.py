@@ -18,8 +18,7 @@ class BaseHandler(tornado.web.RequestHandler):
             self.finish()
         
 
-    def get_current_user(self): #接口，测试时候全返回True
-        #TODO:测试session存在以判断当前是否有user登陆
+    def get_current_user(self):
         self.get_session()
         return True if self.session['_id'] else False
 

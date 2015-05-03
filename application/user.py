@@ -162,7 +162,6 @@ class OperateMyShare(BaseHandler):
             operate = self.get_body_argument('operate')
             client = tornado.httpclient.AsyncHTTPClient()
             if operate == 'delete':
-                print 'test-----'
                 client.fetch(request=self.request, callback=self.delete_share)
             elif operate == 'add':
                 client.fetch(request=self.request, callback=self.add_share)
