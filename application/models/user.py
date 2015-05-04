@@ -10,169 +10,7 @@ from mongoengine.queryset import CASCADE
 import datetime
 
 from application.exception import BaseException
-
-
-class Comment(Document):
-    user = ReferenceField('User', required=True)
-    content = StringField(required=True)
-    create_time = DateTimeField(required=True, default=datetime.datetime.now)
-    share = ReferenceField('Share')
-
-    def __str__(self):
-        return '<comment: \nuser:%s, \nshare:%s, \ncontent:%s>' \
-                    % (self.user, self.share, self.content)
-
-    @classmethod
-    def is_exist(cls, id):
-        return Comment.objects(id=id).first() is not None
-
-    def _comment_delete(self):
-        self.delete()
-
-class InboxShare(Document):
-    """
-        inbox中存放的share
-    """
-    title = StringField(required=True)
-    url = URLField(required=True)
-    own_user = ReferenceField('User')
-    send_time = DateTimeField(required=True, default=datetime.datetime.now)
-
-    def __str__(self):
-        return '<Share: \nurl:%s \nuser:%s \n>' \
-                    % (self.url, self.own_user)
-
-    @classmethod
-    def is_exist(cls, url, own_user):
-        return cls.objects(url=url, own_user=own_user).first() is not None
-
-    def _add_inbox(self, user):
-        if not InboxShare.is_exist(self.url, user):
-            self.own_user = user
-            self.save()
-        else:
-            print InboxShare.is_exist(self.url, user)
-            raise InboxShare.InboxShareException('share已经在inbox存在')
-
-    def _delete_from_inbox(self):
-        if InboxShare.is_exist(self.url, user):
-            self.delete()
-        else:
-            raise InboxShare.InboxShareException('share已经在inbox被删除')
-
-    class InboxShareException(BaseException):
-        pass
-
-
-class Share(Document):
-    """
-        区分是否是同一个share的方法是判断url和own_group是否相等
-    """
-    title = StringField(required=True)
-    url = URLField(required=True)
-    own_group = ReferenceField('ShareGroup')
-    share_users = ListField(ReferenceField('User'), default=list)  #单个组分析用户
-    share_time = DateTimeField(required=True, default=datetime.datetime.now)
-    gratitude_num = IntField(required=True, default=0)
-
-    gratitude_users = ListField(ReferenceField('User'), default=list)
-    comments = ListField(ReferenceField(Comment, reverse_delete_rule=CASCADE))
-
-    def __str__(self):
-        return '<Share: \nurl:%s \nown_group:%s \n>' \
-                    % (self.url, self.own_group)
-
-    @classmethod
-    def is_exist(cls, url, group):  #是否在group中存在url的share
-        return Share.objects(url=url, own_group=group).first() is not None
-
-
-    def _gratitude(self, user):
-        self.gratitude_num += 1
-        self.gratitude_users.append(user)
-        self.save()
-
-    def _add_share(self, user, group):
-        if not Share.is_exist(self.url, group):
-            self.share_users.append(user)
-            self.own_group = group
-            self.save()
-            group._add_share(self)
-
-    def _add_share_user(self, user):  #添加分享用户
-        if user not in self.share_users:
-            self.share_users.append(user)
-            self.save()
-        else:
-            raise Share.ShareException('user已存在')
-
-    def _share_delete(self):
-        self.delete()
-
-    def _remove_share_user(self, user, group):  #删除分享的用户
-        if Share.is_exist(self.url, group):
-            self.share_users.remove(user)
-            self.save()
-
-    def _add_comment(self, comment):  #添加评论
-        self.comments.append(comment)
-        self.save()
-
-    def _remove_comment(self, comment):  #删除评论,形式上的删除
-        comment._comment_delete()
-
-    class ShareException(BaseException):
-        pass
-
-
-class ShareGroup(Document):
-
-    name = StringField(required=True, unique=True)
-    create_user = ReferenceField('User', required=True)
-    create_time = DateTimeField(required=True, default=datetime.datetime.now)
-
-    shares = ListField(ReferenceField(Share))
-    users = ListField(ReferenceField('User'), default=list)
-
-    def __str__(self):
-        return '<Group: \nname:%s, \ncreate_user:%s>' \
-               % (self.name, self.create_user)
-
-    @classmethod
-    def is_exist(cls, name):
-        groups = cls.objects(name=name).first()
-        return groups != None
-
-    def is_admin(self, user):
-        return user == self.create_user
-
-    def _add_user(self, user):  #用户加入group中，逻辑上应该是group做的事
-        if User.is_exist(user.email) and ShareGroup.is_exist(self.name):
-            self.users.append(user)
-            self.save()
-
-    def _remove_user(self, user):
-        """
-            这个方法仅是从group删除用户，具体是管理员删除或是用户自行退组不管
-        """
-        self.users.remove(user)
-        self.save()
-
-    def _add_share(self, share):
-        self.shares.append(share)
-        self.save()
-
-    def _remove_share(self, share):
-        """
-        删除已经分享了的share
-        :param share:
-        :return:
-        """
-        self.shares.remove(share)
-        self.save()
-
-    def is_create_user(self, user):
-        return self.create_user == user
+from application.models import Share, InboxShare, Comment, ShareGroup
 
 
 class User(Document):
@@ -188,17 +26,17 @@ class User(Document):
     brief = StringField()
     inviter = ReferenceField('self')
 
-    self_shares = ListField(ReferenceField(Share), default=list)
-    self_inbox_shares = ListField(ReferenceField(InboxShare), default=list)
-    gratitude_shares = ListField(ReferenceField(Share), default=list)
+    self_shares = ListField(ReferenceField('Share'), default=list)
+    self_inbox_shares = ListField(ReferenceField('InboxShare'), default=list)
+    gratitude_shares = ListField(ReferenceField('Share'), default=list)
 
-    comments = ListField(ReferenceField(Comment), default=list)
+    comments = ListField(ReferenceField('Comment'), default=list)
     black_users = ListField(ReferenceField('self'), default=list)
     attention_users = ListField(ReferenceField('self'), default=list)
 
-    groups = ListField(ReferenceField(ShareGroup), default=list)
+    groups = ListField(ReferenceField('ShareGroup'), default=list)
 
-    manager_groups = ListField(ReferenceField(ShareGroup), default=list)
+    manager_groups = ListField(ReferenceField('ShareGroup'), default=list)
 
     def __init__(self, email, password, nickname=None, *args, **kwargs):
         super(User, self).__init__(email=email, password=self.set_password(password),
@@ -230,6 +68,7 @@ class User(Document):
         self.save()
 
     def remove_the_group(self, group):  #退组,管理员另处理
+        from application.models import ShareGroup
         if not group.is_create_user(self):
             if self.is_in_the_group(group) and ShareGroup.is_exist(group.name):
                 self.groups.remove(group)
@@ -255,6 +94,7 @@ class User(Document):
         return share in self.self_shares and share.own_group == group
 
     def share_to_group(self, share, group, comment_content=None):  #将share分享到group中
+        from application.models import Share
         if not self.is_share(share, group) and self.is_in_the_group(group) and share not in self.self_shares:
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, own_group=group).first()
@@ -279,6 +119,7 @@ class User(Document):
 
 
     def remove_share_to_group(self, share, group):  #从group删除自己分享了的share
+        from application.models import Share
         if self.is_share(share, group) and self.is_in_the_group(group):
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, group=group).first()
@@ -301,6 +142,7 @@ class User(Document):
         return inbox_share in self.self_inbox_shares and inbox_share.own_user == self
 
     def add_inbox_share(self, inbox_share):
+        from application.models import InboxShare
         if not self.is_in_inbox(inbox_share):
             self.self_inbox_shares.append(inbox_share)
             inbox_share._add_inbox(user=self)
@@ -309,6 +151,7 @@ class User(Document):
             raise InboxShare.InboxShareException('inbox中该share已存在')
 
     def remove_inbox_share(self, inbox_share):
+        from application.models import InboxShare
         if self.is_in_inbox(inbox_share):
             self.self_inbox_shares.remove(inbox_share)
             inbox_share._delete_from_inbox()
@@ -317,6 +160,7 @@ class User(Document):
             raise InboxShare.InboxShareException('inbox中该share并不存在')
 
     def send_share(self, inbox_share, group):  #将inbox_share投递入具体组
+        from application.models import Share, InboxShare
         if self.is_in_inbox(inbox_share) and InboxShare.is_exist(inbox_share.url, self):
             share = Share(title=inbox_share.title, url=inbox_share.url)
             share.save()
@@ -331,6 +175,7 @@ class User(Document):
             向某个share(每个group的share在数据库表现是独立的)添加comment
             :param comment_content:添加的评论内容
         """
+        from application.models import Comment
         comment = Comment(user=self, content=comment_content, share=share).save()
         share._add_comment(comment)
         self.comments.append(comment)
@@ -341,6 +186,7 @@ class User(Document):
             向某个share(每个group的share在数据库表现是独立的)删除comment,只是形式上的删除
             :param comment_id:删除评论的id
         """
+        from application.models import Comment
         comment = Comment.objects(id=comment_id).first()
         if comment in self.comments:    #只能删除自己的
             share._remove_comment(comment)  #comment的删除在里面操作了
@@ -403,10 +249,12 @@ class User(Document):
         """
             删除group中分享的share
         """
+        from application.models import Share
         if self.is_admin(group) and Share.is_exist(share.url, group):
             share._share_delete()
 
     def admin_remove_comment_to_share(self, share, comment_id):
+        from application.models import Comment
         if self.is_admin(group=share.own_group):
             comment = Comment.objects(id=comment_id).first()
             share._remove_comment(comment)  #comment的删除在里面操作了
@@ -427,90 +275,3 @@ class User(Document):
     class UserException(BaseException):
         pass
 
-def getConnection():
-
-    conn = connect('share')
-
-
-if __name__ == '__main__':
-    print 'Test script to be finished'
-    from mongoengine import connect
-
-    conn = connect('share')
-
-    # #测试创建User
-    # user1 = User(email='test0@qq.com', password='123456', nickname='user1').save()
-    # user2 = User(email='test1@qq.com', password='123456', nickname='user2').save()
-    # user3 = User(email='test2@qq.com', password='123456', nickname='user3').save()
-    #
-    # #创建组
-    # group = ShareGroup(name='test', create_user=user1, users=[user1]).save()
-    # user1.manager_groups.append(group)
-    # user1.add_the_group(group)
-    #
-    # #测试添加share
-    # share = Share(title='test', explain='test', url='http://www.baidu.com').save()
-    # user1.share_to_group(share=share, group=group)
-    #
-    # #测试share加评论，comment的user和share指定
-    # user1.add_comment_to_share(share=share, comment_content='test')
-
-
-
-    #得到测试的user1，user2, share, group
-    admin = User.objects(email='test0@qq.com').first()
-    user = User.objects(email='test1@qq.com').first()
-    group = ShareGroup.objects(name='test').first()
-    share = Share.objects(url='http://www.baidu.com').first()
-    # print admin.nickname, user.nickname
-    # print group.name
-    # print share.url
-    # print admin.is_admin(group)
-
-    #测试感谢
-    # print share.gratitude_num, share.gratitude_users
-    # user.gratitude(share)
-    # print share.gratitude_num, share.gratitude_users
-
-    # #测试退组,管理员退组时候需要选择解散或是指派管理员
-    # print group.users
-    # user.remove_the_group(group)
-    # print user.groups
-    # print group.users
-    # admin.remove_the_group(group)
-    # print admin.groups
-
-    # #管理员加人
-    # admin.admin_allow_user_entry(user=user, group=group)
-
-    #管理员删人
-    # print group.users
-    # admin.admin_remove_user_from_group(user, group)
-    # print group.users
-
-
-    #测试user黑名单
-    # admin.black(user)
-    # print admin.black_users
-    # admin.remove_black(user)
-    # print admin.black_users
-    #测试user特别关注
-    # admin.add_attention(user)
-    # print admin.attention_users
-    # admin.remove_attention(user)
-    # print admin.attention_users
-
-    #删除评论
-    # comments = Comment.objects()
-    # print comments
-    # admin.remove_comment_to_share(share=share, comment_id=comments[0].id)
-    # print comments
-
-    #测试不能删除他人评论
-    # comments = Comment.objects()
-    # user.add_comment_to_share(share=share, comment_content='tests')
-    #管理员不受限制
-    # comments = Comment.objects()
-    # print comments[1]
-    # admin.admin_remove_comment_to_share(share=share, comment_id=comments[1].id)
-    # print comments[1]

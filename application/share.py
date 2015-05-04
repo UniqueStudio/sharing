@@ -39,13 +39,13 @@ class ShareHandler(BaseHandler):
                 if group is None:
                     continue
                 user.share_to_group(share, group)
-            self.write('ok')
         else:
             share = InboxShare(title=title, url=url)
             try:
                 user.add_inbox_share(share)
             except ValidationError:
                 self.write(json.dumps({'message': 'illegal url'}))
+        self.write('ok')
         self.finish()
 
     def delete_share(self, response):

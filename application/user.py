@@ -5,14 +5,12 @@ import tornado.web
 import tornado.httpclient
 from application.base import BaseHandler
 from application.exception import OperateException
-from application.models import User, getConnection, Share, ShareGroup, Comment
+from application.models import User, Share, ShareGroup, Comment
 
 import json
 import os
 import time
 import hashlib
-
-getConnection()
 
 class Login(BaseHandler):
     def get(self):
