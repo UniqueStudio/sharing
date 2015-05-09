@@ -5,7 +5,7 @@ import tornado.web
 import tornado.httpclient
 from application.base import BaseHandler
 from application.exception import OperateException
-from application.models import User, Share, ShareGroup, Comment
+from application.models import User, Share, ShareGroup, Comment, Invite
 
 import json
 import os
@@ -147,72 +147,6 @@ class UploadImage(BaseHandler):
             up.write(file['body'])
         user.set_avatar(save_file_name)
 
-class OperateMyShare(BaseHandler):
-
-    @tornado.web.asynchronous
-    def post(self):
-        self.session = self.get_session()
-        id = self.session['_id']
-        if id:
-            user = User.objects(id=id).first()
-            operate = self.get_body_argument('operate')
-            client = tornado.httpclient.AsyncHTTPClient()
-            if operate == 'delete':
-                client.fetch(request=self.request, callback=self.delete_share)
-            elif operate == 'add':
-                client.fetch(request=self.request, callback=self.add_share)
-            elif operate == 'gratitude':
-                client.fetch(request=self.request, callback=self.gratitude)
-            else:
-                raise OperateException('没有该操作')
-        else:
-            raise User.UserException('该用户未登陆')
-        self.finish()
-
-
-    def delete_share(self, response):
-        share_id = self.get_body_argument('share_id')
-        group_id = self.get_body_argument('group_id')
-        share = Share.objects(id=share_id).first()
-        group = ShareGroup.objects(id=group_id).first()
-        self.write(share.title + ' ' + group.name)
-        self.finish()
-
-    def add_share(self, response):
-        #TODO:添加一个新的share
-        pass
-
-    def gratitude(self, response):
-        #TODO:感谢某个share
-        pass
-
-
-
-class OperateMyGroup(BaseHandler):
-
-    @tornado.web.asynchronous
-    def post(self):
-        self.session = self.get_session()
-        id = self.session['_id']
-        if id:
-            user = User.objects(id=id).first()
-            operate = self.get_body_argument('operate')
-            client = tornado.httpclient.AsyncHTTPClient()
-            if operate == 'quit':
-                client.fetch(request=self.request, callback=self.quit_group)
-            elif operate == 'accept_invite':
-                client.fetch(request=self.request, callback=self.accept_invite_group)
-            else:
-                raise OperateException('没有该操作')
-
-    def quit_group(self, response):
-        #TODO:退组
-        pass
-
-    def accept_invite_group(self, response):
-        #TODO:接收某个组的邀请
-        pass
-
 class Invite(BaseHandler):
 
     @tornado.web.asynchronous
@@ -220,5 +154,18 @@ class Invite(BaseHandler):
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.invite)
 
-    def invite(self):
-        pass
+    def invite(self, response):
+        inviter_id = self.get_body_argument('inviter_id')
+        invitee_id = self.get_body_argument('invitee_id')
+        invite_group_id = self.get_body_argument('group_id')
+
+        inviter = User.objects(id=inviter_id).first()
+        invitee = User.objects(id=invitee_id).first()
+        invite_group = ShareGroup.objects(id=invite_group_id).first()
+
+        invite_entity = Invite(inviter=inviter, invitee=invitee, invite_group=invite_group)
+        try:
+            invite_entity.save()
+            self.write({'message':'success'})
+        except Exception:
+            self.write({'message':'failure'})

@@ -24,7 +24,6 @@ class User(Document):
     is_man = BooleanField(null=True)
     education_information = StringField()
     brief = StringField()
-    inviter = ReferenceField('self')
 
     self_shares = ListField(ReferenceField('Share'), default=list)
     self_inbox_shares = ListField(ReferenceField('InboxShare'), default=list)
@@ -33,10 +32,18 @@ class User(Document):
     comments = ListField(ReferenceField('Comment'), default=list)
     black_users = ListField(ReferenceField('self'), default=list)
     attention_users = ListField(ReferenceField('self'), default=list)
+    followers = ListField(ReferenceField('self'), default=list)
 
     groups = ListField(ReferenceField('ShareGroup'), default=list)
 
     manager_groups = ListField(ReferenceField('ShareGroup'), default=list)
+
+    #最近被推送时间
+    """
+        推送功能根据该时间实现，每次在查看推送内容的时候更新时间，
+        推送内容为关注人的share，comment，邀请，自己的share评论，通知
+    """
+    pushed_time = DateTimeField(required=True, default=datetime.datetime.now())
 
     def __init__(self, email, password, nickname=None, *args, **kwargs):
         super(User, self).__init__(email=email, password=self.set_password(password),
@@ -115,9 +122,6 @@ class User(Document):
             except ValidationError:
                 pass
 
-
-
-
     def remove_share_to_group(self, share, group):  #从group删除自己分享了的share
         from application.models import Share
         if self.is_share(share, group) and self.is_in_the_group(group):
@@ -195,10 +199,13 @@ class User(Document):
 
     #关注拉黑部分
     def add_attention(self, user):
-        if User.is_exist(user.email) and user not in self.attention_users:
+        if User.is_exist(user.email) and user not in self.attention_users\
+                and self not in user.followers:
             self.remove_black(user)
             self.attention_users.append(user)
+            user.followers.append(self)
             self.save()
+            user.save()
 
     def black(self, user):
         if User.is_exist(user.email) and user not in self.black_users:
@@ -207,9 +214,12 @@ class User(Document):
             self.save()
 
     def remove_attention(self, user):
-        if User.is_exist(user.email) and user in self.attention_users:
+        if User.is_exist(user.email) and user in self.attention_users\
+                 and self in user.followers:
             self.attention_users.remove(user)
+            user.followers.remove(self)
             self.save()
+            user.save()
 
     def remove_black(self, user):
         if User.is_exist(user.email) and user in self.black_users:

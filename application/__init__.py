@@ -4,7 +4,7 @@ __author__ = 'Bing'
 import tornado.web
 from tornado.web import url
 from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage, \
-    OperateMyShare, OperateMyGroup
+    Invite
 from application.share_group import OperateGroup
 from application.share import ShareHandler
 from application.base import BaseHandler
@@ -28,8 +28,7 @@ class Application(tornado.web.Application):
             url(r'/modify_info', ModifyMyInformation),
             url(r'/homepage', Homepage),
             url(r'/upload_image', UploadImage),
-            url(r'/operate_my_share', OperateMyShare),
-            url(r'/operate_my_group', OperateMyGroup),
+            url(r'/invite', Invite),
             url(r'/test', Test),
             url(r'/share', ShareHandler),
             url(r'/operate_group', OperateGroup),
