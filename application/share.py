@@ -31,7 +31,8 @@ class ShareHandler(BaseHandler):
         url = self.get_body_argument('url')
         user = User.objects(id=self.session['_id']).first()
         if len(self.get_body_arguments('groups')):
-            share = Share(title=title, url=url)
+            #TODO:检查是否能加入这条share
+            share = Share(title=title, url=url).save()
             if comment_content:
                 user.add_comment_to_share(share, comment_content)
             for name in self.get_body_arguments('groups'):

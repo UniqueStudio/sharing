@@ -4,7 +4,6 @@ __author__ = 'bing'
 import tornado.web
 import tornado.httpclient
 from application.base import BaseHandler
-from application.exception import OperateException
 from application.models import User, Share, ShareGroup, Comment, Invite
 
 import json

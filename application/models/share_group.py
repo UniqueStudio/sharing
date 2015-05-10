@@ -18,6 +18,8 @@ class ShareGroup(Document):
     create_user = ReferenceField('User', required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 
+    change_admin_time = DateTimeField(required=True, default=datetime.datetime.now)
+
     shares = ListField(ReferenceField('Share'))
     users = ListField(ReferenceField('User'), default=list)
 

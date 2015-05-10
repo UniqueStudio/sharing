@@ -11,6 +11,7 @@ import datetime
 
 from application.exception import BaseException
 from application.models import Share, InboxShare, Comment, ShareGroup
+from application.models.notify import Notify
 
 
 class User(Document):
@@ -38,12 +39,7 @@ class User(Document):
 
     manager_groups = ListField(ReferenceField('ShareGroup'), default=list)
 
-    #最近被推送时间
-    """
-        推送功能根据该时间实现，每次在查看推送内容的时候更新时间，
-        推送内容为关注人的share，comment，邀请，自己的share评论，通知
-    """
-    pushed_time = DateTimeField(required=True, default=datetime.datetime.now())
+    push_content = ListField(ReferenceField('Notify'), default=list)
 
     def __init__(self, email, password, nickname=None, *args, **kwargs):
         super(User, self).__init__(email=email, password=self.set_password(password),
@@ -240,7 +236,39 @@ class User(Document):
         self.avatar = avatar_path
         self.save()
 
-    #以下均为管理员方法，具体是否整理为单独一个类后行考虑
+    #通知方法
+    def notify_comment(self, comment_user, comment):
+        notify = Notify()
+        notify.notify_comment(user=self, comment_user=comment_user, comment=comment)
+        self.push_content.append(notify)
+        self.save()
+
+    def notify_share(self, share_user, share):
+        notify = Notify()
+        notify.notify_share(user=self, share_user=share_user, share=share)
+        self.push_content.append(notify)
+        self.save()
+
+    def notify_follow(self, follow_user):
+        notify = Notify()
+        notify.notify_follow(user=self, follow_user=follow_user)
+        self.push_content.append(notify)
+        self.save()
+
+    def notify_gratitude(self, gratitude_user, share):
+        notify = Notify()
+        notify.notify_gratitude(user=self, gratitude_user=gratitude_user, share=share)
+        self.push_content.append(notify)
+        self.save()
+
+    def notify_change_admin(self, old_admin, group):
+        notify = Notify()
+        notify.notify_change_admin(user=self, old_admin=old_admin, group=group)
+        self.push_content.append(notify)
+        self.save()
+
+
+    #管理员方法
     def is_admin(self, group):
         """
             是否是group的管理员
