@@ -36,8 +36,8 @@ class InboxShare(Document):
             print InboxShare.is_exist(self.url, user)
             raise InboxShare.InboxShareException('share已经在inbox存在')
 
-    def _delete_from_inbox(self):
-        if InboxShare.is_exist(self.url, user):
+    def _delete_from_inbox(self, ):
+        if InboxShare.is_exist(self.url, self.own_user):
             self.delete()
         else:
             raise InboxShare.InboxShareException('share已经在inbox被删除')

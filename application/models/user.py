@@ -41,19 +41,21 @@ class User(Document):
 
     push_content = ListField(ReferenceField('Notify'), default=list)
 
-    def __init__(self, email, password, nickname=None, *args, **kwargs):
-        super(User, self).__init__(email=email, password=self.set_password(password),
+    def __init__(self, email, nickname=None, *args, **kwargs):
+        super(User, self).__init__(email=email,
                                    nickname=nickname, *args, **kwargs)
 
     def set_password(self, password):
-        return md5.new(password).hexdigest()
+        """
+        加密设置密码
+        :param password:
+        :return:
+        """
+        self.password = md5.new(password).hexdigest()
+        return self.password
 
     def check_password(self, password):
-        """
-            由于这个框架获得数据的时候会再经过一次__init__方法（猜测），所有password会经过两次加密，
-            第二次加密是对于数据库中的密码提取后的加密，所有检查密码是否正确要对原密码进行两次加密
-        """
-        return self.set_password(self.set_password(password)) == self.password
+        return self.set_password(password) == self.password
 
     def __str__(self):
         return '<User: \nnickname:%s, \nemail:%s>' % (self.nickname, self.email)
@@ -66,7 +68,7 @@ class User(Document):
     def is_in_the_group(self, group):
         return group in self.groups
 
-    def add_the_group(self, group):
+    def _add_the_group(self, group):
         self.groups.append(group)
         self.save()
 
@@ -85,10 +87,16 @@ class User(Document):
         return share in self.gratitude_shares
 
     def gratitude(self, share):  #感谢分享到group的share(每个share都有独立的分组)
+        if self.is_share(share=share, group=share.own_group):
+            print '不能感谢自己'
+            return
         if not self.is_gratitude(share):
             share._gratitude(self)
             self.gratitude_shares.append(share)
             self.save()
+            #为该share的所有分享者都传递感谢
+            for share_user in share.share_users:
+                share_user._notify_gratitude(gratitude_user=self, share=share)
         else:
             print '重复感谢'
 
@@ -98,7 +106,9 @@ class User(Document):
 
     def share_to_group(self, share, group, comment_content=None):  #将share分享到group中
         from application.models import Share
-        if not self.is_share(share, group) and self.is_in_the_group(group) and share not in self.self_shares:
+        if not self.is_share(share, group) \
+                and self.is_in_the_group(group) \
+                and share not in self.self_shares:
             if Share.is_exist(share.url, group):
                 share = Share.objects(url=share.url, own_group=group).first()
                 share._add_share_user(self)
@@ -107,9 +117,11 @@ class User(Document):
                 share._add_share(self, group)
             if comment_content:
                 self.add_comment_to_share(share, comment_content)
-            print 'saved'
             self.self_shares.append(share)
             self.save()
+            #为自己的关注者说明已share了
+            for follower in self.followers:
+                follower._notify_share(share_user=self, share=share)
         else:
             print '已分享或不是该组成员'
             from mongoengine import ValidationError
@@ -122,7 +134,7 @@ class User(Document):
         from application.models import Share
         if self.is_share(share, group) and self.is_in_the_group(group):
             if Share.is_exist(share.url, group):
-                share = Share.objects(url=share.url, group=group).first()
+                share = Share.objects(url=share.url, own_group=group).first()
                 if len(share.share_users) == 1:  #该条share只有一个分享者直接删除
                     share._share_delete()
                     self.self_shares.remove(share)
@@ -179,6 +191,9 @@ class User(Document):
         comment = Comment(user=self, content=comment_content, share=share).save()
         share._add_comment(comment)
         self.comments.append(comment)
+        #向share的share_users中每一个推送
+        for share_user in share.share_users:
+            share_user._notify_comment(self, comment)
         self.save()
 
     def remove_comment_to_share(self, share, comment_id):
@@ -195,6 +210,10 @@ class User(Document):
 
     #关注拉黑部分
     def add_attention(self, user):
+        """
+        self对user关注
+        :param user: 被关注者
+        """
         if User.is_exist(user.email) and user not in self.attention_users\
                 and self not in user.followers:
             self.remove_black(user)
@@ -202,6 +221,8 @@ class User(Document):
             user.followers.append(self)
             self.save()
             user.save()
+            #添加通知
+            user._notify_follow(self)
 
     def black(self, user):
         if User.is_exist(user.email) and user not in self.black_users:
@@ -237,31 +258,55 @@ class User(Document):
         self.save()
 
     #通知方法
-    def notify_comment(self, comment_user, comment):
+    def _notify_comment(self, comment_user, comment):
+        """
+        向self用户的推送内容增加comment推送
+        :param comment_user: 评论用户
+        :param comment: 评论
+        """
         notify = Notify()
         notify.notify_comment(user=self, comment_user=comment_user, comment=comment)
         self.push_content.append(notify)
         self.save()
 
-    def notify_share(self, share_user, share):
+    def _notify_share(self, share_user, share):
+        """
+        向self用户的推送内容增加share推送
+        :param share_user: share的用户
+        :param share:
+        """
         notify = Notify()
         notify.notify_share(user=self, share_user=share_user, share=share)
         self.push_content.append(notify)
         self.save()
 
-    def notify_follow(self, follow_user):
+    def _notify_follow(self, follow_user):
+        """
+        向self用户的推送内容增加关注推送，提示follow_user关注了self
+        :param follow_user: 关注者
+        """
         notify = Notify()
         notify.notify_follow(user=self, follow_user=follow_user)
         self.push_content.append(notify)
         self.save()
 
-    def notify_gratitude(self, gratitude_user, share):
+    def _notify_gratitude(self, gratitude_user, share):
+        """
+        向self用户的推送内容增加感谢share（自己分享的）的推送
+        :param gratitude_user: 感谢的用户
+        :param share: 被感谢的share
+        """
         notify = Notify()
         notify.notify_gratitude(user=self, gratitude_user=gratitude_user, share=share)
         self.push_content.append(notify)
         self.save()
 
     def notify_change_admin(self, old_admin, group):
+        """
+        向self用户的推送内容增加group改变组管理员的推送
+        :param old_admin: 以前的管理员
+        :param group: 所在组
+        """
         notify = Notify()
         notify.notify_change_admin(user=self, old_admin=old_admin, group=group)
         self.push_content.append(notify)
@@ -304,7 +349,7 @@ class User(Document):
             :param user:该user应该是在传进来之前被验证过且在数据库中的
         """
         if not user.is_in_the_group(group=group) and self.is_admin(group):
-            user.add_the_group(group=group)
+            user._add_the_group(group=group)
             group._add_user(user)
         else:
             print '没有成功加入，或许是权限不够或许是user已经在组内', user.is_in_the_group(group=group)
@@ -312,4 +357,3 @@ class User(Document):
     #异常部分
     class UserException(BaseException):
         pass
-

@@ -47,7 +47,8 @@ class Register(BaseHandler):
         nickname = self.get_body_argument('nickname')
         if User.is_exist(email):
             raise User.UserException('Email已经被占用')
-        user = User(email=email, password=password, nickname=nickname)
+        user = User(email=email, nickname=nickname)
+        user.set_password(password=password)
         user.save()
         self.recode_status_login(user)
         self.finish()

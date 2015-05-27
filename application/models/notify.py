@@ -14,6 +14,9 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 class Notify(Document):
+    """
+        存储推送信息
+    """
     notify_id = ObjectIdField(required=True)    #收到推送通知内容的_id
     notify_user = ReferenceField('User', required=True)    #需要通知的用户
     notify_type = StringField(required=True)
@@ -22,7 +25,7 @@ class Notify(Document):
 
     def notify_comment(self, user, comment_user, comment):
         """
-            推送某人给某人的share评论或回复
+            推送comment_user给user的share评论或回复
             :param user:被通知用户
             :param comment_user:评论/回复者
             :param comment: 评论
@@ -51,9 +54,8 @@ class Notify(Document):
     def notify_follow(self, user, follow_user):
         """
             有人特别关注了user
-            :param user:
-            :param follow_user:
-            :return:
+            :param user:被关注者
+            :param follow_user:关注者
         """
         self.notify_id = follow_user.id
         self.notify_type = 'FOLLOW'
@@ -75,7 +77,6 @@ class Notify(Document):
             :param user:通知的user
             :param old_admin:以前的管理员
             :param group:跟换管理员的组
-            :return:
         """
         self.notify_id = group.id
         self.notify_type = 'ADMIN'
