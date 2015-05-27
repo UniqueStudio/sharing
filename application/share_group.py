@@ -22,17 +22,21 @@ class OperateGroup(BaseHandler):
         if self.session:
             id = self.session['_id']
             create_user = User.objects(id=id).first()
-            if not ShareGroup.is_exist(name):
-                group = ShareGroup(name=name, create_user=create_user)
-                group.save()
-                create_user.manager_groups.append(group)
-                create_user.save()
-                create_user.admin_allow_user_entry(create_user, group)
-                self.write(json.dumps({'message':'success'}))
-            else:
-                self.write(json.dumps({'message':'failure',
-                                   'reason':'the group name is existent'}))
+            self.local_create_group(group_name=name, create_user=create_user)
         else:
             self.write(json.dumps({'message':'failure',
                                    'reason':'user is not login'}))
         self.finish()
+
+    def local_create_group(self, create_user, group_name):
+        if not ShareGroup.is_exist(group_name):
+            group = ShareGroup(name=group_name, create_user=create_user)
+            group.save()
+            create_user.manager_groups.append(group)
+            create_user.save()
+            create_user.admin_allow_user_entry(create_user, group)
+            return json.dumps({'message':'success'})
+        else:
+            return json.dumps({'message':'failure',
+                               'reason':'the group name is existent'})
+
