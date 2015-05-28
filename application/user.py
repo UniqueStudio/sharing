@@ -146,6 +146,7 @@ class UploadImage(BaseHandler):
         with open(save_file_name, 'wb') as up:
             up.write(file['body'])
         user.set_avatar(save_file_name)
+        self.finish()
 
 class Invite(BaseHandler):
 
@@ -169,3 +170,73 @@ class Invite(BaseHandler):
             self.write({'message':'success'})
         except Exception:
             self.write({'message':'failure'})
+            self.finish()
+        self.finish()
+
+class Follow(BaseHandler):
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.follow)
+
+    def follow(self, response):
+        followed_user_id = self.get_body_argument('followed_user_id')
+        self.session = self.get_session()
+        user_id = self.session['_id']
+        if user_id:
+            user = User.objects(id=user_id).first()
+            followed_user = User.objects(id=followed_user_id).first()
+            user.follow(followed_user)
+        self.finish()
+
+class Black(BaseHandler):
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.black)
+
+    def black(self, response):
+        blacked_user_id = self.get_body_argument('blacked_user_id')
+        self.session = self.get_session()
+        user_id = self.session['_id']
+        if user_id:
+            user = User.objects(id=user_id).first()
+            blacked_user = User.objects(id=blacked_user_id).first()
+            user.black(blacked_user)
+        self.finish()
+
+class CancelFollow(BaseHandler):
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.cancel_follow)
+
+    def cancel_follow(self, response):
+        cancelled_user_id = self.get_body_argument('cancelled_user_id')
+        self.session = self.get_session()
+        user_id = self.session['_id']
+        if user_id:
+            user = User.objects(id=user_id).first()
+            cancelled_user = User.objects(id=cancelled_user_id).first()
+            user.cancel_follow(cancelled_user)
+        self.finish()
+
+class CancelBlack(BaseHandler):
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.cancel_black)
+
+    def cancel_black(self, response):
+        cancelled_user_id = self.get_body_argument('cancelled_user_id')
+        self.session = self.get_session()
+        user_id = self.session['_id']
+        if user_id:
+            user = User.objects(id=user_id).first()
+            cancelled_user = User.objects(id=cancelled_user_id).first()
+            user.cancel_black(cancelled_user)
+        self.finish()

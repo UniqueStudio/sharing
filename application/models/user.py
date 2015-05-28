@@ -32,14 +32,14 @@ class User(Document):
 
     comments = ListField(ReferenceField('Comment'), default=list)
     black_users = ListField(ReferenceField('self'), default=list)
-    attention_users = ListField(ReferenceField('self'), default=list)
+    following = ListField(ReferenceField('self'), default=list)
     followers = ListField(ReferenceField('self'), default=list)
 
     groups = ListField(ReferenceField('ShareGroup'), default=list)
 
     manager_groups = ListField(ReferenceField('ShareGroup'), default=list)
 
-    push_content = ListField(ReferenceField('Notify'), default=list)
+    notify_content = MapField(ListField(ReferenceField('Notify'), default=list), default=dict)
 
     def __init__(self, email, nickname=None, *args, **kwargs):
         super(User, self).__init__(email=email,
@@ -209,15 +209,17 @@ class User(Document):
             print '只能删除自己的'
 
     #关注拉黑部分
-    def add_attention(self, user):
+    def follow(self, user):
         """
         self对user关注
         :param user: 被关注者
         """
-        if User.is_exist(user.email) and user not in self.attention_users\
+        if user.id == self.id:
+            return
+        if User.is_exist(user.email) and user not in self.following\
                 and self not in user.followers:
-            self.remove_black(user)
-            self.attention_users.append(user)
+            self.cancel_black(user)
+            self.following.append(user)
             user.followers.append(self)
             self.save()
             user.save()
@@ -225,20 +227,26 @@ class User(Document):
             user._notify_follow(self)
 
     def black(self, user):
+        if user.id == self.id:
+            return
         if User.is_exist(user.email) and user not in self.black_users:
-            self.remove_attention(user)
+            self.cancel_follow(user)
             self.black_users.append(user)
             self.save()
 
-    def remove_attention(self, user):
-        if User.is_exist(user.email) and user in self.attention_users\
+    def cancel_follow(self, user):
+        if user.id == self.id:
+            return
+        if User.is_exist(user.email) and user in self.following\
                  and self in user.followers:
-            self.attention_users.remove(user)
+            self.following.remove(user)
             user.followers.remove(self)
             self.save()
             user.save()
 
-    def remove_black(self, user):
+    def cancel_black(self, user):
+        if user.id == self.id:
+            return
         if User.is_exist(user.email) and user in self.black_users:
             self.black_users.remove(user)
             self.save()
@@ -266,7 +274,12 @@ class User(Document):
         """
         notify = Notify()
         notify.notify_comment(user=self, comment_user=comment_user, comment=comment)
-        self.push_content.append(notify)
+        #推送的键应该是被评论的share.id,当自己一条share被多次评论的时候可以合并一条
+        comment = Comment.objects(id=notify.notify_id).first()
+        key = str(comment.share.id)
+        if key not in self.notify_content:
+            self.notify_content = dict()
+        self.notify_content[key].append(notify)
         self.save()
 
     def _notify_share(self, share_user, share):
@@ -277,7 +290,11 @@ class User(Document):
         """
         notify = Notify()
         notify.notify_share(user=self, share_user=share_user, share=share)
-        self.push_content.append(notify)
+        #推送的键应该是share.id，以便当多个关注者分享一个share时候合并作为一条显示
+        key = str(notify.notify_id)
+        if key not in self.notify_content:
+            self.notify_content = dict()
+        self.notify_content[key].append(notify)
         self.save()
 
     def _notify_follow(self, follow_user):
@@ -287,7 +304,11 @@ class User(Document):
         """
         notify = Notify()
         notify.notify_follow(user=self, follow_user=follow_user)
-        self.push_content.append(notify)
+        #key应该是自己的id， 方便多个人关注self时候可以只显示一条信息，这里的key在用户推送内容中应该是唯一的
+        key = str(self.id)
+        if key not in self.notify_content:
+            self.notify_content = dict()
+        self.notify_content[key].append(notify)
         self.save()
 
     def _notify_gratitude(self, gratitude_user, share):
@@ -298,7 +319,11 @@ class User(Document):
         """
         notify = Notify()
         notify.notify_gratitude(user=self, gratitude_user=gratitude_user, share=share)
-        self.push_content.append(notify)
+        #key应该是被感谢的share，方便多人感谢的时候合并为一条
+        key = str(notify.notify_id)
+        if key not in self.notify_content:
+            self.notify_content = dict()
+        self.notify_content[key].append(notify)
         self.save()
 
     def notify_change_admin(self, old_admin, group):
@@ -309,7 +334,10 @@ class User(Document):
         """
         notify = Notify()
         notify.notify_change_admin(user=self, old_admin=old_admin, group=group)
-        self.push_content.append(notify)
+        key = notify.notify_id
+        if key not in self.notify_content:
+            self.notify_content = dict()
+        self.notify_content[key].append(notify)
         self.save()
 
 

@@ -4,7 +4,7 @@ __author__ = 'Bing'
 import tornado.web
 from tornado.web import url
 from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage, \
-    Invite
+    Invite, Follow, Black, CancelBlack, CancelFollow
 from application.share_group import OperateGroup
 from application.share import ShareHandler
 from application.base import BaseHandler
@@ -32,6 +32,10 @@ class Application(tornado.web.Application):
             url(r'/test', Test),
             url(r'/share', ShareHandler),
             url(r'/operate_group', OperateGroup),
+            url(r'/follow', Follow),
+            url(r'/black', Black),
+            url(r'/cancel_follow', CancelFollow),
+            url(r'/cancel_black', CancelBlack),
         ]
 
         settings = {
