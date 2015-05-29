@@ -39,4 +39,3 @@ class OperateGroup(BaseHandler):
         else:
             return json.dumps({'message':'failure',
                                'reason':'the group name is existent'})
-

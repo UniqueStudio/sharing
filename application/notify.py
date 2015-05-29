@@ -27,8 +27,6 @@ class Notify(BaseHandler):
             result = dict()
             for notify in user.notify_content:
                 print notify.notify_type
-                #TODO:推送分类，完成推送
-                #comment推送
                 if notify.notify_type == COMMENT:
                     result[COMMENT] = dict()
                     comment = Comment.objects(id=notify.notify_id).first()
@@ -42,7 +40,6 @@ class Notify(BaseHandler):
                     if key not in result[SHARE]:
                         result[SHARE][key] = list()
                     result[SHARE][key].append(str(notify.id))
-                #follow推送
                 elif notify.notify_type == FOLLOW:
                     result[FOLLOW] = dict()
                     key = str(user_id)
