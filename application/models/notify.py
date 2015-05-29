@@ -13,6 +13,12 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+COMMENT = 'COMMENT'
+SHARE = 'SHARE'
+FOLLOW = 'FOLLOW'
+GRATITUDE = 'GRATITUDE'
+ADMIN = 'ADMIN'
+
 class Notify(Document):
     """
         存储推送信息
@@ -31,7 +37,7 @@ class Notify(Document):
             :param comment: 评论
         """
         self.notify_id = comment.id
-        self.notify_type = 'COMMENT'
+        self.notify_type = COMMENT
         self.notify_user = user
         self.notify_content = '%s 回复了你的 %s share' \
                               % (comment_user.nickname, comment.share.title)
@@ -45,7 +51,7 @@ class Notify(Document):
             :param share:被创建的share
         """
         self.notify_id = share.id
-        self.notify_type = 'SHARE'
+        self.notify_type = SHARE
         self.notify_user = user
         self.notify_content = '%s 分享了 %s' \
                                 % (share_user.nickname, share.title)
@@ -58,14 +64,14 @@ class Notify(Document):
             :param follow_user:关注者
         """
         self.notify_id = follow_user.id
-        self.notify_type = 'FOLLOW'
+        self.notify_type = FOLLOW
         self.notify_user = user
         self.notify_content = '%s 关注了你' % (follow_user.nickname)
         self.save()
 
     def notify_gratitude(self, user, gratitude_user, share):
         self.notify_id = share.id
-        self.notify_type = 'GRATITUDE'
+        self.notify_type = GRATITUDE
         self.notify_user = user
         self.notify_content = '%s 感谢了你的share %s' \
                                 % (gratitude_user.nickname, share.title)
@@ -79,7 +85,7 @@ class Notify(Document):
             :param group:跟换管理员的组
         """
         self.notify_id = group.id
-        self.notify_type = 'ADMIN'
+        self.notify_type = ADMIN
         self.notify_user = user
         self.notify_content = '%s 组的管理员已经由%s更换为%s' \
                                 % (group.name, old_admin.nickname, group.create_user)

@@ -7,6 +7,7 @@ from application.user import Login, Register, ModifyMyInformation, Homepage, Upl
     Invite, Follow, Black, CancelBlack, CancelFollow
 from application.share_group import OperateGroup
 from application.share import ShareHandler
+from application.notify import Notify
 from application.base import BaseHandler
 
 class Test(BaseHandler):
@@ -36,6 +37,7 @@ class Application(tornado.web.Application):
             url(r'/black', Black),
             url(r'/cancel_follow', CancelFollow),
             url(r'/cancel_black', CancelBlack),
+            url(r'/notify', Notify),
         ]
 
         settings = {

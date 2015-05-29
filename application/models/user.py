@@ -10,8 +10,6 @@ from mongoengine.queryset import CASCADE
 import datetime
 
 from application.exception import BaseException
-from application.models import Share, InboxShare, Comment, ShareGroup
-from application.models.notify import Notify
 
 
 class User(Document):
@@ -39,7 +37,8 @@ class User(Document):
 
     manager_groups = ListField(ReferenceField('ShareGroup'), default=list)
 
-    notify_content = MapField(ListField(ReferenceField('Notify'), default=list), default=dict)
+
+    notify_content = ListField(ReferenceField('Notify'), default=list)
 
     def __init__(self, email, nickname=None, *args, **kwargs):
         super(User, self).__init__(email=email,
@@ -272,14 +271,11 @@ class User(Document):
         :param comment_user: 评论用户
         :param comment: 评论
         """
+        from application.models import Notify
         notify = Notify()
         notify.notify_comment(user=self, comment_user=comment_user, comment=comment)
         #推送的键应该是被评论的share.id,当自己一条share被多次评论的时候可以合并一条
-        comment = Comment.objects(id=notify.notify_id).first()
-        key = str(comment.share.id)
-        if key not in self.notify_content:
-            self.notify_content = dict()
-        self.notify_content[key].append(notify)
+        self.notify_content.append(notify)
         self.save()
 
     def _notify_share(self, share_user, share):
@@ -288,13 +284,11 @@ class User(Document):
         :param share_user: share的用户
         :param share:
         """
+        from application.models import Notify
         notify = Notify()
         notify.notify_share(user=self, share_user=share_user, share=share)
         #推送的键应该是share.id，以便当多个关注者分享一个share时候合并作为一条显示
-        key = str(notify.notify_id)
-        if key not in self.notify_content:
-            self.notify_content = dict()
-        self.notify_content[key].append(notify)
+        self.notify_content.append(notify)
         self.save()
 
     def _notify_follow(self, follow_user):
@@ -302,13 +296,10 @@ class User(Document):
         向self用户的推送内容增加关注推送，提示follow_user关注了self
         :param follow_user: 关注者
         """
+        from application.models import Notify
         notify = Notify()
         notify.notify_follow(user=self, follow_user=follow_user)
-        #key应该是自己的id， 方便多个人关注self时候可以只显示一条信息，这里的key在用户推送内容中应该是唯一的
-        key = str(self.id)
-        if key not in self.notify_content:
-            self.notify_content = dict()
-        self.notify_content[key].append(notify)
+        self.notify_content.append(notify)
         self.save()
 
     def _notify_gratitude(self, gratitude_user, share):
@@ -317,13 +308,10 @@ class User(Document):
         :param gratitude_user: 感谢的用户
         :param share: 被感谢的share
         """
+        from application.models import Notify
         notify = Notify()
         notify.notify_gratitude(user=self, gratitude_user=gratitude_user, share=share)
-        #key应该是被感谢的share，方便多人感谢的时候合并为一条
-        key = str(notify.notify_id)
-        if key not in self.notify_content:
-            self.notify_content = dict()
-        self.notify_content[key].append(notify)
+        self.notify_content.append(notify)
         self.save()
 
     def notify_change_admin(self, old_admin, group):
@@ -332,12 +320,10 @@ class User(Document):
         :param old_admin: 以前的管理员
         :param group: 所在组
         """
+        from application.models import Notify
         notify = Notify()
         notify.notify_change_admin(user=self, old_admin=old_admin, group=group)
-        key = notify.notify_id
-        if key not in self.notify_content:
-            self.notify_content = dict()
-        self.notify_content[key].append(notify)
+        self.notify_content.append(notify)
         self.save()
 
 

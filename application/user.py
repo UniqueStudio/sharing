@@ -156,21 +156,23 @@ class Invite(BaseHandler):
         client.fetch(request=self.request, callback=self.invite)
 
     def invite(self, response):
-        inviter_id = self.get_body_argument('inviter_id')
-        invitee_id = self.get_body_argument('invitee_id')
-        invite_group_id = self.get_body_argument('group_id')
+        self.session = self.get_session()
+        inviter_id = self.session['_id']
+        if inviter_id:
+            invitee_id = self.get_body_argument('invitee_id')
+            invite_group_id = self.get_body_argument('group_id')
 
-        inviter = User.objects(id=inviter_id).first()
-        invitee = User.objects(id=invitee_id).first()
-        invite_group = ShareGroup.objects(id=invite_group_id).first()
+            inviter = User.objects(id=inviter_id).first()
+            invitee = User.objects(id=invitee_id).first()
+            invite_group = ShareGroup.objects(id=invite_group_id).first()
 
-        invite_entity = Invite(inviter=inviter, invitee=invitee, invite_group=invite_group)
-        try:
-            invite_entity.save()
-            self.write({'message':'success'})
-        except Exception:
-            self.write({'message':'failure'})
-            self.finish()
+            invite_entity = Invite(inviter=inviter, invitee=invitee, invite_group=invite_group)
+            try:
+                invite_entity.save()
+                self.write({'message':'success'})
+            except Exception:
+                self.write({'message':'failure'})
+                self.finish()
         self.finish()
 
 class Follow(BaseHandler):
