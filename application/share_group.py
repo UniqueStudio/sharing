@@ -6,22 +6,20 @@ from application.models import User, Share, ShareGroup
 import tornado.web
 import json
 
-class OperateGroup(BaseHandler):
+class CreateGroup(BaseHandler):
 
     @tornado.web.asynchronous
-    @tornado.web.authenticated
     def post(self):
-        operate = self.get_body_argument('operate')
+        print 1
         client = tornado.httpclient.AsyncHTTPClient()
-
-        if operate == 'create':
-            client.fetch(request=self.request, callback=self.create_group)
+        client.fetch(request=self.request, callback=self.create_group)
 
     def create_group(self, response):
         name = self.get_body_argument('name')
-        if self.session:
-            id = self.session['_id']
-            create_user = User.objects(id=id).first()
+        self.session = self.get_session()
+        user_id = self.session['_id']
+        if user_id:
+            create_user = User.objects(id=user_id).first()
             self.local_create_group(group_name=name, create_user=create_user)
         else:
             self.write(json.dumps({'message':'failure',
@@ -39,3 +37,4 @@ class OperateGroup(BaseHandler):
         else:
             return json.dumps({'message':'failure',
                                'reason':'the group name is existent'})
+

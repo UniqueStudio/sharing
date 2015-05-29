@@ -5,7 +5,7 @@ import tornado.web
 from tornado.web import url
 from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage, \
     Invite, Follow, Black, CancelBlack, CancelFollow
-from application.share_group import OperateGroup
+from application.share_group import CreateGroup
 from application.share import ShareHandler
 from application.notify import Notify
 from application.base import BaseHandler
@@ -32,7 +32,7 @@ class Application(tornado.web.Application):
             url(r'/invite', Invite),
             url(r'/test', Test),
             url(r'/share', ShareHandler),
-            url(r'/operate_group', OperateGroup),
+            url(r'/create_group', CreateGroup),
             url(r'/follow', Follow),
             url(r'/black', Black),
             url(r'/cancel_follow', CancelFollow),
