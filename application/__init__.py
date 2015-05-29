@@ -5,20 +5,10 @@ import tornado.web
 from tornado.web import url
 from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage, \
     Invite, Follow, Black, CancelBlack, CancelFollow
-from application.share_group import CreateGroup
+from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUser
 from application.share import ShareHandler
 from application.notify import Notify
 from application.base import BaseHandler
-
-class Test(BaseHandler):
-    def get(self):
-        if self.get_argument('action') == 'create':
-            self.get_session()
-            self.session['test'] = 'test'
-            self.session.save()
-        else:
-            self.get_session()
-            self.write(self.session['test'])
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -30,14 +20,19 @@ class Application(tornado.web.Application):
             url(r'/homepage', Homepage),
             url(r'/upload_image', UploadImage),
             url(r'/invite', Invite),
-            url(r'/test', Test),
+
             url(r'/share', ShareHandler),
-            url(r'/create_group', CreateGroup),
+
             url(r'/follow', Follow),
             url(r'/black', Black),
             url(r'/cancel_follow', CancelFollow),
             url(r'/cancel_black', CancelBlack),
             url(r'/notify', Notify),
+
+            url(r'/group/create', CreateGroup),
+            url(r'/group/info', GroupInfo),
+            url(r'/group/shares', GroupShare),
+            url(r'/group/users', GroupUser),
         ]
 
         settings = {
