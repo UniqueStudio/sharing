@@ -8,7 +8,7 @@ from application.base import BaseHandler
 from application.exception import OperateException
 from application.models import Share, User, ShareGroup, InboxShare
 
-class ShareHandler(BaseHandler):
+class Share(BaseHandler):
 
     @tornado.web.authenticated
     def get(self):
@@ -23,7 +23,7 @@ class ShareHandler(BaseHandler):
             client.fetch(request=self.request, callback=self.add_share)
         else:
             #TODO::Handle exception afterwards
-            raise OperateException('Failure in ShareHandler')
+            raise OperateException('Failure in Share')
 
     def add_share(self, response):
         title = self.get_body_argument('title')
