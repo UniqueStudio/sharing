@@ -148,6 +148,7 @@ class UploadImage(BaseHandler):
         user.set_avatar(save_file_name)
         self.finish()
 
+#TODO:解决邀请用户入组
 class Invite(BaseHandler):
 
     @tornado.web.asynchronous
@@ -174,6 +175,9 @@ class Invite(BaseHandler):
                 self.write({'message':'failure'})
                 self.finish()
         self.finish()
+
+class AcceptInvite(BaseHandler):
+    pass
 
 class Follow(BaseHandler):
 
