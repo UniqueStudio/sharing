@@ -14,7 +14,6 @@ import hashlib
 class Login(BaseHandler):
     def get(self):
         self.xsrf_token
-        print self.get_cookie('_xsrf')
         self.write('未登陆')
 
     @tornado.web.asynchronous

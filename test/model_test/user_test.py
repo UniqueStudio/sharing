@@ -135,5 +135,5 @@ def suite_test():
     return suite
 
 if __name__ == '__main__':
-    # To run this test, use '-m' with python in root directory
+    # To run this test, use '-m' option in root directory
     unittest.main(defaultTest='suite_test')

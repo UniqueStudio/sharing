@@ -137,6 +137,7 @@ class User(Document):
                 if len(share.share_users) == 1:  #该条share只有一个分享者直接删除
                     share._share_delete()
                     self.self_shares.remove(share)
+                    group._remove_share(share)
                     self.save()
                 else:
                     if self in share.share_users:
@@ -144,9 +145,9 @@ class User(Document):
                         self.self_shares.remove(share)
                         self.save()
                     else:
-                        print '并没有分享过'
+                        raise Share.ShareException('并没有分享过')
             else:
-                print '该share不存在'
+                raise Share.ShareException('该share不存在')
 
     #inbox部分
     def is_in_inbox(self, inbox_share):
@@ -195,15 +196,15 @@ class User(Document):
             share_user._notify_comment(self, comment)
         self.save()
 
-    def remove_comment_to_share(self, share, comment_id):
+    def remove_comment_to_share(self, comment_id):
         """
-            向某个share(每个group的share在数据库表现是独立的)删除comment,只是形式上的删除
+            向某个share(每个group的share在数据库表现是独立的)删除comment
             :param comment_id:删除评论的id
         """
         from application.models import Comment
         comment = Comment.objects(id=comment_id).first()
         if comment in self.comments:    #只能删除自己的
-            share._remove_comment(comment)  #comment的删除在里面操作了
+            comment.share._remove_comment(comment)  #comment的删除在里面操作了
         else:
             print '只能删除自己的'
 

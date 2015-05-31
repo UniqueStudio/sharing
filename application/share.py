@@ -8,7 +8,8 @@ from application.base import BaseHandler
 from application.exception import OperateException
 from application.models import Share, User, ShareGroup, InboxShare
 
-class Share(BaseHandler):
+
+class CreateShare(BaseHandler):
 
     @tornado.web.authenticated
     def get(self):
@@ -18,25 +19,21 @@ class Share(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         client = tornado.httpclient.AsyncHTTPClient()
-        operate = self.get_body_argument('operate')
-        if operate == 'add':
-            client.fetch(request=self.request, callback=self.add_share)
-        else:
-            #TODO::Handle exception afterwards
-            raise OperateException('Failure in Share')
+        client.fetch(request=self.request, callback=self.create_share)
 
-    def add_share(self, response):
+    def create_share(self, response):
         title = self.get_body_argument('title')
-        comment_content = self.get_body_argument('comment', default=None)
         url = self.get_body_argument('url')
         user = User.objects(id=self.session['_id']).first()
         if len(self.get_body_arguments('groups')):
-            #TODO:检查是否能加入这条share
+            comment_content = self.get_body_argument('comment', default=None)
+            print self.get_body_arguments('groups')
             share = Share(title=title, url=url).save()
             if comment_content:
                 user.add_comment_to_share(share, comment_content)
             for name in self.get_body_arguments('groups'):
                 group = ShareGroup.objects(name=name).first()
+                # if grouop not exist, skip it.
                 if group is None:
                     continue
                 user.share_to_group(share, group)
@@ -49,5 +46,31 @@ class Share(BaseHandler):
         self.write('ok')
         self.finish()
 
+
+class DeleteShare(BaseHandler):
+
+    @tornado.web.asynchronous
+    @tornado.web.authenticated
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.delete_share)
+
     def delete_share(self, response):
-        pass
+        user = User.objects(id=self.session['_id']).first()
+        share_id = self.get_body_argument('share_id')
+        if self.get_body_argument('type') == 'inbox':
+            inbox_share = InboxShare.objects(id=share_id).first()
+            if inbox_share is None:
+                msg = 'no such inbox_share'
+            else:
+                user.remove_inbox_share(inbox_share)
+                msg = 'ok, inbox_share deleted'
+        else:
+            share = Share.objects(id=share_id).first()
+            if share is None:
+                msg = 'no such share'
+            else:
+                user.remove_share_to_group(share, share.own_group)
+                msg = 'ok, share deleted'
+        self.write(msg)
+        self.finish()

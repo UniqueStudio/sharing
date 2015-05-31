@@ -10,7 +10,6 @@ class CreateGroup(BaseHandler):
 
     @tornado.web.asynchronous
     def post(self):
-        print 1
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.create_group)
 

@@ -55,6 +55,8 @@ class Share(Document):
             raise Share.ShareException('user已存在')
 
     def _share_delete(self):
+        for comment in self.comments:
+            comment._comment_delete()
         self.delete()
 
     def _remove_share_user(self, user, group):  #删除分享的用户
@@ -67,6 +69,8 @@ class Share(Document):
         self.save()
 
     def _remove_comment(self, comment):  #删除评论,形式上的删除
+        self.comments.remove(comment)
+        self.save()
         comment._comment_delete()
 
     class ShareException(BaseException):

@@ -6,7 +6,7 @@ from tornado.web import url
 from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage, \
     Invite, Follow, Black, CancelBlack, CancelFollow
 from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUser
-from application.share import Share
+from application.share import CreateShare, DeleteShare
 from application.notify import Notify
 from application.base import BaseHandler
 
@@ -21,7 +21,8 @@ class Application(tornado.web.Application):
             url(r'/upload_image', UploadImage),
             url(r'/invite', Invite),
 
-            url(r'/share', Share),
+            url(r'/share/create', CreateShare),
+            url(r'/share/delete', DeleteShare),
 
             url(r'/follow', Follow),
             url(r'/black', Black),
