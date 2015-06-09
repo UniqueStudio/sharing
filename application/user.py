@@ -31,13 +31,14 @@ class Login(BaseHandler):
             raise User.UserException('密码不正确')
         else:
             self.recode_status_login(user)
-            print '登陆成功'
+            self.write("登陆成功")
         self.finish()
 
 class Register(BaseHandler):
     @tornado.web.asynchronous
-    def post(self):
+    def post(self, invite_id=None):
         client = tornado.httpclient.AsyncHTTPClient()
+        self.invite_id = invite_id
         client.fetch(request=self.request, callback=self.register)
 
     def register(self, response):
@@ -46,9 +47,17 @@ class Register(BaseHandler):
         nickname = self.get_body_argument('nickname')
         if User.is_exist(email):
             raise User.UserException('Email已经被占用')
+        if self.invite_id:
+            invite = Invite.objects(id=self.invite_id).first()
+            email = invite.invite_email
         user = User(email=email, nickname=nickname)
         user.set_password(password=password)
         user.save()
+        if invite:
+            group = invite.invite_group
+            group.create_user.admin_allow_user_entry(user, group)
+            user.invitee = invite.inviter
+            user.save()
         self.recode_status_login(user)
         self.finish()
 
@@ -147,8 +156,7 @@ class UploadImage(BaseHandler):
         user.set_avatar(save_file_name)
         self.finish()
 
-#TODO:解决邀请用户入组
-class Invite(BaseHandler):
+class InviteExist(BaseHandler):
 
     @tornado.web.asynchronous
     def post(self):
@@ -158,9 +166,9 @@ class Invite(BaseHandler):
     def invite(self, response):
         self.session = self.get_session()
         inviter_id = self.session['_id']
-        if inviter_id:
-            invitee_id = self.get_body_argument('invitee_id')
-            invite_group_id = self.get_body_argument('group_id')
+        invitee_id = self.get_body_argument('invitee_id')
+        invite_group_id = self.get_body_argument('group_id')
+        if inviter_id and invitee_id and invite_group_id:
 
             inviter = User.objects(id=inviter_id).first()
             invitee = User.objects(id=invitee_id).first()
@@ -172,11 +180,41 @@ class Invite(BaseHandler):
                 self.write({'message':'success'})
             except Exception:
                 self.write({'message':'failure'})
-                self.finish()
+        self.finish()
+
+class InviteByEmail(BaseHandler):
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.invite)
+
+    def invite(self, response):
+        self.session = self.get_session()
+        inviter_id = self.session['_id']
+        invite_group_id = self.get_body_argument('group_id')
+        email = self.get_body_argument("email")
+        if inviter_id and invite_group_id and email:
+            inviter = User.objects(id=inviter_id).first()
+            invite_group = ShareGroup.objects(id=invite_group_id).first()
+            invite_entity = Invite(inviter=inviter, invitee_email=email, invite_group=invite_group)
+            try:
+                invite_entity.save()
+                #TODO:send email
+                info = str(invite_entity.id)
+                self.write({'message':'success'})
+            except Exception as e:
+                print e
+                self.write({'message':'failure'})
         self.finish()
 
 class AcceptInvite(BaseHandler):
-    pass
+
+    def post(self):
+        invite_id = self.get_body_argument("invite_id")
+        invite = Invite.objects(id=invite_id).first()
+        user = invite.invitee
+
 
 class Follow(BaseHandler):
 

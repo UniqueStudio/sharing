@@ -4,7 +4,7 @@ __author__ = 'Bing'
 import tornado.web
 from tornado.web import url
 from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage, \
-    Invite, Follow, Black, CancelBlack, CancelFollow
+    InviteExist, InviteByEmail, Follow, Black, CancelBlack, CancelFollow, AcceptInvite
 from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUser
 from application.share import CreateShare, DeleteShare
 from application.notify import Notify
@@ -16,10 +16,13 @@ class Application(tornado.web.Application):
         handlers = [
             url(r'/login', Login),
             url(r'/register', Register),
+            url(r'/register/(.*)', Register),
             url(r'/modify_info', ModifyMyInformation),
             url(r'/homepage', Homepage),
             url(r'/upload_image', UploadImage),
-            url(r'/invite', Invite),
+            url(r'/user/invite/exist', InviteExist),
+            url(r'/user/invite/email', InviteByEmail),
+            url(r'/user/invite/accept', AcceptInvite),
 
             url(r'/share/create', CreateShare),
             url(r'/share/delete', DeleteShare),

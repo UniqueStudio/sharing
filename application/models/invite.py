@@ -7,6 +7,7 @@ import datetime
 
 class Invite(Document):
     inviter = ReferenceField('User', required=True)
-    invitee = ReferenceField('User', required=True)
+    invitee = ReferenceField('User')
+    invitee_email = EmailField()
     invite_time = DateTimeField(required=True, default=datetime.datetime.now)
     invite_group = ReferenceField('ShareGroup', required=True)
