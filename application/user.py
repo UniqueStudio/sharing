@@ -30,7 +30,7 @@ class Login(BaseHandler):
             raise User.UserException('密码不正确')
         else:
             self.recode_status_login(user)
-            self.write("登陆成功")
+            self.write(json.dumps({'message': 'success'}))
         self.finish()
 
 class Register(BaseHandler):
@@ -60,6 +60,7 @@ class Register(BaseHandler):
             user.save()
             invite.invite_delete()
         self.recode_status_login(user)
+        self.write(json.dumps({'message': 'success'}))
         self.finish()
 
 class Homepage(BaseHandler):
@@ -114,7 +115,7 @@ class ModifyMyInformation(BaseHandler):
                                     phone_number=phone_number)
         else:
             raise User.UserException('该用户未登陆')
-        self.write('modify_information')
+        self.write(json.dumps({'message': 'success'}))
         self.finish()
 
 
@@ -144,8 +145,12 @@ class UploadImage(BaseHandler):
             if self.request.files:
                 avatar = self.request.files['avatar'][0]
                 self.save_file(avatar, upload_path, user)
-                print 'success'
-        self.write('finish')
+                self.write(json.dumps({'message': 'success'}))
+            else:
+                self.write(json.dumps({'message': '无文件'}))
+        else:
+            self.write(json.dumps({'message': '未登陆'}))
+
 
     def save_file(self, file, save_dir, user):
         file_name = file['filename'] + str(time.time())
@@ -211,13 +216,20 @@ class InviteByEmail(BaseHandler):
 class AcceptInvite(BaseHandler):
 
     def post(self):
-        invite_id = self.get_body_argument("invite_id")
-        invite = Invite.objects(id=invite_id).first()
-        user = invite.invitee
-        group = invite.invite_group
-        group.create_user.admin_allow_user_entry(user=user, group=group)
-        self.write({'message': 'success'})
-
+        self.session = self.get_session()
+        user_id = self.session['_id']
+        if user_id:
+            invite_id = self.get_body_argument("invite_id")
+            invite = Invite.objects(id=invite_id).first()
+            user = invite.invitee
+            if user.id == user_id:
+                group = invite.invite_group
+                group.create_user.admin_allow_user_entry(user=user, group=group)
+                self.write(json.dumps({'message': 'success'}))
+            else:
+                raise User.UserException(user.nickname + '非邀请用户')
+        else:
+            self.write(json.dumps({'message': '未登陆'}))
 
 class Follow(BaseHandler):
 
@@ -234,6 +246,9 @@ class Follow(BaseHandler):
             user = User.objects(id=user_id).first()
             followed_user = User.objects(id=followed_user_id).first()
             user.follow(followed_user)
+            self.write(json.dumps({'message', 'success'}))
+        else:
+            self.write(json.dumps({'message', 'failure'}))
         self.finish()
 
 class Black(BaseHandler):
@@ -251,6 +266,9 @@ class Black(BaseHandler):
             user = User.objects(id=user_id).first()
             blacked_user = User.objects(id=blacked_user_id).first()
             user.black(blacked_user)
+            self.write(json.dumps({'message', 'success'}))
+        else:
+            self.write(json.dumps({'message', 'failure'}))
         self.finish()
 
 class CancelFollow(BaseHandler):
@@ -268,6 +286,9 @@ class CancelFollow(BaseHandler):
             user = User.objects(id=user_id).first()
             cancelled_user = User.objects(id=cancelled_user_id).first()
             user.cancel_follow(cancelled_user)
+            self.write(json.dumps({'message', 'success'}))
+        else:
+            self.write(json.dumps({'message', 'failure'}))
         self.finish()
 
 class CancelBlack(BaseHandler):
@@ -285,6 +306,9 @@ class CancelBlack(BaseHandler):
             user = User.objects(id=user_id).first()
             cancelled_user = User.objects(id=cancelled_user_id).first()
             user.cancel_black(cancelled_user)
+            self.write(json.dumps({'message', 'success'}))
+        else:
+            self.write(json.dumps({'message', 'failure'}))
         self.finish()
 
 class ApplyGroup(BaseHandler):
@@ -302,7 +326,7 @@ class ApplyGroup(BaseHandler):
         group = ShareGroup.objects(id=group_id).first()
         try:
             group.add_apply_user(user)
-            self.write(json.dumps({'message': '申请成功'}))
+            self.write(json.dumps({'message': 'success'}))
         except ShareGroup.GroupException:
-            self.write(json.dumps({'message': '已在组中/已申请'}))
+            self.write(json.dumps({'message': 'failure'}))
         self.finish()
