@@ -1,5 +1,4 @@
 #encoding:utf-8
-__author__ = 'bing'
 
 import tornado.web
 import tornado.httpclient
@@ -47,6 +46,7 @@ class Register(BaseHandler):
         nickname = self.get_body_argument('nickname')
         if User.is_exist(email):
             raise User.UserException('Email已经被占用')
+        invite = None
         if self.invite_id:
             invite = Invite.objects(id=self.invite_id).first()
             email = invite.invite_email
@@ -58,6 +58,7 @@ class Register(BaseHandler):
             group.create_user.admin_allow_user_entry(user, group)
             user.invitee = invite.inviter
             user.save()
+            invite.invite_delete()
         self.recode_status_login(user)
         self.finish()
 
@@ -202,10 +203,9 @@ class InviteByEmail(BaseHandler):
                 invite_entity.save()
                 #TODO:send email
                 info = str(invite_entity.id)
-                self.write({'message':'success'})
+                self.write({'message': 'success'})
             except Exception as e:
-                print e
-                self.write({'message':'failure'})
+                self.write({'message': 'failure'})
         self.finish()
 
 class AcceptInvite(BaseHandler):
@@ -214,6 +214,9 @@ class AcceptInvite(BaseHandler):
         invite_id = self.get_body_argument("invite_id")
         invite = Invite.objects(id=invite_id).first()
         user = invite.invitee
+        group = invite.invite_group
+        group.create_user.admin_allow_user_entry(user=user, group=group)
+        self.write({'message': 'success'})
 
 
 class Follow(BaseHandler):
@@ -282,4 +285,24 @@ class CancelBlack(BaseHandler):
             user = User.objects(id=user_id).first()
             cancelled_user = User.objects(id=cancelled_user_id).first()
             user.cancel_black(cancelled_user)
+        self.finish()
+
+class ApplyGroup(BaseHandler):
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.apply_group)
+
+    def apply_group(self, response):
+        group_id = self.get_body_argument('group_id')
+        self.session = self.get_session()
+        user_id = self.session['_id']
+        user = User.objects(id=user_id).first()
+        group = ShareGroup.objects(id=group_id).first()
+        try:
+            group.add_apply_user(user)
+            self.write(json.dumps({'message': '申请成功'}))
+        except ShareGroup.GroupException:
+            self.write(json.dumps({'message': '已在组中/已申请'}))
         self.finish()

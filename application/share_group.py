@@ -96,4 +96,100 @@ class GroupUser(BaseHandler):
 
 
 class ChangeAdmin(BaseHandler):
-    pass
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.change_admin)
+
+    def change_admin(self, response):
+        group_id = self.get_body_argument('group_id')
+        group = ShareGroup.objects(id=group_id).first()
+        self.session = self.get_session()
+        create_user_id = self.session['_id']
+        create_user = User.objects(id=create_user_id).first()
+        print group
+        user_id = self.get_body_argument('user_id') #接替管理员权限的用户
+        user = User.objects(id=user_id).first()
+        create_user.change_admin(user=user, group=group)
+        self.finish()
+
+class ApplyUser(BaseHandler):
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.show_apply_user)
+
+    def show_apply_user(self, response):
+        group_id = self.get_body_argument('group_id')
+        group = ShareGroup.objects(id=group_id).first()
+        self.session = self.get_session()
+        user_id = self.session['_id']
+        if not user_id:
+            self.write(json.dumps({'message': '请以管理员权限登陆'}))
+            self.finish()
+        user = User.objects(id=user_id).first()
+        if user.is_admin(group=group):
+            self.write(json.dumps({'user': group.apply_users}))
+        else:
+            self.write(json.dumps({'message': '用户权限不足'}))
+        self.finish()
+
+class AcceptApply(BaseHandler):
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.accept_apply)
+
+    def accept_apply(self, response):
+        group_id = self.get_body_argument('group_id')
+        group = ShareGroup.objects(id=group_id).first()
+        self.session = self.get_session()
+        user_id = self.session['_id']
+        if not user_id:
+            self.write(json.dumps({'message': '请以管理员权限登陆'}))
+            self.finish()
+        user = User.objects(id=user_id).first()
+        if user.is_admin(group=group):
+            apply_user_id = self.get_body_argument('apply_user_id')
+            apply_user = User.objects(id=apply_user_id).first()
+            try:
+                group.accept_apply(apply_user)
+                self.write(json.dumps({'user': 'success'}))
+            except ShareGroup.GroupException:
+                self.write(json.dumps({'message': '无此用户申请信息'}))
+        else:
+            self.write(json.dumps({'message': '用户权限不足'}))
+        self.finish()
+
+class RejectApply(BaseHandler):
+
+    @tornado.web.asynchronous
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.reject_apply)
+
+    def reject_apply(self, response):
+        group_id = self.get_body_argument('group_id')
+        group = ShareGroup.objects(id=group_id).first()
+        self.session = self.get_session()
+        user_id = self.session['_id']
+        if not user_id:
+            self.write(json.dumps({'message': '请以管理员权限登陆'}))
+            self.finish()
+        user = User.objects(id=user_id).first()
+        if user.is_admin(group=group):
+            apply_user_id = self.get_body_argument('apply_user_id')
+            apply_user = User.objects(id=apply_user_id).first()
+            try:
+                group.reject_apply(apply_user)
+                self.write(json.dumps({'user': 'success'}))
+            except ShareGroup.GroupException:
+                self.write(json.dumps({'message': '无此用户申请信息'}))
+        else:
+            self.write(json.dumps({'message': '用户权限不足'}))
+        self.finish()
+
+

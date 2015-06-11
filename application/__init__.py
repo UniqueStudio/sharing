@@ -1,11 +1,12 @@
 #encoding:utf-8
-__author__ = 'Bing'
 
 import tornado.web
 from tornado.web import url
 from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage, \
-    InviteExist, InviteByEmail, Follow, Black, CancelBlack, CancelFollow, AcceptInvite
-from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUser
+    InviteExist, InviteByEmail, Follow, Black, CancelBlack, CancelFollow, AcceptInvite, \
+    ApplyGroup
+from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUser, \
+    ChangeAdmin, ApplyUser, AcceptApply, RejectApply
 from application.share import CreateShare, DeleteShare
 from application.notify import Notify
 from application.base import BaseHandler
@@ -24,6 +25,8 @@ class Application(tornado.web.Application):
             url(r'/user/invite/email', InviteByEmail),
             url(r'/user/invite/accept', AcceptInvite),
 
+            url(r'/user/group/apply', ApplyGroup),
+
             url(r'/share/create', CreateShare),
             url(r'/share/delete', DeleteShare),
 
@@ -37,6 +40,10 @@ class Application(tornado.web.Application):
             url(r'/group/info', GroupInfo),
             url(r'/group/shares', GroupShare),
             url(r'/group/users', GroupUser),
+            url(r'/group/change_admin', ChangeAdmin),
+            url(r'/group/apply/users', ApplyUser),
+            url(r'/group/apply/accept', AcceptApply),
+            url(r'/group/apply/reject', RejectApply),
         ]
 
         settings = {

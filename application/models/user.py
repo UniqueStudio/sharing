@@ -369,7 +369,23 @@ class User(Document):
             user._add_the_group(group=group)
             group._add_user(user)
         else:
-            print '没有成功加入，或许是权限不够或许是user已经在组内', user.is_in_the_group(group=group)
+            print '没有成功加入，或许是权限不够或许是user已经在组内'
+
+    def change_admin(self, user, group):
+        """
+        改变管理员
+        :param user: 担任管理员
+        :param group: 需改变的组
+        """
+        if self.is_admin(group) and user.is_in_the_group(group=group):
+            self.manager_groups.remove(group)
+            user.manager_groups.append(group)
+            self.save()
+            user.save()
+            group.change_admin(user)
+        else:
+            if not user.is_in_the_group(group=group):
+                raise self.UserException(user.nickname + '不在' + group.name)
 
     #异常部分
     class UserException(BaseException):

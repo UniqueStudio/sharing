@@ -11,3 +11,6 @@ class Invite(Document):
     invitee_email = EmailField()
     invite_time = DateTimeField(required=True, default=datetime.datetime.now)
     invite_group = ReferenceField('ShareGroup', required=True)
+
+    def invite_delete(self):
+        self.delete()

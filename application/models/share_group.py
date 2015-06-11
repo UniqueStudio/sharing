@@ -3,9 +3,6 @@ __author__ = 'bing'
 
 from mongoengine import Document
 from mongoengine.fields import *
-import md5
-from mongoengine import connect
-from mongoengine.queryset import CASCADE
 
 import datetime
 
@@ -22,6 +19,8 @@ class ShareGroup(Document):
 
     shares = ListField(ReferenceField('Share'))
     users = ListField(ReferenceField('User'), default=list)
+
+    apply_users = ListField(ReferenceField('User'), default=list)
 
     def __str__(self):
         return '<Group: \nname:%s, \ncreate_user:%s>' \
@@ -64,3 +63,34 @@ class ShareGroup(Document):
     def is_create_user(self, user):
         return self.create_user == user
 
+    def change_admin(self, user):
+        self.create_user = user
+        self.save()
+
+    def add_apply_user(self, user):
+        if not user.is_in_the_group(group=self):
+            if user in self.apply_users:
+                raise ShareGroup.GroupException('已申请')
+            self.apply_users.append(user)
+            self.save()
+        else:
+            raise ShareGroup.GroupException('成员已在组中')
+
+    def accept_apply(self, user):
+        if user in self.apply_users:
+            self.create_user.admin_allow_user_entry(user=user, group=self)
+            self.apply_users.remove(user)
+            self.save()
+        else:
+            raise ShareGroup.GroupException('该用户没有申请')
+
+    def reject_apply(self, user):
+        if user in self.apply_users:
+            self.apply_users.remove(user)
+            self.save()
+        else:
+            raise ShareGroup.GroupException('该用户没有申请')
+
+
+    class GroupException(BaseException):
+        pass
