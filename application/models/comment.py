@@ -3,13 +3,8 @@ __author__ = 'bing'
 
 from mongoengine import Document
 from mongoengine.fields import *
-import md5
-from mongoengine import connect
-from mongoengine.queryset import CASCADE
 
 import datetime
-
-from application.exception import BaseException
 
 
 class Comment(Document):

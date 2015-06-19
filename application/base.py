@@ -2,12 +2,12 @@
 __author__ = 'bing'
 
 import tornado.web
-import application.util.session
+import application.utils.session
 import json
 
 class BaseHandler(tornado.web.RequestHandler):
     session = None
-    mrg = application.util.session.MemcacheSessionManager()
+    mrg = application.utils.session.MemcacheSessionManager()
 
     def get_body_argument(self, *args, **kw):
         # handle MissingArgumentError

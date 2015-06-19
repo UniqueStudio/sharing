@@ -7,8 +7,9 @@ from application.user import Login, Register, ModifyMyInformation, Homepage, Upl
     ApplyGroup
 from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUser, \
     ChangeAdmin, ApplyUser, AcceptApply, RejectApply
-from application.share import CreateShare, DeleteShare
+from application.share import GetShare, CreateShare, DeleteShare
 from application.notify import NotifyInfo
+from application.comment import CreateComment, DeleteComment
 from application.base import BaseHandler
 
 class Application(tornado.web.Application):
@@ -27,6 +28,7 @@ class Application(tornado.web.Application):
 
             url(r'/user/group/apply', ApplyGroup),
 
+            url(r'/share/get', GetShare),
             url(r'/share/create', CreateShare),
             url(r'/share/delete', DeleteShare),
 
@@ -35,6 +37,9 @@ class Application(tornado.web.Application):
             url(r'/user/cancel_follow', CancelFollow),
             url(r'/user/cancel_black', CancelBlack),
             url(r'/user/notify', NotifyInfo),
+            url(r'/comment/create', CreateComment),
+            url(r'/comment/delete', DeleteComment),
+
 
             url(r'/group/create', CreateGroup),
             url(r'/group/info', GroupInfo),

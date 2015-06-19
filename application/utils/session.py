@@ -3,7 +3,6 @@ __author__ = 'bing'
 import os
 import time
 from hashlib import sha1
-import pickle
 
 class SessionManageBase(object):
     """

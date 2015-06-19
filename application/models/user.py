@@ -4,8 +4,6 @@ __author__ = 'bing'
 from mongoengine import Document
 from mongoengine.fields import *
 import md5
-from mongoengine import connect
-from mongoengine.queryset import CASCADE
 
 import datetime
 
@@ -38,7 +36,6 @@ class User(Document):
     invitee = ReferenceField("User")
 
     manager_groups = ListField(ReferenceField('ShareGroup'), default=list)
-
 
     notify_content = ListField(ReferenceField('Notify'), default=list)
 

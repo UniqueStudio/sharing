@@ -9,11 +9,25 @@ from application.exception import OperateException
 from application.models import Share, User, ShareGroup, InboxShare
 
 
-class CreateShare(BaseHandler):
+class GetShare(BaseHandler):
 
+    @tornado.web.asynchronous
     @tornado.web.authenticated
     def get(self):
-        self.write('share content')
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.get_share)
+
+    def get_share(self, response):
+        user = User.objects(id=self.session['_id']).first()
+        self.write(str(json.dumps({
+            'self_shares' : map(lambda o: json.loads(o.to_json()), user.self_shares),
+            'self_inbox_shares' : map(lambda o: json.loads(o.to_json()), user.self_inbox_shares),
+            'gratitude_shares' : map(lambda o: json.loads(o.to_json()), user.gratitude_shares)
+        }, indent=4)))
+        self.finish()
+
+
+class CreateShare(BaseHandler):
 
     @tornado.web.asynchronous
     @tornado.web.authenticated
@@ -74,3 +88,5 @@ class DeleteShare(BaseHandler):
                 msg = 'ok, share deleted'
         self.write(msg)
         self.finish()
+
+
