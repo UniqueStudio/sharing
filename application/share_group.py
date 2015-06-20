@@ -8,8 +8,32 @@ import json
 
 
 class CreateGroup(BaseHandler):
+
     @tornado.web.asynchronous
+    @tornado.web.authenticated
     def post(self):
+        """
+        @api {post} /group 新建一个share组
+        @apiVersion 0.1.0
+        @apiName CreateGroup
+        @apiGroup ShareGroup
+        @apiPermission login
+
+        @apiDescription 首先检查是否有相同名字的组，如果没有，则直接创建该组，
+        执行此操作的人自动成为管理员。否则报错。
+
+        @apiParam {String} name     the name of group to be created.
+
+        @apiUse MessageSuccess
+
+        @apiError GroupExist The group exists.
+        @apiErrorExample Response:
+            HTTP/1.1 200 OK
+            {
+              "message": "failure",
+              "reason": "该组已存在"
+            }
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.create_group)
 
@@ -17,13 +41,9 @@ class CreateGroup(BaseHandler):
         name = self.get_body_argument('name')
         self.session = self.get_session()
         user_id = self.session['_id']
-        if user_id:
-            create_user = User.objects(id=user_id).first()
-            message = self.local_create_group(group_name=name, create_user=create_user)
-            self.write(message)
-        else:
-            self.write(json.dumps({'message': 'failure',
-                                   'reason': 'user is not login'}))
+        create_user = User.objects(id=user_id).first()
+        message = self.local_create_group(group_name=name, create_user=create_user)
+        self.write(message)
         self.finish()
 
     def local_create_group(self, create_user, group_name):
@@ -36,36 +56,130 @@ class CreateGroup(BaseHandler):
             return json.dumps({'message': 'success'})
         else:
             return json.dumps({'message': 'failure',
-                               'reason': 'the group name is existent'})
+                               'reason': u'该组已存在'})
+
+    @tornado.web.asynchronous
+    def get(self):
+        """
+        @api {get} /group 搜索share组
+        @apiVersion 0.1.0
+        @apiName GetGroup
+        @apiGroup ShareGroup
+        @apiPermission login
+
+        @apiDescription 根据id或者name来搜索group信息,两个之间必须提供一个条件.
+
+        @apiParam {String} [name]     the name of group.
+        @apiParam {String} [id]       the id of group.
+
+        @apiSuccess {String} group_name The name of group.
+        @apiSuccess {String} group_id The id of group.
+        @apiSuccess {String} create_time The time of group created.
+
+        @apiUse GroupNotExistError
+        """
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.query_group)
+
+    def query_group(self, response):
+        group_id = self.get_argument('group_id')
+        if not group_id:
+            group_name = self.get_argument('group_name')
+            group = ShareGroup.objects(name=group_name).first()
+        else:
+            group = ShareGroup.objects(id=group_id).first()
+        if group:
+            result = dict()
+            result['group_name'] = group.name
+            result['group_id'] = str(group.id)
+            result['create_time'] = str(group.create_time)
+            self.write(json.dumps(result))
+        else:
+            self.write(json.dumps({'message': 'failure',
+                                   'reason': u'该组不存在'}))
+        self.finish()
 
 
 class GroupInfo(BaseHandler):
+
     @tornado.web.asynchronous
+    @tornado.web.authenticated
     def get(self):
+        """
+        @api {get} /group/info 查询share组信息，包括成员
+        @apiVersion 0.1.0
+        @apiName GetGroupInfo
+        @apiGroup ShareGroup
+        @apiPermission member
+
+        @apiDescription 根据id或者name来搜索group信息,两个之间必须提供一个条件.
+
+        @apiParam {String} [name]     the name of group.
+        @apiParam {String} [id]       the id of group.
+
+        @apiSuccess {String} group_name The name of group.
+        @apiSuccess {String} group_id The id of group.
+        @apiSuccess {String} create_time The time of group created.
+        @apiSuccess {Object} admin Admin of the group.
+        @apiSuccess {String} admin.name The name of admin.
+        @apiSuccess {String} admin.id The id of admin.
+        @apiSuccess {Object[]} users Users in the group.
+        @apiSuccess {String} users.name The name of users.
+        @apiSuccess {String} users.id The id of users.
+
+        @apiUse GroupNotExistError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.show_info)
 
     def show_info(self, response):
+        self.session = self.get_session()
         group_id = self.get_argument('group_id')
-        if group_id:
+        if not group_id:
+            group_name = self.get_argument('group_name')
+            group = ShareGroup.objects(name=group_name).first()
+        else:
             group = ShareGroup.objects(id=group_id).first()
-            if group:
-                result = dict()
-                result['group_name'] = group.name
-                result['create_user'] = dict()
-                result['create_user']['name'] = group.create_user.nickname
-                result['create_user']['id'] = str(group.create_user.id)
-                result['create_user']['email'] = group.create_user.email
-                result['create_time'] = str(group.create_time)
-                self.write(json.dumps(result))
-            else:
-                self.write(json.dumps({'message': 'failure'}))
+        user = User.objects(id=self.session['_id']).first()
+        if group and user and user.is_in_the_group(group=group):
+            result = dict()
+            result['group_name'] = group.name
+            result['group_id'] = str(group.id)
+            result['admin'] = dict()
+            result['admin']['name'] = group.create_user.nickname
+            result['admin']['id'] = str(group.create_user.id)
+            result['create_time'] = str(group.create_time)
+            result['users'] = [{'name': user.nickname, 'id': str(user.id)} for user in group.users]
+            self.write(json.dumps(result))
+        else:
+            self.write(json.dumps({'message': 'failure',
+                                   'reason': u'该组不存在'}))
         self.finish()
 
 
 class GroupShare(BaseHandler):
+
     @tornado.web.asynchronous
+    @tornado.web.authenticated
     def get(self):
+        """
+        @api {get} /group/shares 获取组内的share.
+        @apiVersion 0.1.0
+        @apiName GetGroupShare
+        @apiGroup ShareGroup
+        @apiPermission member
+
+        @apiDescription 根据group_id获取组内share.
+
+        @apiParam {String} id The id of group.
+
+        @apiSuccess {Object[]} shares Shares in the group.
+        @apiSuccess {String} shares.title The title of shares.
+        @apiSuccess {String} shares.id The id of shares.
+
+        @apiUse GroupNotExistError
+        @apiUse NotLoginError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.get_shares)
 
@@ -81,7 +195,11 @@ class GroupShare(BaseHandler):
             if group:
                 if user and user.is_in_the_group(group=group):
                     shares = group.shares
-                    result = [{share.title: str(share.id)} for share in shares]
+                    result = [
+                        {
+                            'title': share.title,
+                            'id': str(share.id)
+                        } for share in shares]
                     self.write(json.dumps(result))
                 else:
                     self.write(json.dumps({'message': 'failure',
@@ -93,8 +211,28 @@ class GroupShare(BaseHandler):
 
 
 class GroupUser(BaseHandler):
+
     @tornado.web.asynchronous
+    @tornado.web.authenticated
     def get(self):
+        """
+        @api {get} /group/users 获取组内的user信息.
+        @apiVersion 0.1.0
+        @apiName GetGroupUser
+        @apiGroup ShareGroup
+        @apiPermission member
+
+        @apiDescription 根据group_id获取组内user.
+
+        @apiParam {String} id The id of group.
+
+        @apiSuccess {Object[]} users Users in the group.
+        @apiSuccess {String} users.name The name of users.
+        @apiSuccess {String} users.id The id of users.
+
+        @apiUse GroupNotExistError
+        @apiUse NotLoginError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.get_user)
 
@@ -110,7 +248,11 @@ class GroupUser(BaseHandler):
             if group:
                 if user and user.is_in_the_group(group=group):
                     users = group.users
-                    result = [{user.nickname: str(user.id)} for user in users]
+                    result = [
+                        {
+                            'name': user.nickname,
+                            'id': str(user.id)
+                        } for user in users]
                     self.write(json.dumps(result))
                 else:
                     self.write(json.dumps({'message': 'failure',
@@ -122,7 +264,9 @@ class GroupUser(BaseHandler):
 
 
 class ChangeAdmin(BaseHandler):
+
     @tornado.web.asynchronous
+    @tornado.web.authenticated
     def post(self):
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.change_admin)
@@ -151,7 +295,9 @@ class ChangeAdmin(BaseHandler):
 
 
 class ApplyUser(BaseHandler):
+
     @tornado.web.asynchronous
+    @tornado.web.authenticated
     def get(self):
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.show_apply_user)
@@ -174,6 +320,7 @@ class ApplyUser(BaseHandler):
 
 class AcceptApply(BaseHandler):
     @tornado.web.asynchronous
+    @tornado.web.authenticated
     def post(self):
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.accept_apply)
@@ -202,6 +349,7 @@ class AcceptApply(BaseHandler):
 
 class RejectApply(BaseHandler):
     @tornado.web.asynchronous
+    @tornado.web.authenticated
     def post(self):
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.reject_apply)

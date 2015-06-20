@@ -19,6 +19,7 @@ class ShareGroup(Document):
 
     shares = ListField(ReferenceField('Share'))
     users = ListField(ReferenceField('User'), default=list)
+    # advance_users = ListField(ReferenceField('User'), default=list)
 
     apply_users = ListField(ReferenceField('User'), default=list)
 
@@ -29,7 +30,7 @@ class ShareGroup(Document):
     @classmethod
     def is_exist(cls, name):
         groups = cls.objects(name=name).first()
-        return groups != None
+        return groups is not None
 
     def is_admin(self, user):
         return user == self.create_user

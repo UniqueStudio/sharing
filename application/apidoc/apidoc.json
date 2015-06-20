@@ -1,0 +1,15 @@
+{
+  "name": "new share api document",
+  "version": "0.1.0",
+  "description": "new share product started in 2015",
+  "title": "share api document",
+  "url": "http://127.0.0.1:5000",
+  "header": {
+    "title": "Important",
+    "filename": "header.md"
+  },
+  "footer": {
+    "title": "At last",
+    "filename": "footer.md"
+  }
+}

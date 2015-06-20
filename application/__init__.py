@@ -41,7 +41,7 @@ class Application(tornado.web.Application):
             url(r'/comment/delete', DeleteComment),
 
 
-            url(r'/group/create', CreateGroup),
+            url(r'/group', CreateGroup),
             url(r'/group/info', GroupInfo),
             url(r'/group/shares', GroupShare),
             url(r'/group/users', GroupUser),

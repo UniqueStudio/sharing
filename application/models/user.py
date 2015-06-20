@@ -53,7 +53,7 @@ class User(Document):
         return self.password
 
     def check_password(self, password):
-        return self.set_password(password) == self.password
+        return md5.new(password).hexdigest() == self.password
 
     def __str__(self):
         return '<User: \nnickname:%s, \nemail:%s>' % (self.nickname, self.email)

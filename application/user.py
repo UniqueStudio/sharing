@@ -4,6 +4,7 @@ import tornado.web
 import tornado.httpclient
 from application.base import BaseHandler
 from application.models import User, Share, ShareGroup, Comment, Invite
+from application.exception import BaseException
 
 import json
 import os
@@ -11,15 +12,28 @@ import time
 import hashlib
 
 class Login(BaseHandler):
-    def get(self):
-        self.xsrf_token
-        self.write('未登陆')
 
     @tornado.web.asynchronous
     def post(self):
+        """
+        @api {post} /login Login
+        @apiVersion 0.1.0
+        @apiName Login
+        @apiGroup User
+
+        @apiDescription 使用邮箱密码登录.
+
+        @apiParam {String} email Email as account.
+        @apiParam {String} password Password.
+
+        @apiUse MessageSuccess
+
+        @apiUse OtherError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.login)
 
+    @BaseHandler.sandbox
     def login(self, response):
         email = self.get_body_argument('email')
         password = self.get_body_argument('password')
@@ -29,17 +43,36 @@ class Login(BaseHandler):
         if not user or not user.check_password(password):
             raise User.UserException('密码不正确')
         else:
+            print password
+            print user.check_password(password)
+            print 'haha'
             self.recode_status_login(user)
             self.write(json.dumps({'message': 'success'}))
-        self.finish()
 
 class Register(BaseHandler):
+
     @tornado.web.asynchronous
     def post(self, invite_id=None):
+        """
+        @api {post} /register Register
+        @apiVersion 0.1.0
+        @apiName Register
+        @apiGroup User
+
+        @apiDescription 使用邮箱密码注册share账户，测试用.
+
+        @apiParam {String} email Email as account.
+        @apiParam {String} password Password.
+
+        @apiUse MessageSuccess
+
+        @apiUse OtherError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         self.invite_id = invite_id
         client.fetch(request=self.request, callback=self.register)
 
+    @BaseHandler.sandbox
     def register(self, response):
         email = self.get_body_argument('email')
         password = self.get_body_argument('password')
@@ -61,7 +94,6 @@ class Register(BaseHandler):
             invite.invite_delete()
         self.recode_status_login(user)
         self.write(json.dumps({'message': 'success'}))
-        self.finish()
 
 class Homepage(BaseHandler):
     @tornado.web.asynchronous
@@ -70,6 +102,7 @@ class Homepage(BaseHandler):
         client.fetch(request=self.request, callback=self.get_homepage)
 
     @tornado.web.authenticated
+    @BaseHandler.sandbox
     def get_homepage(self, response):
         self.session = self.get_session()
         id = self.session['_id']
@@ -93,7 +126,6 @@ class Homepage(BaseHandler):
             self.write(json.dumps(result))
         else:
             raise User.UserException('该用户未登陆')
-        self.finish()
 
 class ModifyMyInformation(BaseHandler):
     @tornado.web.asynchronous
@@ -102,6 +134,7 @@ class ModifyMyInformation(BaseHandler):
         client.fetch(request=self.request, callback=self.modify_information)
 
     @tornado.web.authenticated
+    @BaseHandler.sandbox
     def modify_information(self, response):
         phone_number = self.get_body_argument('phone_number', default=None)
         is_man = self.get_body_argument('is_man', default=True)
@@ -116,7 +149,6 @@ class ModifyMyInformation(BaseHandler):
         else:
             raise User.UserException('该用户未登陆')
         self.write(json.dumps({'message': 'success'}))
-        self.finish()
 
 
 class UploadImage(BaseHandler):
@@ -311,6 +343,7 @@ class CancelBlack(BaseHandler):
             self.write(json.dumps({'message', 'failure'}))
         self.finish()
 
+
 class ApplyGroup(BaseHandler):
 
     @tornado.web.asynchronous
@@ -319,11 +352,11 @@ class ApplyGroup(BaseHandler):
         client.fetch(request=self.request, callback=self.apply_group)
 
     def apply_group(self, response):
-        group_id = self.get_body_argument('group_id')
+        group_name = self.get_body_argument('name')
         self.session = self.get_session()
         user_id = self.session['_id']
         user = User.objects(id=user_id).first()
-        group = ShareGroup.objects(id=group_id).first()
+        group = ShareGroup.objects(name=group_name).first()
         try:
             group.add_apply_user(user)
             self.write(json.dumps({'message': 'success'}))

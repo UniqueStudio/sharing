@@ -47,7 +47,7 @@ class CreateShare(BaseHandler):
                 user.add_comment_to_share(share, comment_content)
             for name in self.get_body_arguments('groups'):
                 group = ShareGroup.objects(name=name).first()
-                # if grouop not exist, skip it.
+                # if group not exist, skip it.
                 if group is None:
                     continue
                 user.share_to_group(share, group)
@@ -88,5 +88,3 @@ class DeleteShare(BaseHandler):
                 msg = 'ok, share deleted'
         self.write(msg)
         self.finish()
-
-

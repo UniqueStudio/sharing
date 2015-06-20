@@ -3,9 +3,20 @@ __author__ = 'bing'
 
 import tornado.web
 import application.utils.session
+from application.exception import BaseException
 import json
 
 class BaseHandler(tornado.web.RequestHandler):
+    """
+    @apiDefine MessageSuccess
+    @apiSuccess {String} message     message = success.
+
+    @apiSuccessExample Success-Response:
+       HTTP/1.1 200 OK
+       {
+         "message": "success"
+       }
+    """
     session = None
     mrg = application.utils.session.MemcacheSessionManager()
 
@@ -16,7 +27,6 @@ class BaseHandler(tornado.web.RequestHandler):
         except tornado.web.MissingArgumentError as e:
             self.write(json.dumps({'message': 'missing ' + e.arg_name}))
             self.finish()
-        
 
     def get_current_user(self):
         self.get_session()
@@ -48,3 +58,24 @@ class BaseHandler(tornado.web.RequestHandler):
         self.session['_id'] = user.id
         self.session['email'] = user.email
         self.session.save()
+
+    def write_other_error(self, e):
+        assert isinstance(e, BaseException)
+        self.write(json.dumps({
+            'message': 'failure',
+            'reason': e.description
+        }))
+
+    @staticmethod
+    def sandbox(func):
+        def sandbox_wrapper(self, *args, **kw):
+            try:
+                func(self, *args, **kw)
+            except BaseException as e:
+                self.write(json.dumps({
+                    'message': 'failure',
+                    'reason': e.description
+                }))
+            finally:
+                self.finish()
+        return sandbox_wrapper
