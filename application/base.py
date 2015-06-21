@@ -26,7 +26,6 @@ class BaseHandler(tornado.web.RequestHandler):
             return super(BaseHandler, self).get_body_argument(*args, **kw)
         except tornado.web.MissingArgumentError as e:
             self.write(json.dumps({'message': 'missing ' + e.arg_name}))
-            self.finish()
 
     def get_current_user(self):
         self.get_session()
@@ -58,13 +57,6 @@ class BaseHandler(tornado.web.RequestHandler):
         self.session['_id'] = user.id
         self.session['email'] = user.email
         self.session.save()
-
-    def write_other_error(self, e):
-        assert isinstance(e, BaseException)
-        self.write(json.dumps({
-            'message': 'failure',
-            'reason': e.description
-        }))
 
     @staticmethod
     def sandbox(func):

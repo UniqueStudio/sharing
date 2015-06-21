@@ -258,6 +258,7 @@ class User(Document):
         self.brief = brief
         self.education_information = education_information
         self.phone_number = phone_number
+        print self.phone_number
         self.save()
 
     def set_avatar(self, avatar_path):

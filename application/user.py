@@ -4,7 +4,6 @@ import tornado.web
 import tornado.httpclient
 from application.base import BaseHandler
 from application.models import User, Share, ShareGroup, Comment, Invite
-from application.exception import BaseException
 
 import json
 import os
@@ -43,9 +42,6 @@ class Login(BaseHandler):
         if not user or not user.check_password(password):
             raise User.UserException('密码不正确')
         else:
-            print password
-            print user.check_password(password)
-            print 'haha'
             self.recode_status_login(user)
             self.write(json.dumps({'message': 'success'}))
 
@@ -98,6 +94,42 @@ class Register(BaseHandler):
 class Homepage(BaseHandler):
     @tornado.web.asynchronous
     def get(self):
+        """
+        @api {post} /homepage[?uid=:uid] Homepage
+        @apiVersion 0.1.0
+        @apiName Homepage
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 查看个人主页内容，包括分享的share.
+        如果加上可选的uid，则可以看到这个uid对应用户的信息，
+        其同组的share可见，否则不可见.
+        带optional的返回字段仅自己可见.
+
+        @apiParam {String} [uid] User id.
+
+        @apiSuccess {String} nickname Nickname of user.
+        @apiSuccess {String} id Id of user.
+        @apiSuccess {String} avatar Avatar of user.
+        @apiSuccess {Boolean} is_man Gender of user.
+        @apiSuccess {String} brief Self description of user.
+        @apiSuccess {String} register_time Register time of user.
+        @apiSuccess {Object[]} groups Groups of user.
+        @apiSuccess {String} groups.id Id of groups.
+        @apiSuccess {String} groups.name Name of groups.
+        @apiSuccess {Object[]} shares Shares of user.
+        @apiSuccess {String} shares.id Id of shares.
+        @apiSuccess {String} shares.title Title of shares.
+        @apiSuccess {String} shares.group Group of shares.
+        @apiSuccess {String} shares.share_time Time shared.
+        @apiSuccess {String} [gratitude_shares_sum] The sum of gratitude received.
+        @apiSuccess {String} [comment_sum] The sum of comments made before.
+        @apiSuccess {String} [black_users_sum] The sum of user in blacklist.
+        @apiSuccess {String} [followers_sum] The sum of followers.
+        @apiSuccess {String} [following_sum] The sum of following.
+
+        @apiUse NotLoginError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.get_homepage)
 
@@ -105,31 +137,118 @@ class Homepage(BaseHandler):
     @BaseHandler.sandbox
     def get_homepage(self, response):
         self.session = self.get_session()
-        id = self.session['_id']
-        if id:
-            user = User.objects(id=id).first()
-            result = {}
-            result['nickname'] = user.nickname
-            result['email'] = user.email
-            result['id'] = str(user.id)
-            result['avatar'] = user.avatar
-            result['is_man'] = user.is_man
-            result['brief'] = user.brief
-            result['phone_number'] = user.phone_number
-            result['self_shares'] = [str(share.id) for share in user.self_shares]
-            result['gratitude_shares'] = [str(share.id) for share in user.gratitude_shares]
-            result['comments'] = [str(comment.id) for comment in user.comments]
-            result['black_users'] = [str(tmp_user.id) for tmp_user in user.black_users]
-            result['attention_users'] = [str(tmp_user.id) for tmp_user in user.attention_users]
-            result['groups'] = [str(group.id) for group in user.groups]
-            result['manager_groups'] = [str(group.id) for group in user.manager_groups]
-            self.write(json.dumps(result))
+        uid_arugument = self.get_body_argument('uid', default=None)
+        uid = self.session['_id']
+        query_uid = uid if uid_arugument is None else uid_arugument
+        user = User.objects(id=query_uid).first()
+        result = {}
+        result['nickname'] = user.nickname
+        result['id'] = str(user.id)
+        result['avatar'] = user.avatar
+        result['is_man'] = user.is_man
+        result['brief'] = user.brief
+        result['register_time'] = str(user.register_time)
+        result['groups'] = [
+            {
+                'id': str(group.id),
+                'name': group.name
+            }
+            for group in user.groups]
+        if uid_arugument is None:
+            result['gratitude_shares_sum'] = len(user.gratitude_shares)
+            result['comments_sum'] = len(user.comments)
+            result['black_users_sum'] = len(user.black_users)
+            result['followers_sum'] = len(user.followers)
+            result['following_sum'] = len(user.following)
+            result['shares'] = [
+                {
+                    'id': str(share.id),
+                    'title': share.title,
+                    'group': share.own_group.name,
+                    'share_time': str(share.share_time)
+                }
+                for share in user.self_shares]
+            result['manager_groups'] = [
+                {
+                    'id': str(group.id),
+                    'name': group.name
+                }for group in user.manager_groups]
         else:
-            raise User.UserException('该用户未登陆')
+            mine = User.objects(id=uid).first()
+            result['shares'] = [
+                {
+                    'id': str(share.id),
+                    'title': share.title,
+                    'group': share.own_group.name,
+                    'share_time': str(share.share_time)
+                }
+                for share in user.self_shares if share.own_group in mine.groups]
+        self.write(json.dumps(result))
 
-class ModifyMyInformation(BaseHandler):
+
+class MyInformation(BaseHandler):
+
+    @tornado.web.asynchronous
+    def get(self):
+        """
+        @api {get} /setting Personal setting
+        @apiVersion 0.1.0
+        @apiName GetMyInformation
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 查询个人信息，仅对自己有效.
+
+        @apiSuccess {String} nickname Nickname of user.
+        @apiSuccess {String} email Email of user.
+        @apiSuccess {String} id Id of user.
+        @apiSuccess {String} avatar Avatar of user.
+        @apiSuccess {Boolean} is_man Gender of user.
+        @apiSuccess {String} brief Self description of user.
+        @apiSuccess {String} education_information Education information of user.
+        @apiSuccess {String} [phone_number] Phone number of user.
+
+        @apiUse NotLoginError
+        """
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.get_information)
+
+    @tornado.web.authenticated
+    @BaseHandler.sandbox
+    def get_information(self, response):
+        self.session = self.get_session()
+        user = User.objects(id=self.session['_id']).first()
+        print type(user.education_information)
+        self.write(json.dumps({
+            'nickname': user.nickname,
+            'email': user.email,
+            'id': str(user.id),
+            'avatar': user.avatar,
+            'is_man': user.is_man,
+            'brief': user.brief,
+            'education_information': user.education_information,
+            'phone_number': user.phone_number
+        }))
+
     @tornado.web.asynchronous
     def post(self):
+        """
+        @api {post} /setting Update personal info.
+        @apiVersion 0.1.0
+        @apiName PostMyInformation
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 修改个人信息.
+
+        @apiParam {Number} [is_man=0, 1] Gender of user.
+        @apiParam {String} brief Self description of user.
+        @apiParam {String} education_information Education information of user.
+        @apiParam {String} [phone_number] Phone number of user.
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.modify_information)
 
@@ -137,17 +256,15 @@ class ModifyMyInformation(BaseHandler):
     @BaseHandler.sandbox
     def modify_information(self, response):
         phone_number = self.get_body_argument('phone_number', default=None)
-        is_man = self.get_body_argument('is_man', default=True)
+        is_man = self.get_body_argument('is_man', default=1) != '0'
+        print is_man
         education_information = self.get_body_argument('education_information')
         brief = self.get_body_argument('brief')
         id = self.session['_id']
-        if id:
-            user = User.objects(id=id).first()
-            user.modify_information(is_man=is_man, brief=brief,
-                                    education_information=education_information,
-                                    phone_number=phone_number)
-        else:
-            raise User.UserException('该用户未登陆')
+        user = User.objects(id=id).first()
+        user.modify_information(is_man=is_man, brief=brief,
+                                education_information=education_information,
+                                phone_number=phone_number)
         self.write(json.dumps({'message': 'success'}))
 
 
@@ -182,7 +299,6 @@ class UploadImage(BaseHandler):
                 self.write(json.dumps({'message': '无文件'}))
         else:
             self.write(json.dumps({'message': '未登陆'}))
-
 
     def save_file(self, file, save_dir, user):
         file_name = file['filename'] + str(time.time())
@@ -245,6 +361,7 @@ class InviteByEmail(BaseHandler):
                 self.write({'message': 'failure'})
         self.finish()
 
+
 class AcceptInvite(BaseHandler):
 
     def post(self):
@@ -263,7 +380,16 @@ class AcceptInvite(BaseHandler):
         else:
             self.write(json.dumps({'message': '未登陆'}))
 
+
 class Follow(BaseHandler):
+
+    @tornado.web.asynchronous
+    def get(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.get_follow)
+
+    def get_follow(self, response):
+        pass
 
     @tornado.web.asynchronous
     def post(self):
@@ -282,6 +408,7 @@ class Follow(BaseHandler):
         else:
             self.write(json.dumps({'message', 'failure'}))
         self.finish()
+
 
 class Black(BaseHandler):
 
@@ -303,6 +430,7 @@ class Black(BaseHandler):
             self.write(json.dumps({'message', 'failure'}))
         self.finish()
 
+
 class CancelFollow(BaseHandler):
 
     @tornado.web.asynchronous
@@ -322,6 +450,7 @@ class CancelFollow(BaseHandler):
         else:
             self.write(json.dumps({'message', 'failure'}))
         self.finish()
+
 
 class CancelBlack(BaseHandler):
 

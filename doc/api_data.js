@@ -456,6 +456,294 @@ define({ "api": [
     }
   },
   {
+    "type": "get",
+    "url": "/setting",
+    "title": "Personal setting",
+    "version": "0.1.0",
+    "name": "GetMyInformation",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>查询个人信息，仅对自己有效.</p> ",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "nickname",
+            "description": "<p>Nickname of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "avatar",
+            "description": "<p>Avatar of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Boolean</p> ",
+            "optional": false,
+            "field": "is_man",
+            "description": "<p>Gender of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "brief",
+            "description": "<p>Self description of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "education_information",
+            "description": "<p>Education information of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "phone_number",
+            "description": "<p>Phone number of user.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/homepage[?uid=:uid]",
+    "title": "Homepage",
+    "version": "0.1.0",
+    "name": "Homepage",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>查看个人主页内容，包括分享的share. 如果加上可选的uid，则可以看到这个uid对应用户的信息， 其同组的share可见，否则不可见. 带optional的返回字段仅自己可见.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "uid",
+            "description": "<p>User id.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "nickname",
+            "description": "<p>Nickname of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "avatar",
+            "description": "<p>Avatar of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Boolean</p> ",
+            "optional": false,
+            "field": "is_man",
+            "description": "<p>Gender of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "brief",
+            "description": "<p>Self description of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "register_time",
+            "description": "<p>Register time of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": "<p>Groups of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "groups.id",
+            "description": "<p>Id of groups.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "groups.name",
+            "description": "<p>Name of groups.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "shares",
+            "description": "<p>Shares of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.id",
+            "description": "<p>Id of shares.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.title",
+            "description": "<p>Title of shares.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.group",
+            "description": "<p>Group of shares.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.share_time",
+            "description": "<p>Time shared.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "gratitude_shares_sum",
+            "description": "<p>The sum of gratitude received.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comment_sum",
+            "description": "<p>The sum of comments made before.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "black_users_sum",
+            "description": "<p>The sum of user in blacklist.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "followers_sum",
+            "description": "<p>The sum of followers.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "following_sum",
+            "description": "<p>The sum of following.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "post",
     "url": "/login",
     "title": "Login",
@@ -517,6 +805,89 @@ define({ "api": [
         ]
       },
       "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/setting",
+    "title": "Update personal info.",
+    "version": "0.1.0",
+    "name": "PostMyInformation",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>修改个人信息.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>Number</p> ",
+            "optional": true,
+            "field": "is_man",
+            "defaultValue": "0,",
+            "description": "<p>1] Gender of user.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "brief",
+            "description": "<p>Self description of user.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "education_information",
+            "description": "<p>Education information of user.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "phone_number",
+            "description": "<p>Phone number of user.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
         {
           "title": "Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",

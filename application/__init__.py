@@ -2,7 +2,7 @@
 
 import tornado.web
 from tornado.web import url
-from application.user import Login, Register, ModifyMyInformation, Homepage, UploadImage, \
+from application.user import Login, Register, MyInformation, Homepage, UploadImage, \
     InviteExist, InviteByEmail, Follow, Black, CancelBlack, CancelFollow, AcceptInvite, \
     ApplyGroup
 from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUser, \
@@ -19,7 +19,7 @@ class Application(tornado.web.Application):
             url(r'/login', Login),
             url(r'/register', Register),
             url(r'/register/(.*)', Register),
-            url(r'/modify_info', ModifyMyInformation),
+            url(r'/setting', MyInformation),
             url(r'/homepage', Homepage),
             url(r'/upload_image', UploadImage),
             url(r'/user/invite/exist', InviteExist),
