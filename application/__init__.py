@@ -3,7 +3,7 @@
 import tornado.web
 from tornado.web import url
 from application.user import Login, Register, MyInformation, Homepage, UploadImage, \
-    InviteExist, InviteByEmail, Follow, Black, CancelBlack, CancelFollow, AcceptInvite, \
+    InviteByEmail, Follow, Black, CancelBlack, CancelFollow, AcceptInvite, \
     ApplyGroup
 from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUser, \
     ChangeAdmin, ApplyUser, AcceptApply, RejectApply
@@ -22,9 +22,9 @@ class Application(tornado.web.Application):
             url(r'/setting', MyInformation),
             url(r'/homepage', Homepage),
             url(r'/upload_image', UploadImage),
-            url(r'/user/invite/exist', InviteExist),
-            url(r'/user/invite/email', InviteByEmail),
-            url(r'/user/invite/accept', AcceptInvite),
+            # url(r'/user/invite/exist', InviteExist),
+            url(r'/user/invite', InviteByEmail),
+            url(r'/user/accept/(.*)', AcceptInvite),
 
             url(r'/user/group/apply', ApplyGroup),
 

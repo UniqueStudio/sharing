@@ -2,8 +2,10 @@
 
 import tornado.web
 import tornado.httpclient
+from mongoengine import Q
 from application.base import BaseHandler
 from application.models import User, Share, ShareGroup, Comment, Invite
+from application.exception import BaseException
 
 import json
 import os
@@ -50,14 +52,15 @@ class Register(BaseHandler):
     @tornado.web.asynchronous
     def post(self, invite_id=None):
         """
-        @api {post} /register Register
+        @api {post} /register 注册(测试用)
         @apiVersion 0.1.0
-        @apiName Register
+        @apiName RegisterTest
         @apiGroup User
 
-        @apiDescription 使用邮箱密码注册share账户，测试用.
+        @apiDescription 直接使用邮箱密码注册share账户.
 
         @apiParam {String} email Email as account.
+        @apiParam {String} nickname Nickname as account.
         @apiParam {String} password Password.
 
         @apiUse MessageSuccess
@@ -70,6 +73,24 @@ class Register(BaseHandler):
 
     @BaseHandler.sandbox
     def register(self, response):
+        """
+        @api {post} /register/:key 注册并加入组
+        @apiVersion 0.1.0
+        @apiName Register
+        @apiGroup User
+
+        @apiDescription 通过key来注册share，key在邀请的链接中.
+        注册完成后用户将自动成为待进组的状态，接下来只需该组管理员的审核.
+
+        @apiParam {String} key Key of invite.
+        @apiParam {String} email Email as account.
+        @apiParam {String} nickname Nickname as account.
+        @apiParam {String} password Password.
+
+        @apiUse MessageSuccess
+
+        @apiUse OtherError
+        """
         email = self.get_body_argument('email')
         password = self.get_body_argument('password')
         nickname = self.get_body_argument('nickname')
@@ -78,14 +99,14 @@ class Register(BaseHandler):
         invite = None
         if self.invite_id:
             invite = Invite.objects(id=self.invite_id).first()
-            email = invite.invite_email
+            email = invite.invitee_email
         user = User(email=email, nickname=nickname)
         user.set_password(password=password)
         user.save()
         if invite:
             group = invite.invite_group
-            group.create_user.admin_allow_user_entry(user, group)
-            user.invitee = invite.inviter
+            group.add_apply_user(user)
+            user.inviter = invite.inviter
             user.save()
             invite.invite_delete()
         self.recode_status_login(user)
@@ -241,7 +262,7 @@ class MyInformation(BaseHandler):
 
         @apiDescription 修改个人信息.
 
-        @apiParam {Number} [is_man=0, 1] Gender of user.
+        @apiParam {Number} [is_man=0,1] Gender of user.
         @apiParam {String} brief Self description of user.
         @apiParam {String} education_information Education information of user.
         @apiParam {String} [phone_number] Phone number of user.
@@ -257,7 +278,6 @@ class MyInformation(BaseHandler):
     def modify_information(self, response):
         phone_number = self.get_body_argument('phone_number', default=None)
         is_man = self.get_body_argument('is_man', default=1) != '0'
-        print is_man
         education_information = self.get_body_argument('education_information')
         brief = self.get_body_argument('brief')
         id = self.session['_id']
@@ -272,7 +292,7 @@ class UploadImage(BaseHandler):
 
     def get(self):
         self.write(
-            '''
+            """
 <html>
   <head><title>Upload File</title></head>
   <body>
@@ -282,7 +302,7 @@ class UploadImage(BaseHandler):
     </form>
   </body>
 </html>
-            '''
+            """
         )
 
     def post(self):
@@ -310,75 +330,93 @@ class UploadImage(BaseHandler):
         user.set_avatar(save_file_name)
         self.finish()
 
-class InviteExist(BaseHandler):
-
-    @tornado.web.asynchronous
-    def post(self):
-        client = tornado.httpclient.AsyncHTTPClient()
-        client.fetch(request=self.request, callback=self.invite)
-
-    def invite(self, response):
-        self.session = self.get_session()
-        inviter_id = self.session['_id']
-        invitee_id = self.get_body_argument('invitee_id')
-        invite_group_id = self.get_body_argument('group_id')
-        if inviter_id and invitee_id and invite_group_id:
-
-            inviter = User.objects(id=inviter_id).first()
-            invitee = User.objects(id=invitee_id).first()
-            invite_group = ShareGroup.objects(id=invite_group_id).first()
-
-            invite_entity = Invite(inviter=inviter, invitee=invitee, invite_group=invite_group)
-            try:
-                invite_entity.save()
-                self.write({'message':'success'})
-            except Exception:
-                self.write({'message':'failure'})
-        self.finish()
 
 class InviteByEmail(BaseHandler):
 
     @tornado.web.asynchronous
     def post(self):
+        """
+        @api {post} /user/invite 邀请注册.
+        @apiVersion 0.1.0
+        @apiName InviteByEmail
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 通过邮件的形式邀请注册.
+
+        @apiParam {String} group_id Id of group.
+        @apiParam {String} email Email of user to be invited.
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.invite)
 
+    @tornado.web.authenticated
+    @BaseHandler.sandbox
     def invite(self, response):
         self.session = self.get_session()
         inviter_id = self.session['_id']
         invite_group_id = self.get_body_argument('group_id')
         email = self.get_body_argument("email")
+        _invite = Invite.objects(Q(inviter=inviter_id)
+                                 & Q(invitee_email=email)
+                                 & Q(invite_group=invite_group_id)).first()
+        if _invite is not None:
+            raise BaseException(u'邀请已发出')
         if inviter_id and invite_group_id and email:
             inviter = User.objects(id=inviter_id).first()
             invite_group = ShareGroup.objects(id=invite_group_id).first()
-            invite_entity = Invite(inviter=inviter, invitee_email=email, invite_group=invite_group)
-            try:
-                invite_entity.save()
-                #TODO:send email
-                info = str(invite_entity.id)
-                self.write({'message': 'success'})
-            except Exception as e:
-                self.write({'message': 'failure'})
-        self.finish()
+            if invite_group is None:
+                raise BaseException(u'该组不存在')
+            invite_entity = Invite(inviter=inviter,
+                                   invitee_email=email,
+                                   invite_group=invite_group)
+            invite_entity.save()
+            #TODO:send email
+            info = str(invite_entity.id)
+            print info
+            self.write({'message': 'success'})
 
 
 class AcceptInvite(BaseHandler):
 
-    def post(self):
+    @tornado.web.asynchronous
+    def get(self, invite_id):
+        """
+        @api {get} /user/accept/:key 接受邀请
+        @apiVersion 0.1.0
+        @apiName AcceptInvite
+        @apiGroup User
+
+        @apiDescription 通过key来接受邀请，key默认在邀请链接中.
+        用户应当已是share注册用户，这样才能使用这个接口接受邀请.
+
+        @apiParam {String} key Key of invite.
+
+        @apiUse MessageSuccess
+
+        @apiUse OtherError
+        """
+        self.invite_id = invite_id
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.accept_invite)
+
+    @tornado.web.authenticated
+    @BaseHandler.sandbox
+    def accept_invite(self, response):
         self.session = self.get_session()
-        user_id = self.session['_id']
-        if user_id:
-            invite_id = self.get_body_argument("invite_id")
-            invite = Invite.objects(id=invite_id).first()
-            user = invite.invitee
-            if user.id == user_id:
-                group = invite.invite_group
-                group.create_user.admin_allow_user_entry(user=user, group=group)
-                self.write(json.dumps({'message': 'success'}))
-            else:
-                raise User.UserException(user.nickname + '非邀请用户')
-        else:
-            self.write(json.dumps({'message': '未登陆'}))
+        invite = Invite.objects(id=self.invite_id).first()
+        if not invite:
+            raise BaseException(u'邀请码错误')
+        user = User.objects(id=self.session['_id']).first()
+        group = invite.invite_group
+        group.add_apply_user(user)
+        user.inviter = invite.inviter
+        user.save()
+        invite.invite_delete()
+        self.write(json.dumps({'message': 'success'}))
 
 
 class Follow(BaseHandler):

@@ -33,7 +33,7 @@ class User(Document):
 
     groups = ListField(ReferenceField('ShareGroup'), default=list)
 
-    invitee = ReferenceField("User")
+    inviter = ReferenceField("User")
 
     manager_groups = ListField(ReferenceField('ShareGroup'), default=list)
 

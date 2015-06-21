@@ -457,6 +457,69 @@
   },
   {
     "type": "get",
+    "url": "/user/accept/:key",
+    "title": "接受邀请",
+    "version": "0.1.0",
+    "name": "AcceptInvite",
+    "group": "User",
+    "description": "<p>通过key来接受邀请，key默认在邀请链接中. 用户应当已是share注册用户，这样才能使用这个接口接受邀请.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "key",
+            "description": "<p>Key of invite.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "message",
+            "description": "<p>message = success.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/setting",
     "title": "Personal setting",
     "version": "0.1.0",
@@ -745,6 +808,74 @@
   },
   {
     "type": "post",
+    "url": "/user/invite",
+    "title": "邀请注册.",
+    "version": "0.1.0",
+    "name": "InviteByEmail",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>通过邮件的形式邀请注册.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>Id of group.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email of user to be invited.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
     "url": "/login",
     "title": "Login",
     "version": "0.1.0",
@@ -836,8 +967,8 @@
             "type": "<p>Number</p> ",
             "optional": true,
             "field": "is_man",
-            "defaultValue": "0,",
-            "description": "<p>1] Gender of user.</p> "
+            "defaultValue": "0,1",
+            "description": "<p>Gender of user.</p> "
           },
           {
             "group": "Parameter",
@@ -898,12 +1029,96 @@
   },
   {
     "type": "post",
-    "url": "/register",
-    "title": "Register",
+    "url": "/register/:key",
+    "title": "注册并加入组",
     "version": "0.1.0",
     "name": "Register",
     "group": "User",
-    "description": "<p>使用邮箱密码注册share账户，测试用.</p> ",
+    "description": "<p>通过key来注册share，key在邀请的链接中. 注册完成后用户将自动成为待进组的状态，接下来只需该组管理员的审核.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "key",
+            "description": "<p>Key of invite.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email as account.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "nickname",
+            "description": "<p>Nickname as account.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "message",
+            "description": "<p>message = success.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/register",
+    "title": "注册(测试用)",
+    "version": "0.1.0",
+    "name": "RegisterTest",
+    "group": "User",
+    "description": "<p>直接使用邮箱密码注册share账户.</p> ",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -913,6 +1128,13 @@
             "optional": false,
             "field": "email",
             "description": "<p>Email as account.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "nickname",
+            "description": "<p>Nickname as account.</p> "
           },
           {
             "group": "Parameter",
