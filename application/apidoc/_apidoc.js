@@ -14,6 +14,16 @@
  */
 
 /**
+ * @apiDefine SuccessMsg
+ * @apiVersion 0.1.0
+ * @apiSuccessExample Success-Response
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "success"
+ *     }
+ */
+
+/**
  * @apiDefine GroupNotExistError
  * @apiVersion 0.1.0
  * @apiError GroupNotFound Can not find the group.

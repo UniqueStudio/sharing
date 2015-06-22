@@ -5,7 +5,6 @@ import tornado.web
 import tornado.httpclient
 from mongoengine.errors import ValidationError
 from application.base import BaseHandler
-from application.exception import OperateException
 from application.models import Share, User, ShareGroup, InboxShare
 
 
@@ -57,7 +56,7 @@ class CreateShare(BaseHandler):
                 user.add_inbox_share(share)
             except ValidationError:
                 self.write(json.dumps({'message': 'illegal url'}))
-        self.write('ok')
+        self.write(json.dumps({'message': 'success'}))
         self.finish()
 
 

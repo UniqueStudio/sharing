@@ -34,21 +34,20 @@ class Application(tornado.web.Application):
 
             url(r'/user/follow', Follow),
             url(r'/user/black', Black),
-            url(r'/user/cancel_follow', CancelFollow),
+            url(r'/user/unfollow', CancelFollow),
             url(r'/user/cancel_black', CancelBlack),
             url(r'/user/notify', NotifyInfo),
             url(r'/comment/create', CreateComment),
             url(r'/comment/delete', DeleteComment),
-
 
             url(r'/group', CreateGroup),
             url(r'/group/info', GroupInfo),
             url(r'/group/shares', GroupShare),
             url(r'/group/users', GroupUser),
             url(r'/group/change_admin', ChangeAdmin),
-            url(r'/group/apply/users', ApplyUser),
-            url(r'/group/apply/accept', AcceptApply),
-            url(r'/group/apply/reject', RejectApply),
+            url(r'/group/apply_users', ApplyUser),
+            url(r'/group/accept', AcceptApply),
+            url(r'/group/reject', RejectApply),
         ]
 
         settings = {

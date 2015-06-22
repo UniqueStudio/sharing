@@ -17,7 +17,7 @@ class Login(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /login Login
+        @api {post} /login 登录
         @apiVersion 0.1.0
         @apiName Login
         @apiGroup User
@@ -116,7 +116,7 @@ class Homepage(BaseHandler):
     @tornado.web.asynchronous
     def get(self):
         """
-        @api {post} /homepage[?uid=:uid] Homepage
+        @api {post} /homepage[?uid=:uid] 个人主页
         @apiVersion 0.1.0
         @apiName Homepage
         @apiGroup User
@@ -212,7 +212,7 @@ class MyInformation(BaseHandler):
     @tornado.web.asynchronous
     def get(self):
         """
-        @api {get} /setting Personal setting
+        @api {get} /setting 个人设置
         @apiVersion 0.1.0
         @apiName GetMyInformation
         @apiGroup User
@@ -254,7 +254,7 @@ class MyInformation(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /setting Update personal info.
+        @api {post} /setting 修改个人设置
         @apiVersion 0.1.0
         @apiName PostMyInformation
         @apiGroup User
@@ -426,107 +426,174 @@ class Follow(BaseHandler):
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.get_follow)
 
+    @tornado.web.authenticated
+    @BaseHandler.sandbox
     def get_follow(self, response):
         pass
 
     @tornado.web.asynchronous
     def post(self):
+        """
+        @api {post} /user/follow 关注.
+        @apiVersion 0.1.0
+        @apiName Follow
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 关注用户，具体功能待定.
+
+        @apiParam {String} followed_user_id Id of group.
+
+        @apiUse SuccessMsg
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.follow)
 
+    @tornado.web.authenticated
+    @BaseHandler.sandbox
     def follow(self, response):
         followed_user_id = self.get_body_argument('followed_user_id')
         self.session = self.get_session()
-        user_id = self.session['_id']
-        if user_id:
-            user = User.objects(id=user_id).first()
-            followed_user = User.objects(id=followed_user_id).first()
-            user.follow(followed_user)
-            self.write(json.dumps({'message', 'success'}))
-        else:
-            self.write(json.dumps({'message', 'failure'}))
-        self.finish()
+        user = User.objects(id=self.session['_id']).first()
+        followed_user = User.objects(id=followed_user_id).first()
+        user.follow(followed_user)
+        self.write(json.dumps({'message': 'success'}))
 
 
 class Black(BaseHandler):
 
     @tornado.web.asynchronous
     def post(self):
+        """
+        @api {post} /user/black 拉黑.
+        @apiVersion 0.1.0
+        @apiName Black
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 拉黑用户，不再接收其share.
+
+        @apiParam {String} blacked_user_id Id of group.
+
+        @apiUse SuccessMsg
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.black)
 
+    @tornado.web.authenticated
+    @BaseHandler.sandbox
     def black(self, response):
         blacked_user_id = self.get_body_argument('blacked_user_id')
         self.session = self.get_session()
-        user_id = self.session['_id']
-        if user_id:
-            user = User.objects(id=user_id).first()
-            blacked_user = User.objects(id=blacked_user_id).first()
-            user.black(blacked_user)
-            self.write(json.dumps({'message', 'success'}))
-        else:
-            self.write(json.dumps({'message', 'failure'}))
-        self.finish()
+        user = User.objects(id=self.session['_id']).first()
+        blacked_user = User.objects(id=blacked_user_id).first()
+        user.black(blacked_user)
+        self.write(json.dumps({'message': 'success'}))
 
 
 class CancelFollow(BaseHandler):
 
     @tornado.web.asynchronous
     def post(self):
+        """
+        @api {post} /user/black 取消关注.
+        @apiVersion 0.1.0
+        @apiName CancelFollow
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 取关.
+
+        @apiParam {String} unfollow_user_id Id of group.
+
+        @apiUse SuccessMsg
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.cancel_follow)
 
+    @tornado.web.authenticated
+    @BaseHandler.sandbox
     def cancel_follow(self, response):
-        cancelled_user_id = self.get_body_argument('cancelled_user_id')
+        cancelled_user_id = self.get_body_argument('unfollow_user_id')
         self.session = self.get_session()
-        user_id = self.session['_id']
-        if user_id:
-            user = User.objects(id=user_id).first()
-            cancelled_user = User.objects(id=cancelled_user_id).first()
-            user.cancel_follow(cancelled_user)
-            self.write(json.dumps({'message', 'success'}))
-        else:
-            self.write(json.dumps({'message', 'failure'}))
-        self.finish()
+        user = User.objects(id=self.session['_id']).first()
+        cancelled_user = User.objects(id=cancelled_user_id).first()
+        user.cancel_follow(cancelled_user)
+        self.write(json.dumps({'message': 'success'}))
 
 
 class CancelBlack(BaseHandler):
 
     @tornado.web.asynchronous
     def post(self):
+        """
+        @api {post} /user/black 取消拉黑.
+        @apiVersion 0.1.0
+        @apiName CancelBlack
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 取消拉黑用户.
+
+        @apiParam {String} cancelled_user_id Id of group.
+
+        @apiUse SuccessMsg
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.cancel_black)
 
+    @tornado.web.authenticated
+    @BaseHandler.sandbox
     def cancel_black(self, response):
         cancelled_user_id = self.get_body_argument('cancelled_user_id')
         self.session = self.get_session()
-        user_id = self.session['_id']
-        if user_id:
-            user = User.objects(id=user_id).first()
-            cancelled_user = User.objects(id=cancelled_user_id).first()
-            user.cancel_black(cancelled_user)
-            self.write(json.dumps({'message', 'success'}))
-        else:
-            self.write(json.dumps({'message', 'failure'}))
-        self.finish()
+        user = User.objects(id=self.session['_id']).first()
+        cancelled_user = User.objects(id=cancelled_user_id).first()
+        user.cancel_black(cancelled_user)
+        self.write(json.dumps({'message': 'success'}))
 
 
 class ApplyGroup(BaseHandler):
 
     @tornado.web.asynchronous
     def post(self):
+        """
+        @api {post} /user/group/apply 申请加组.
+        @apiVersion 0.1.0
+        @apiName ApplyGroup
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 已登陆的用户可以直接用组名申请加组.
+
+        @apiParam {String} group_name Name of group.
+
+        @apiUse SuccessMsg
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
         client = tornado.httpclient.AsyncHTTPClient()
         client.fetch(request=self.request, callback=self.apply_group)
 
+    @tornado.web.authenticated
+    @BaseHandler.sandbox
     def apply_group(self, response):
-        group_name = self.get_body_argument('name')
+        group_name = self.get_body_argument('group_name')
         self.session = self.get_session()
-        user_id = self.session['_id']
-        user = User.objects(id=user_id).first()
+        user = User.objects(id=self.session['_id']).first()
         group = ShareGroup.objects(name=group_name).first()
-        try:
-            group.add_apply_user(user)
-            self.write(json.dumps({'message': 'success'}))
-        except ShareGroup.GroupException:
-            self.write(json.dumps({'message': 'failure'}))
-        self.finish()
+        group.add_apply_user(user)
+        self.write(json.dumps({'message': 'success'}))

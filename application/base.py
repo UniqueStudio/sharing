@@ -1,7 +1,7 @@
 # encoding:utf-8
-__author__ = 'bing'
 
 import tornado.web
+from mongoengine import ValidationError
 import application.utils.session
 from application.exception import BaseException
 import json
@@ -25,7 +25,7 @@ class BaseHandler(tornado.web.RequestHandler):
         try:
             return super(BaseHandler, self).get_body_argument(*args, **kw)
         except tornado.web.MissingArgumentError as e:
-            self.write(json.dumps({'message': 'missing ' + e.arg_name}))
+            raise BaseException('missing ' + e.arg_name)
 
     def get_current_user(self):
         self.get_session()
@@ -67,6 +67,11 @@ class BaseHandler(tornado.web.RequestHandler):
                 self.write(json.dumps({
                     'message': 'failure',
                     'reason': e.description
+                }))
+            except ValidationError as e:
+                self.write(json.dumps({
+                    'message': 'failure',
+                    'reason': e.message
                 }))
             finally:
                 self.finish()

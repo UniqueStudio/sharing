@@ -1,6 +1,248 @@
 [
   {
     "type": "post",
+    "url": "/group/accept",
+    "title": "同意入组.",
+    "version": "0.1.0",
+    "name": "AcceptApply",
+    "group": "ShareGroup",
+    "permission": [
+      {
+        "name": "admin",
+        "title": "To be the admin of this group.",
+        "description": ""
+      }
+    ],
+    "description": "<p>管理员通过入组申请.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>The id of group.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "apply_user_id",
+            "description": "<p>The id of user.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share_group.py",
+    "groupTitle": "ShareGroup",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "GroupNotFound",
+            "description": "<p>Can not find the group.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/group/apply_users?group_id=:group_id",
+    "title": "获取申请入组的人员.",
+    "version": "0.1.0",
+    "name": "ApplyUser",
+    "group": "ShareGroup",
+    "permission": [
+      {
+        "name": "admin",
+        "title": "To be the admin of this group.",
+        "description": ""
+      }
+    ],
+    "description": "<p>根据group_id获取组内申请入组人员的信息.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>The id of group.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "users",
+            "description": "<p>Users in the group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "users.name",
+            "description": "<p>The name of users.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "users.id",
+            "description": "<p>The id of users.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share_group.py",
+    "groupTitle": "ShareGroup",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "GroupNotFound",
+            "description": "<p>Can not find the group.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/group/change_admin",
+    "title": "管理员转让.",
+    "version": "0.1.0",
+    "name": "ChangeAdmin",
+    "group": "ShareGroup",
+    "permission": [
+      {
+        "name": "admin",
+        "title": "To be the admin of this group.",
+        "description": ""
+      }
+    ],
+    "description": "<p>管理员通过可以转让管理员的职位给组员.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>The id of group.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "user_id",
+            "description": "<p>The id of user.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share_group.py",
+    "groupTitle": "ShareGroup",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "GroupNotFound",
+            "description": "<p>Can not find the group.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
     "url": "/group",
     "title": "新建一个share组",
     "version": "0.1.0",
@@ -71,7 +313,7 @@
   },
   {
     "type": "get",
-    "url": "/group",
+    "url": "/group?group_name=:group_name",
     "title": "搜索share组",
     "version": "0.1.0",
     "name": "GetGroup",
@@ -83,23 +325,16 @@
         "description": ""
       }
     ],
-    "description": "<p>根据id或者name来搜索group信息,两个之间必须提供一个条件.</p> ",
+    "description": "<p>根据name来搜索group信息.</p> ",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
             "type": "<p>String</p> ",
-            "optional": true,
-            "field": "name",
-            "description": "<p>the name of group.</p> "
-          },
-          {
-            "group": "Parameter",
-            "type": "<p>String</p> ",
-            "optional": true,
-            "field": "id",
-            "description": "<p>the id of group.</p> "
+            "optional": false,
+            "field": "group_name",
+            "description": "<p>The name of group.</p> "
           }
         ]
       }
@@ -281,7 +516,7 @@
   },
   {
     "type": "get",
-    "url": "/group/shares",
+    "url": "/group/shares?group_id=:group_id",
     "title": "获取组内的share.",
     "version": "0.1.0",
     "name": "GetGroupShare",
@@ -301,7 +536,7 @@
             "group": "Parameter",
             "type": "<p>String</p> ",
             "optional": false,
-            "field": "id",
+            "field": "group_id",
             "description": "<p>The id of group.</p> "
           }
         ]
@@ -330,6 +565,69 @@
             "optional": false,
             "field": "shares.id",
             "description": "<p>The id of shares.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.share_time",
+            "description": "<p>Time when share first made.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "shares.comment_sum",
+            "description": "<p>The sum of comments.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Object</p> ",
+            "optional": false,
+            "field": "shares.origin",
+            "description": "<p>First author of this share.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.origin.nickname",
+            "description": "<p>Name of first author.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.origin.id",
+            "description": "<p>Id of first author.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.origin.avatar",
+            "description": "<p>Avatar of first author.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "shares.origin.others",
+            "description": "<p>The rest of user who shared it.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.origin.others.id",
+            "description": "<p>Id of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.origin.others.nickname",
+            "description": "<p>Name of user.</p> "
           }
         ]
       }
@@ -369,7 +667,7 @@
   },
   {
     "type": "get",
-    "url": "/group/users",
+    "url": "/group/users?group_id=:group_id",
     "title": "获取组内的user信息.",
     "version": "0.1.0",
     "name": "GetGroupUser",
@@ -389,7 +687,7 @@
             "group": "Parameter",
             "type": "<p>String</p> ",
             "optional": false,
-            "field": "id",
+            "field": "group_id",
             "description": "<p>The id of group.</p> "
           }
         ]
@@ -398,6 +696,13 @@
     "success": {
       "fields": {
         "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "admin_id",
+            "description": "<p>The id of admin.</p> "
+          },
           {
             "group": "Success 200",
             "type": "<p>Object[]</p> ",
@@ -418,12 +723,110 @@
             "optional": false,
             "field": "users.id",
             "description": "<p>The id of users.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "users.avatar",
+            "description": "<p>The avatar of users.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "users.gratitude_shares_sum",
+            "description": "<p>The sum of gratitude.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "users.share_sum",
+            "description": "<p>The num of shares.</p> "
           }
         ]
       }
     },
     "filename": "application/share_group.py",
     "groupTitle": "ShareGroup",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "GroupNotFound",
+            "description": "<p>Can not find the group.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/group/reject",
+    "title": "拒绝入组.",
+    "version": "0.1.0",
+    "name": "RejectApply",
+    "group": "ShareGroup",
+    "permission": [
+      {
+        "name": "admin",
+        "title": "To be the admin of this group.",
+        "description": ""
+      }
+    ],
+    "description": "<p>管理员拒绝入组申请.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>The id of group.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "apply_user_id",
+            "description": "<p>The id of user.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share_group.py",
+    "groupTitle": "ShareGroup",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "error": {
       "fields": {
         "Error 4xx": [
@@ -519,9 +922,359 @@
     }
   },
   {
+    "type": "post",
+    "url": "/user/group/apply",
+    "title": "申请加组.",
+    "version": "0.1.0",
+    "name": "ApplyGroup",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>已登陆的用户可以直接用组名申请加组.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_name",
+            "description": "<p>Name of group.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/user/black",
+    "title": "拉黑.",
+    "version": "0.1.0",
+    "name": "Black",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>拉黑用户，不再接收其share.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "blacked_user_id",
+            "description": "<p>Id of group.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/user/black",
+    "title": "取消拉黑.",
+    "version": "0.1.0",
+    "name": "CancelBlack",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>取消拉黑用户.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "cancelled_user_id",
+            "description": "<p>Id of group.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/user/black",
+    "title": "取消关注.",
+    "version": "0.1.0",
+    "name": "CancelFollow",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>取关.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "unfollow_user_id",
+            "description": "<p>Id of group.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/user/follow",
+    "title": "关注.",
+    "version": "0.1.0",
+    "name": "Follow",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>关注用户，具体功能待定.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "followed_user_id",
+            "description": "<p>Id of group.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "get",
     "url": "/setting",
-    "title": "Personal setting",
+    "title": "个人设置",
     "version": "0.1.0",
     "name": "GetMyInformation",
     "group": "User",
@@ -620,7 +1373,7 @@
   {
     "type": "post",
     "url": "/homepage[?uid=:uid]",
-    "title": "Homepage",
+    "title": "个人主页",
     "version": "0.1.0",
     "name": "Homepage",
     "group": "User",
@@ -877,7 +1630,7 @@
   {
     "type": "post",
     "url": "/login",
-    "title": "Login",
+    "title": "登录",
     "version": "0.1.0",
     "name": "Login",
     "group": "User",
@@ -947,7 +1700,7 @@
   {
     "type": "post",
     "url": "/setting",
-    "title": "Update personal info.",
+    "title": "修改个人设置",
     "version": "0.1.0",
     "name": "PostMyInformation",
     "group": "User",
