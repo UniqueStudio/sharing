@@ -116,7 +116,7 @@ class Homepage(BaseHandler):
     @tornado.web.asynchronous
     def get(self):
         """
-        @api {post} /homepage[?uid=:uid] 个人主页
+        @api {get} /homepage[?uid=:uid] 个人主页
         @apiVersion 0.1.0
         @apiName Homepage
         @apiGroup User

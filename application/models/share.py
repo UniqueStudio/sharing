@@ -21,7 +21,6 @@ class Share(Document):
     own_group = ReferenceField('ShareGroup')
     share_users = ListField(ReferenceField('User'), default=list)  #单个组分析用户
     share_time = DateTimeField(required=True, default=datetime.datetime.now)
-    gratitude_num = IntField(required=True, default=0)
 
     gratitude_users = ListField(ReferenceField('User'), default=list)
     comments = ListField(ReferenceField('Comment', reverse_delete_rule=CASCADE))
@@ -34,9 +33,7 @@ class Share(Document):
     def is_exist(cls, url, group):  #是否在group中存在url的share
         return Share.objects(url=url, own_group=group).first() is not None
 
-
     def _gratitude(self, user):
-        self.gratitude_num += 1
         self.gratitude_users.append(user)
         self.save()
 

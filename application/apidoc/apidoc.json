@@ -1,7 +1,7 @@
 {
-  "name": "new share api document",
+  "name": "SHR--分享团队兴趣",
   "version": "0.1.0",
-  "description": "new share product started in 2015",
+  "description": "SHR beta版，@联创团队",
   "title": "SHR api document",
   "url": "http://127.0.0.1:5000",
   "header": {
