@@ -159,7 +159,7 @@ class GroupShare(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         """
-        @api {get} /group/shares?group_id=:group_id 获取组内的share.
+        @api {get} /group/shares?group_id=:group_id 获取组内的share
         @apiVersion 0.1.0
         @apiName GetGroupShare
         @apiGroup ShareGroup
@@ -235,7 +235,7 @@ class GroupUser(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         """
-        @api {get} /group/users?group_id=:group_id 获取组内的user信息.
+        @api {get} /group/users?group_id=:group_id 获取组内的user信息
         @apiVersion 0.1.0
         @apiName GetGroupUser
         @apiGroup ShareGroup
@@ -298,7 +298,7 @@ class ChangeAdmin(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         """
-        @api {post} /group/change_admin 管理员转让.
+        @api {post} /group/change_admin 管理员转让
         @apiVersion 0.1.0
         @apiName ChangeAdmin
         @apiGroup ShareGroup
@@ -346,7 +346,7 @@ class ApplyUser(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         """
-        @api {get} /group/apply_users?group_id=:group_id 获取申请入组的人员.
+        @api {get} /group/apply_users?group_id=:group_id 获取申请入组的人员
         @apiVersion 0.1.0
         @apiName ApplyUser
         @apiGroup ShareGroup
@@ -391,7 +391,7 @@ class AcceptApply(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         """
-        @api {post} /group/accept 同意入组.
+        @api {post} /group/accept 同意入组
         @apiVersion 0.1.0
         @apiName AcceptApply
         @apiGroup ShareGroup
@@ -433,7 +433,7 @@ class RejectApply(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         """
-        @api {post} /group/reject 拒绝入组.
+        @api {post} /group/reject 拒绝入组
         @apiVersion 0.1.0
         @apiName RejectApply
         @apiGroup ShareGroup

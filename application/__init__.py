@@ -9,7 +9,7 @@ from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUse
     ChangeAdmin, ApplyUser, AcceptApply, RejectApply
 from application.share import ShareHandler
 from application.notify import NotifyInfo
-from application.comment import CreateComment, DeleteComment
+from application.comment import CommentHandler
 from application.base import BaseHandler
 
 class Application(tornado.web.Application):
@@ -35,8 +35,7 @@ class Application(tornado.web.Application):
             url(r'/user/unfollow', CancelFollow),
             url(r'/user/cancel_black', CancelBlack),
             url(r'/user/notify', NotifyInfo),
-            url(r'/comment/create', CreateComment),
-            url(r'/comment/delete', DeleteComment),
+            url(r'/comment', CommentHandler),
 
             url(r'/group', CreateGroup),
             url(r'/group/info', GroupInfo),

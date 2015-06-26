@@ -157,6 +157,7 @@ class Homepage(BaseHandler):
     @tornado.web.authenticated
     @BaseHandler.sandbox
     def get_homepage(self, response):
+        print self.session['_id']
         self.session = self.get_session()
         uid_arugument = self.get_body_argument('uid', default=None)
         uid = self.session['_id']
@@ -336,7 +337,7 @@ class InviteByEmail(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /user/invite 邀请注册.
+        @api {post} /user/invite 邀请注册
         @apiVersion 0.1.0
         @apiName InviteByEmail
         @apiGroup User
@@ -434,7 +435,7 @@ class Follow(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /user/follow 关注.
+        @api {post} /user/follow 关注
         @apiVersion 0.1.0
         @apiName Follow
         @apiGroup User
@@ -468,7 +469,7 @@ class Black(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /user/black 拉黑.
+        @api {post} /user/black 拉黑
         @apiVersion 0.1.0
         @apiName Black
         @apiGroup User
@@ -502,7 +503,7 @@ class CancelFollow(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /user/black 取消关注.
+        @api {post} /user/black 取消关注
         @apiVersion 0.1.0
         @apiName CancelFollow
         @apiGroup User
@@ -536,7 +537,7 @@ class CancelBlack(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /user/black 取消拉黑.
+        @api {post} /user/black 取消拉黑
         @apiVersion 0.1.0
         @apiName CancelBlack
         @apiGroup User
@@ -570,7 +571,7 @@ class ApplyGroup(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /user/group/apply 申请加组.
+        @api {post} /user/group/apply 申请加组
         @apiVersion 0.1.0
         @apiName ApplyGroup
         @apiGroup User

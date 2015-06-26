@@ -168,7 +168,7 @@ class User(Document):
             inbox_share._delete_from_inbox()
             self.save()
         else:
-            raise InboxShare.InboxShareException('inbox中该share并不存在')
+            raise InboxShare.InboxShareException(u'inbox中该share并不存在')
 
     def send_share(self, inbox_share, group):  #将inbox_share投递入具体组
         from application.models import Share, InboxShare
@@ -178,7 +178,7 @@ class User(Document):
             self.share_to_group(share=share, group=group)
             self.remove_inbox_share(inbox_share=inbox_share)
         else:
-            raise InboxShare.InboxShareException('inbox中该share并不存在')
+            raise InboxShare.InboxShareException(u'inbox中该share并不存在')
 
     #添加评论部分
     def add_comment_to_share(self, share, comment_content):
@@ -205,7 +205,7 @@ class User(Document):
         if comment in self.comments:    #只能删除自己的
             comment.share._remove_comment(comment)  #comment的删除在里面操作了
         else:
-            print '只能删除自己的'
+            raise self.UserException(u'只能删除自己的')
 
     #关注拉黑部分
     def follow(self, user):

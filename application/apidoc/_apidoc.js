@@ -27,7 +27,7 @@
  * @apiDefine GroupNotExistError
  * @apiVersion 0.1.0
  * @apiError GroupNotFound Can not find the group.
- * @apiErrorExample Response:
+ * @apiErrorExample Error-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "message": "failure",
@@ -39,7 +39,7 @@
  * @apiDefine NotLoginError
  * @apiVersion 0.1.0
  * @apiError NotLogin  Users must login to invoke this api.
- * @apiErrorExample Response:
+ * @apiErrorExample Error-Response:
  *     HTTP/1.1 403 Forbidden
  */
 
@@ -47,7 +47,7 @@
  * @apiDefine OtherError
  * @apiVersion 0.1.0
  * @apiError SomeErrorInDetail Errors in detail.
- * @apiErrorExample Response:
+ * @apiErrorExample Error-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "message": "failure",

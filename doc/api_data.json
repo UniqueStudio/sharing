@@ -1,6 +1,255 @@
 [
   {
     "type": "delete",
+    "url": "/comment",
+    "title": "删除评论",
+    "version": "0.1.0",
+    "name": "DeleteComment",
+    "group": "Comment",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>通过comment_id删除评论.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comment_id",
+            "description": "<p>Id of comment.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/comment.py",
+    "groupTitle": "Comment",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/comment?share_id=:share_id",
+    "title": "获取评论",
+    "version": "0.1.0",
+    "name": "GetComment",
+    "group": "Comment",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>根据share_id获取组内某条share的评论.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "share_id",
+            "description": "<p>Id of share in group.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "comments",
+            "description": "<p>Comments of share.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comments.content",
+            "description": "<p>Content of comment.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comments.time",
+            "description": "<p>Time of comment.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comments.nickname",
+            "description": "<p>Nickname of user who made this comment.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comments.avatar",
+            "description": "<p>Avatar of user who made this comment.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/comment.py",
+    "groupTitle": "Comment",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/comment",
+    "title": "发布评论",
+    "version": "0.1.0",
+    "name": "PostComment",
+    "group": "Comment",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>只能对组内的share发表评论.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "share_id",
+            "description": "<p>Id of share..</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "content",
+            "description": "<p>Content of comment.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/comment.py",
+    "groupTitle": "Comment",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "delete",
     "url": "/share",
     "title": "删除share",
     "version": "0.1.0",
@@ -64,12 +313,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -215,12 +464,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -230,7 +479,7 @@
   {
     "type": "post",
     "url": "/group/accept",
-    "title": "同意入组.",
+    "title": "同意入组",
     "version": "0.1.0",
     "name": "AcceptApply",
     "group": "ShareGroup",
@@ -292,12 +541,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         }
@@ -307,7 +556,7 @@
   {
     "type": "get",
     "url": "/group/apply_users?group_id=:group_id",
-    "title": "获取申请入组的人员.",
+    "title": "获取申请入组的人员",
     "version": "0.1.0",
     "name": "ApplyUser",
     "group": "ShareGroup",
@@ -380,12 +629,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         }
@@ -395,7 +644,7 @@
   {
     "type": "post",
     "url": "/group/change_admin",
-    "title": "管理员转让.",
+    "title": "管理员转让",
     "version": "0.1.0",
     "name": "ChangeAdmin",
     "group": "ShareGroup",
@@ -457,12 +706,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         }
@@ -609,7 +858,7 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
           "type": "json"
         }
@@ -735,7 +984,7 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
           "type": "json"
         }
@@ -745,7 +994,7 @@
   {
     "type": "get",
     "url": "/group/shares?group_id=:group_id",
-    "title": "获取组内的share.",
+    "title": "获取组内的share",
     "version": "0.1.0",
     "name": "GetGroupShare",
     "group": "ShareGroup",
@@ -881,12 +1130,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         }
@@ -896,7 +1145,7 @@
   {
     "type": "get",
     "url": "/group/users?group_id=:group_id",
-    "title": "获取组内的user信息.",
+    "title": "获取组内的user信息",
     "version": "0.1.0",
     "name": "GetGroupUser",
     "group": "ShareGroup",
@@ -997,12 +1246,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         }
@@ -1012,7 +1261,7 @@
   {
     "type": "post",
     "url": "/group/reject",
-    "title": "拒绝入组.",
+    "title": "拒绝入组",
     "version": "0.1.0",
     "name": "RejectApply",
     "group": "ShareGroup",
@@ -1074,12 +1323,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         }
@@ -1158,12 +1407,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -1226,7 +1475,7 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -1236,7 +1485,7 @@
   {
     "type": "post",
     "url": "/user/group/apply",
-    "title": "申请加组.",
+    "title": "申请加组",
     "version": "0.1.0",
     "name": "ApplyGroup",
     "group": "User",
@@ -1291,12 +1540,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -1306,7 +1555,7 @@
   {
     "type": "post",
     "url": "/user/black",
-    "title": "拉黑.",
+    "title": "拉黑",
     "version": "0.1.0",
     "name": "Black",
     "group": "User",
@@ -1361,12 +1610,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -1376,7 +1625,7 @@
   {
     "type": "post",
     "url": "/user/black",
-    "title": "取消拉黑.",
+    "title": "取消拉黑",
     "version": "0.1.0",
     "name": "CancelBlack",
     "group": "User",
@@ -1431,12 +1680,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -1446,7 +1695,7 @@
   {
     "type": "post",
     "url": "/user/black",
-    "title": "取消关注.",
+    "title": "取消关注",
     "version": "0.1.0",
     "name": "CancelFollow",
     "group": "User",
@@ -1501,12 +1750,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -1516,7 +1765,7 @@
   {
     "type": "post",
     "url": "/user/follow",
-    "title": "关注.",
+    "title": "关注",
     "version": "0.1.0",
     "name": "Follow",
     "group": "User",
@@ -1571,12 +1820,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -1675,7 +1924,7 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         }
@@ -1864,7 +2113,7 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         }
@@ -1874,7 +2123,7 @@
   {
     "type": "post",
     "url": "/user/invite",
-    "title": "邀请注册.",
+    "title": "邀请注册",
     "version": "0.1.0",
     "name": "InviteByEmail",
     "group": "User",
@@ -1927,12 +2176,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -2002,7 +2251,7 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -2080,12 +2329,12 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
           "type": "json"
         },
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -2169,7 +2418,7 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
@@ -2246,7 +2495,7 @@
       },
       "examples": [
         {
-          "title": "Response:",
+          "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }

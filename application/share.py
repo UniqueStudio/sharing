@@ -163,4 +163,5 @@ class ShareHandler(BaseHandler):
             if share is None:
                 raise BaseException(u'非法id')
             else:
+                user.remove_share_to_group(share, share.own_group)
                 self.write(json.dumps({'message': 'success'}))
