@@ -11,6 +11,7 @@ from application.share import ShareHandler
 from application.notify import NotifyInfo
 from application.comment import CommentHandler
 from application.base import BaseHandler
+from application.inbox_share import InboxShareHandler
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -29,6 +30,7 @@ class Application(tornado.web.Application):
             url(r'/user/group/apply', ApplyGroup),
 
             url(r'/share', ShareHandler),
+            url(r'/inbox_share', InboxShareHandler),
 
             url(r'/user/follow', Follow),
             url(r'/user/black', Black),

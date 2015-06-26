@@ -102,7 +102,7 @@ class GroupInfo(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         """
-        @api {get} /group/info 查询share组信息，包括成员
+        @api {get} /group/info 查询组信息，包括成员
         @apiVersion 0.1.0
         @apiName GetGroupInfo
         @apiGroup ShareGroup

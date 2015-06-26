@@ -25,6 +25,7 @@ class ShareHandler(BaseHandler):
 
         @apiParam {String} share_id Id of share in group.
 
+        @apiSuccess {String} id Id of share.
         @apiSuccess {String} title Title of share.
         @apiSuccess {String} url Url of share.
         @apiSuccess {String} share_time Time of share created.
@@ -55,6 +56,7 @@ class ShareHandler(BaseHandler):
         if not user or share.own_group not in user.groups:
             raise BaseException(u'没有权限')
         self.write(json.dumps({
+            'id': str(share.id),
             'title': share.title,
             'url': share.url,
             'origin': {
@@ -86,6 +88,7 @@ class ShareHandler(BaseHandler):
 
         @apiParam {String} title Title of share.
         @apiParam {String} url Title of share.
+        @apiParam {String} [comment] Comment of share.
         @apiParam {String[]} groups Name of groups to send share.
 
         @apiUse SuccessMsg
@@ -131,13 +134,11 @@ class ShareHandler(BaseHandler):
         @apiGroup Share
         @apiPermission login
 
-        @apiDescription 通过share_id删除share，如果带上type=inbox，
-        则从inbox_share中（即@me）删除。
+        @apiDescription 通过share_id删除share.
         组内share的删除动作默认仅减少share users，当分享的人数为0的时候，
-        这条share才会删除。inbox_share则直接删除。
+        这条share才会删除。
 
         @apiParam {String} share_id Id of share.
-        @apiParam {String} [type] Type of operation.
 
         @apiUse SuccessMsg
 
@@ -151,17 +152,9 @@ class ShareHandler(BaseHandler):
     def delete_share(self, response):
         user = User.objects(id=self.session['_id']).first()
         share_id = self.get_body_argument('share_id')
-        if self.get_body_argument('type', default=None) == 'inbox':
-            inbox_share = InboxShare.objects(id=share_id).first()
-            if inbox_share is None:
-                raise BaseException(u'非法id')
-            else:
-                user.remove_inbox_share(inbox_share)
-                self.write(json.dumps({'message': 'success'}))
+        share = Share.objects(id=share_id).first()
+        if share is None:
+            raise BaseException(u'非法id')
         else:
-            share = Share.objects(id=share_id).first()
-            if share is None:
-                raise BaseException(u'非法id')
-            else:
-                user.remove_share_to_group(share, share.own_group)
-                self.write(json.dumps({'message': 'success'}))
+            user.remove_share_to_group(share, share.own_group)
+            self.write(json.dumps({'message': 'success'}))
