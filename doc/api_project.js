@@ -6,7 +6,7 @@ define({
   "url": "http://127.0.0.1:5000",
   "header": {
     "title": "Important",
-    "content": "<h1>Before start</h1>\n<p>如果是本地测试，请保证后台处于正常运行状态。</p>\n"
+    "content": "<h1>Before start</h1>\n<p>如果是本地测试，请保证后台处于正常运行状态。</p>\n<p>接口参数说明优先考虑url中的参数（如注册的key），\n如果不是url中的参数，则为请求头的中的参数（如登录的email）。</p>\n"
   },
   "footer": {
     "title": "At last",
@@ -16,7 +16,7 @@ define({
   "apidoc": "0.2.0",
   "generator": {
     "name": "apidoc",
-    "time": "2015-06-26T18:35:52.291Z",
+    "time": "2015-06-28T15:29:45.518Z",
     "url": "http://apidocjs.com",
     "version": "0.13.1"
   }

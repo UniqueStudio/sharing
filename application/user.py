@@ -12,6 +12,7 @@ import os
 import time
 import hashlib
 
+
 class Login(BaseHandler):
 
     @tornado.web.asynchronous
@@ -46,6 +47,7 @@ class Login(BaseHandler):
         else:
             self.recode_status_login(user)
             self.write(json.dumps({'message': 'success'}))
+
 
 class Register(BaseHandler):
 
@@ -82,8 +84,7 @@ class Register(BaseHandler):
         @apiDescription 通过key来注册share，key在邀请的链接中.
         注册完成后用户将自动成为待进组的状态，接下来只需该组管理员的审核.
 
-        @apiParam {String} key Key of invite.
-        @apiParam {String} email Email as account.
+        @apiParam {String} key Key of invite(already in url).
         @apiParam {String} nickname Nickname as account.
         @apiParam {String} password Password.
 
@@ -94,12 +95,12 @@ class Register(BaseHandler):
         email = self.get_body_argument('email')
         password = self.get_body_argument('password')
         nickname = self.get_body_argument('nickname')
-        if User.is_exist(email):
-            raise User.UserException('Email已经被占用')
         invite = None
         if self.invite_id:
             invite = Invite.objects(id=self.invite_id).first()
             email = invite.invitee_email
+        if User.is_exist(email):
+            raise User.UserException('Email已经被占用')
         user = User(email=email, nickname=nickname)
         user.set_password(password=password)
         user.save()
@@ -111,6 +112,7 @@ class Register(BaseHandler):
             invite.invite_delete()
         self.recode_status_login(user)
         self.write(json.dumps({'message': 'success'}))
+
 
 class Homepage(BaseHandler):
     @tornado.web.asynchronous
@@ -343,10 +345,15 @@ class InviteByEmail(BaseHandler):
         @apiGroup User
         @apiPermission login
 
-        @apiDescription 通过邮件的形式邀请注册.
+        @apiDescription 通过邮件的形式邀请注册，若成功，则返回邀请码，
+        用户可直接使用.
+        邀请码目前没有时间限制，任何人均可使用，使用一次后失效.
 
         @apiParam {String} group_id Id of group.
         @apiParam {String} email Email of user to be invited.
+
+        @apiSuccess {String} message Success.
+        @apiSuccess {String} key The key to join group.
 
         @apiUse NotLoginError
         @apiUse OtherError
@@ -378,7 +385,7 @@ class InviteByEmail(BaseHandler):
             #TODO:send email
             info = str(invite_entity.id)
             print info
-            self.write({'message': 'success'})
+            self.write({'message': 'success', 'key': info})
 
 
 class AcceptInvite(BaseHandler):

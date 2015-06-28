@@ -357,7 +357,7 @@ class ApplyUser(BaseHandler):
         @apiParam {String} group_id The id of group.
 
         @apiSuccess {Object[]} users Users in the group.
-        @apiSuccess {String} users.name The name of users.
+        @apiSuccess {String} users.nickname The name of users.
         @apiSuccess {String} users.id The id of users.
 
         @apiUse GroupNotExistError
@@ -378,7 +378,7 @@ class ApplyUser(BaseHandler):
         if user and user.is_admin(group=group):
             self.write(json.dumps({'users': [
                 {
-                    'uid': str(invitee.id),
+                    'id': str(invitee.id),
                     'nickname': invitee.nickname
                 }
                 for invitee in group.apply_users]}))

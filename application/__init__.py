@@ -7,7 +7,7 @@ from application.user import Login, Register, MyInformation, Homepage, UploadIma
     ApplyGroup
 from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUser, \
     ChangeAdmin, ApplyUser, AcceptApply, RejectApply
-from application.share import ShareHandler
+from application.share import ShareHandler, GratitudeHandler
 from application.notify import NotifyInfo
 from application.comment import CommentHandler
 from application.base import BaseHandler
@@ -23,11 +23,11 @@ class Application(tornado.web.Application):
             url(r'/setting', MyInformation),
             url(r'/homepage', Homepage),
             url(r'/upload_image', UploadImage),
-            # url(r'/user/invite/exist', InviteExist),
+
             url(r'/user/invite', InviteByEmail),
             url(r'/user/accept/(.*)', AcceptInvite),
 
-            url(r'/user/group/apply', ApplyGroup),
+            url(r'/user/apply', ApplyGroup),
 
             url(r'/share', ShareHandler),
             url(r'/inbox_share', InboxShareHandler),
@@ -37,6 +37,8 @@ class Application(tornado.web.Application):
             url(r'/user/unfollow', CancelFollow),
             url(r'/user/cancel_black', CancelBlack),
             url(r'/user/notify', NotifyInfo),
+
+            url(r'/gratitude', GratitudeHandler),
             url(r'/comment', CommentHandler),
 
             url(r'/group', CreateGroup),

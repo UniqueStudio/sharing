@@ -86,8 +86,7 @@ class User(Document):
 
     def gratitude(self, share):  #感谢分享到group的share(每个share都有独立的分组)
         if self.is_share(share=share, group=share.own_group):
-            print '不能感谢自己'
-            return
+            raise User.UserException(u'不能感谢自己')
         if not self.is_gratitude(share):
             share._gratitude(self)
             self.gratitude_shares.append(share)
@@ -96,7 +95,14 @@ class User(Document):
             for share_user in share.share_users:
                 share_user._notify_gratitude(gratitude_user=self, share=share)
         else:
-            print '重复感谢'
+            raise User.UserException(u'重复感谢')
+
+    def cancel_gratitude(self, share):
+        if not self.is_gratitude(share):
+            raise User.UserException(u'并没有投递过感谢')
+        share._cancel_gratitude(self)
+        self.gratitude_shares.remove(share)
+        self.save()
 
     #个人分享部分
     def is_share(self, share, group):  #是否分享到某个组

@@ -604,6 +604,76 @@
   },
   {
     "type": "delete",
+    "url": "/gratitude",
+    "title": "取消感谢",
+    "version": "0.1.0",
+    "name": "DeleteGratitude",
+    "group": "Share",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>通过share_id取消感谢.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "share_id",
+            "description": "<p>Id of share.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share.py",
+    "groupTitle": "Share",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "delete",
     "url": "/share",
     "title": "删除share",
     "version": "0.1.0",
@@ -949,7 +1019,7 @@
             "group": "Success 200",
             "type": "<p>String</p> ",
             "optional": false,
-            "field": "users.name",
+            "field": "users.nickname",
             "description": "<p>The name of users.</p> "
           },
           {
@@ -1684,6 +1754,76 @@
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/gratitude",
+    "title": "感谢",
+    "version": "0.1.0",
+    "name": "PostGratitude",
+    "group": "Share",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>通过share_id向别人投递感谢，感谢成功后发送通知给对方. share必须为组分享到内的share</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "share_id",
+            "description": "<p>Id of share.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share.py",
+    "groupTitle": "Share",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
           "type": "json"
         }
       ]
@@ -2495,7 +2635,7 @@
         "description": ""
       }
     ],
-    "description": "<p>通过邮件的形式邀请注册.</p> ",
+    "description": "<p>通过邮件的形式邀请注册，若成功，则返回邀请码， 用户可直接使用. 邀请码目前没有时间限制，任何人均可使用，使用一次后失效.</p> ",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -2512,6 +2652,26 @@
             "optional": false,
             "field": "email",
             "description": "<p>Email of user to be invited.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "key",
+            "description": "<p>The key to join group.</p> "
           }
         ]
       }
@@ -2718,14 +2878,7 @@
             "type": "<p>String</p> ",
             "optional": false,
             "field": "key",
-            "description": "<p>Key of invite.</p> "
-          },
-          {
-            "group": "Parameter",
-            "type": "<p>String</p> ",
-            "optional": false,
-            "field": "email",
-            "description": "<p>Email as account.</p> "
+            "description": "<p>Key of invite(already in url).</p> "
           },
           {
             "group": "Parameter",

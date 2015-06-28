@@ -155,6 +155,71 @@ class ShareHandler(BaseHandler):
         share = Share.objects(id=share_id).first()
         if share is None:
             raise BaseException(u'非法id')
-        else:
-            user.remove_share_to_group(share, share.own_group)
-            self.write(json.dumps({'message': 'success'}))
+        user.remove_share_to_group(share, share.own_group)
+        self.write(json.dumps({'message': 'success'}))
+
+
+class GratitudeHandler(BaseHandler):
+
+    @tornado.web.asynchronous
+    @tornado.web.authenticated
+    def post(self):
+        """
+        @api {post} /gratitude 感谢
+        @apiVersion 0.1.0
+        @apiName PostGratitude
+        @apiGroup Share
+        @apiPermission login
+
+        @apiDescription 通过share_id向别人投递感谢，感谢成功后发送通知给对方.
+        share必须为组分享到内的share
+
+        @apiParam {String} share_id Id of share.
+
+        @apiUse SuccessMsg
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.post_gratitude)
+
+    @BaseHandler.sandbox
+    def post_gratitude(self, response):
+        user = User.objects(id=self.session['_id']).first()
+        share = Share.objects(id=self.get_body_argument('share_id')).first()
+        if share is None or not user.is_in_the_group(share.own_group):
+            raise BaseException(u'非法id')
+        user.gratitude(share)
+        self.write(json.dumps({'message': 'success'}))
+
+    @tornado.web.asynchronous
+    @tornado.web.authenticated
+    def delete(self):
+        """
+        @api {delete} /gratitude 取消感谢
+        @apiVersion 0.1.0
+        @apiName DeleteGratitude
+        @apiGroup Share
+        @apiPermission login
+
+        @apiDescription 通过share_id取消感谢.
+
+        @apiParam {String} share_id Id of share.
+
+        @apiUse SuccessMsg
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.delete_gratitude)
+
+    @BaseHandler.sandbox
+    def delete_gratitude(self, response):
+        user = User.objects(id=self.session['_id']).first()
+        share = Share.objects(id=self.get_body_argument('share_id')).first()
+        if share is None or not user.is_in_the_group(share.own_group):
+            raise BaseException(u'非法id')
+        user.cancel_gratitude(share)
+        self.write(json.dumps({'message': 'success'}))
