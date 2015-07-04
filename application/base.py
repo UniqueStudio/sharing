@@ -27,8 +27,16 @@ class BaseHandler(tornado.web.RequestHandler):
         except tornado.web.MissingArgumentError as e:
             raise BaseException('missing ' + e.arg_name)
 
+    def get_argument(self, *args, **kw):
+        # handle MissingArgumentError
+        try:
+            return super(BaseHandler, self).get_argument(*args, **kw)
+        except tornado.web.MissingArgumentError as e:
+            raise BaseException('missing ' + e.arg_name)
+
     def get_current_user(self):
         self.get_session()
+        print self.session['_id'], 23333333
         return True if self.session['_id'] else False
 
     def get_session(self):
@@ -63,7 +71,8 @@ class BaseHandler(tornado.web.RequestHandler):
         def sandbox_wrapper(self, *args, **kw):
             try:
                 func(self, *args, **kw)
-            except BaseException as e:
+            except application.exception.BaseException as e:
+                print 'BaseException'
                 self.write(json.dumps({
                     'message': 'failure',
                     'reason': e.description

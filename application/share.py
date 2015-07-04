@@ -48,7 +48,9 @@ class ShareHandler(BaseHandler):
 
     @BaseHandler.sandbox
     def get_share(self, response):
+        print '23333333'
         share_id = self.get_argument('share_id')
+        print 'share_id'
         share = Share.objects(id=share_id).first()
         if share is None:
             raise BaseException(u'非法id')

@@ -8,63 +8,87 @@ from application.models.notify import COMMENT, SHARE, FOLLOW, GRATITUDE, ADMIN
 
 import json
 
+
 class NotifyInfo(BaseHandler):
 
     @tornado.web.asynchronous
-    def post(self):
+    @tornado.web.authenticated
+    def get(self):
         client = tornado.httpclient.AsyncHTTPClient()
-        client.fetch(request=self.request, callback=self.notify)
+        client.fetch(request=self.request, callback=self.get_notify)
 
-    def show_notify_info(self, response):
+    @BaseHandler.sandbox
+    def get_notify(self, response):
         """
-            获取通知并对通知进行处理
+        @api {get} /user/notify 获取通知（测试用）
+        @apiVersion 0.1.0
+        @apiName GetNotify
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 获取未读的所有通知.
+        notify_type包括`COMMENT`, `SHARE`, `FOLLOW`, `GRATITUDE`, `ADMIN`, `INVITE`.
+
+        @apiSuccess {Object[]} notifies Notifies of user.
+        @apiSuccess {String} notifies.notify_id Id of notify.
+        @apiSuccess {String} notifies.notify_cid Related id of component in notify.
+        @apiSuccess {String} notifies.notify_uid Related id of user in notify.
+        @apiSuccess {String} notifies.notify_type Type of notify.
+        @apiSuccess {String} notifies.notify_time Time of notify.
+
+        @apiUse NotLoginError
         """
         #TODO:重构
-        self.session = self.get_session()
-        user_id = self.session['_id']
-        if user_id:
-            user = User.objects(id=user_id).first()
-            result = dict()
-            for notify in user.notify_content:
-                if notify.notify_type == COMMENT:
-                    result[COMMENT] = dict()
-                    comment = Comment.objects(id=notify.notify_id).first()
-                    #以share为键方便同一条share有多条comment通知
-                    key = str(comment.share.id)
-                    if key not in result[COMMENT]:
-                        result[COMMENT][key] = list()
-                    result[COMMENT][key].append(str(notify.id))
-                elif notify.notify_type == SHARE:
-                    result[SHARE] = dict()
-                    #以share的id作为通知的键，一条share一条通知
-                    key = str(notify.notify_id)
-                    if key not in result[SHARE]:
-                        result[SHARE][key] = list()
-                    result[SHARE][key].append(str(notify.id))
-                elif notify.notify_type == FOLLOW:
-                    result[FOLLOW] = dict()
-                    #以登陆用户（被关注的人）的id作为通知的键
-                    key = str(user_id)
-                    if key not in result[FOLLOW]:
-                        result[FOLLOW][key] = list()
-                    result[FOLLOW][key].append(str(notify.id))
-                elif notify.notify_type == GRATITUDE:
-                    result[GRATITUDE] = dict()
-                    #以share的id作为键，一条share多条感谢作为一个通知
-                    key = str(notify.notify_id)
-                    if key not in result[GRATITUDE]:
-                        result[GRATITUDE][key] = list()
-                    result[GRATITUDE][key].append(str(notify.id))
-                elif notify.notify_type == ADMIN:
-                    result[ADMIN] = dict()
-                    #以group的id作为键
-                    key = str(notify.notify_id)
-                    if key not in result[ADMIN]:
-                        result[ADMIN][key] = list()
-                    result[ADMIN][key].append(str(notify.id))
-            user.notify_content = list()
-            user.save()
-            self.write(json.dumps(result))
-        else:
-            self.write(json.dumps({'message': 'failure', 'reason': '用户未登陆'}))
-        self.finish()
+        user = User.objects(id=self.session['_id']).first()
+        # result = dict()
+        # for notify in user.notify_content:
+            # if notify.notify_type == COMMENT:
+            #     result[COMMENT] = dict()
+            #     comment = Comment.objects(id=notify.notify_id).first()
+            #     #以share为键方便同一条share有多条comment通知
+            #     key = str(comment.share.id)
+            #     if key not in result[COMMENT]:
+            #         result[COMMENT][key] = list()
+            #     result[COMMENT][key].append(str(notify.id))
+            # elif notify.notify_type == SHARE:
+            #     result[SHARE] = dict()
+            #     #以share的id作为通知的键，一条share一条通知
+            #     key = str(notify.notify_id)
+            #     if key not in result[SHARE]:
+            #         result[SHARE][key] = list()
+            #     result[SHARE][key].append(str(notify.id))
+            # elif notify.notify_type == FOLLOW:
+            #     result[FOLLOW] = dict()
+            #     #以登陆用户（被关注的人）的id作为通知的键
+            #     key = str(user_id)
+            #     if key not in result[FOLLOW]:
+            #         result[FOLLOW][key] = list()
+            #     result[FOLLOW][key].append(str(notify.id))
+            # elif notify.notify_type == GRATITUDE:
+            #     result[GRATITUDE] = dict()
+            #     #以share的id作为键，一条share多条感谢作为一个通知
+            #     key = str(notify.notify_id)
+            #     if key not in result[GRATITUDE]:
+            #         result[GRATITUDE][key] = list()
+            #     result[GRATITUDE][key].append(str(notify.id))
+            #     print 233333
+            # elif notify.notify_type == ADMIN:
+            #     result[ADMIN] = dict()
+            #     #以group的id作为键
+            #     key = str(notify.notify_id)
+            #     if key not in result[ADMIN]:
+            #         result[ADMIN][key] = list()
+            #     result[ADMIN][key].append(str(notify.id))
+        result = dict(notifies=list())
+        for notify in user.notify_content:
+            result["notifies"].append({
+                "notify_id": str(notify.id),
+                "notify_cid": str(notify.notify_id),
+                "notify_uid": str(notify.notify_user),
+                "notify_type": notify.notify_type,
+                "notify_time": str(notify.notify_time)
+            })
+            notify.delete()
+        user.notify_content = list()
+        user.save()
+        self.write(json.dumps(result))

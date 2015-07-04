@@ -2434,6 +2434,91 @@
   },
   {
     "type": "get",
+    "url": "/user/notify",
+    "title": "获取通知（测试用）",
+    "version": "0.1.0",
+    "name": "GetNotify",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>获取未读的所有通知. notify_type包括<code>COMMENT</code>, <code>SHARE</code>, <code>FOLLOW</code>, <code>GRATITUDE</code>, <code>ADMIN</code>, <code>INVITE</code>.</p> ",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "notifies",
+            "description": "<p>Notifies of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "notifies.notify_id",
+            "description": "<p>Id of notify.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "notifies.notify_cid",
+            "description": "<p>Related id of component in notify.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "notifies.notify_uid",
+            "description": "<p>Related id of user in notify.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "notifies.notify_type",
+            "description": "<p>Type of notify.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "notifies.notify_time",
+            "description": "<p>Time of notify.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/notify.py",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/homepage[?uid=:uid]",
     "title": "个人主页",
     "version": "0.1.0",
@@ -2737,6 +2822,56 @@
         ]
       }
     },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "message",
+            "description": "<p>message = success.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/logout",
+    "title": "注销",
+    "version": "0.1.0",
+    "name": "Logout",
+    "group": "User",
+    "description": "<p>注销当前登录.</p> ",
     "filename": "application/user.py",
     "groupTitle": "User",
     "success": {

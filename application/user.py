@@ -15,6 +15,9 @@ import hashlib
 
 class Login(BaseHandler):
 
+    def get(self):
+        self.write('You should login!')
+
     @tornado.web.asynchronous
     def post(self):
         """
@@ -47,6 +50,29 @@ class Login(BaseHandler):
         else:
             self.recode_status_login(user)
             self.write(json.dumps({'message': 'success'}))
+
+
+class Logout(BaseHandler):
+
+    def get(self):
+        """
+        @api {get} /logout 注销
+        @apiVersion 0.1.0
+        @apiName Logout
+        @apiGroup User
+
+        @apiDescription 注销当前登录.
+
+        @apiUse MessageSuccess
+
+        @apiUse OtherError
+        """
+        self.session = self.get_session()
+        self.session.clear()
+        self.session.save()
+        self.clear_cookie('session_id')
+        self.write(json.dumps({'message': 'success'}))
+
 
 
 class Register(BaseHandler):
