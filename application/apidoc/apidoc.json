@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "SHR beta版，@联创团队",
   "title": "SHR api document",
-  "url": "http://127.0.0.1:5000",
+  "url": "http://104.236.46.64:8888",
   "header": {
     "title": "Important",
     "filename": "application/apidoc/header.md"
