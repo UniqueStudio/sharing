@@ -26,6 +26,7 @@ class CommentHandler(BaseHandler):
         @apiParam {String} share_id Id of share in group.
 
         @apiSuccess {Object[]} comments Comments of share.
+        @apiSuccess {String} comments.id Id of comment.
         @apiSuccess {String} comments.content Content of comment.
         @apiSuccess {String} comments.time Time of comment.
         @apiSuccess {String} comments.nickname Nickname of user who made this comment.

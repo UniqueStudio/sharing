@@ -111,6 +111,13 @@
             "group": "Success 200",
             "type": "<p>String</p> ",
             "optional": false,
+            "field": "comments.id",
+            "description": "<p>Id of comment.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
             "field": "comments.content",
             "description": "<p>Content of comment.</p> "
           },
@@ -2076,7 +2083,7 @@
             "type": "<p>String</p> ",
             "optional": false,
             "field": "blacked_user_id",
-            "description": "<p>Id of group.</p> "
+            "description": "<p>Id of user.</p> "
           }
         ]
       }
@@ -2146,7 +2153,7 @@
             "type": "<p>String</p> ",
             "optional": false,
             "field": "cancelled_user_id",
-            "description": "<p>Id of group.</p> "
+            "description": "<p>Id of user.</p> "
           }
         ]
       }
@@ -2216,7 +2223,7 @@
             "type": "<p>String</p> ",
             "optional": false,
             "field": "unfollow_user_id",
-            "description": "<p>Id of group.</p> "
+            "description": "<p>Id of user.</p> "
           }
         ]
       }
@@ -2286,7 +2293,7 @@
             "type": "<p>String</p> ",
             "optional": false,
             "field": "followed_user_id",
-            "description": "<p>Id of group.</p> "
+            "description": "<p>Id of user.</p> "
           }
         ]
       }

@@ -25,7 +25,8 @@ class NotifyBaseHandler(object):
 
     @classmethod
     def save(cls, user, content):
-        notify = Notify(notify_id=content.id, user=user.id)
+        assert cls.notify_type
+        notify = Notify(notify_id=content.id, notify_user=user.id, notify_type=cls.notify_type)
         notify.save()
         return notify
 

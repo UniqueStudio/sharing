@@ -279,7 +279,7 @@ class User(Document):
         :param comment: 评论
         """
         from application.utils.notify import NotifyCommentHandler
-        notify = NotifyCommentHandler.save(self.id, comment.id)
+        notify = NotifyCommentHandler.save(self, comment)
         #推送的键应该是被评论的share.id,当自己一条share被多次评论的时候可以合并一条
         self.notify_content.append(notify)
         self.save()
@@ -294,7 +294,7 @@ class User(Document):
         # notify = Notify()
         # notify.notify_share(user=self, share_user=share_user, share=share)
         from application.utils.notify import NotifyShareHandler
-        notify = NotifyShareHandler.save(self.id, share.id)
+        notify = NotifyShareHandler.save(share_user, share)
         #推送的键应该是share.id，以便当多个关注者分享一个share时候合并作为一条显示
         self.notify_content.append(notify)
         self.save()
@@ -308,7 +308,7 @@ class User(Document):
         # notify = Notify()
         # notify.notify_follow(user=self, follow_user=follow_user)
         from application.utils.notify import NotifyFollowHandler
-        notify = NotifyFollowHandler.save(self.id, follow_user.id)
+        notify = NotifyFollowHandler.save(self, follow_user)
         self.notify_content.append(notify)
         self.save()
 
@@ -322,7 +322,7 @@ class User(Document):
         # notify = Notify()
         # notify.notify_gratitude(user=self, gratitude_user=gratitude_user, share=share)
         from application.utils.notify import NotifyGratitudeHandler
-        notify = NotifyGratitudeHandler.save(self.id, share.id)
+        notify = NotifyGratitudeHandler.save(gratitude_user, share)
         self.notify_content.append(notify)
         self.save()
 
@@ -336,7 +336,19 @@ class User(Document):
         # notify = Notify()
         # notify.notify_change_admin(user=self, old_admin=old_admin, group=group)
         from application.utils.notify import NotifyAdminHandler
-        notify = NotifyAdminHandler.save(group.create_user.id, group.id)
+        notify = NotifyAdminHandler.save(group.create_user, group)
+        self.notify_content.append(notify)
+        self.save()
+
+    def _notify_invite(self, invite, user):
+        """
+        向用户推荐被邀请的信息推送
+        :param invite_id: key
+        :param user_id: 邀请人
+        :return:
+        """
+        from application.utils.notify import NotifyInviteHandler
+        notify = NotifyInviteHandler.save(user, invite)
         self.notify_content.append(notify)
         self.save()
 

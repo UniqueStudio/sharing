@@ -5,6 +5,7 @@ from mongoengine import ValidationError
 import application.utils.session
 from application.exception import BaseException
 import json
+import traceback
 
 class BaseHandler(tornado.web.RequestHandler):
     """
@@ -73,11 +74,14 @@ class BaseHandler(tornado.web.RequestHandler):
                 func(self, *args, **kw)
             except application.exception.BaseException as e:
                 print 'BaseException'
+                print traceback.format_exc()
                 self.write(json.dumps({
                     'message': 'failure',
                     'reason': e.description
                 }))
             except ValidationError as e:
+                print 'ValidationError '
+                print traceback.format_exc()
                 self.write(json.dumps({
                     'message': 'failure',
                     'reason': e.message

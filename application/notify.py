@@ -5,7 +5,7 @@ import tornado.httpclient
 from application.base import BaseHandler
 from application.models import User, Share, ShareGroup, Comment, Invite
 from application.models.notify import COMMENT, SHARE, FOLLOW, GRATITUDE, ADMIN
-from application.utils.notify import NofityItem
+from application.utils.notify import NotifyItem
 
 import json
 
@@ -23,8 +23,7 @@ class NotifyInfo(BaseHandler):
         user = User.objects(id=self.session['_id']).first()
         result = dict(notifies=list())
         for notify in user.notify_content:
-            if notify.notify_type == COMMENT:
-                result["notifies"].append(NofityItem(notify).load_notify())
+            result["notifies"].append(NotifyItem(notify).load_notify())
         print result
         self.write(json.dumps(result))
 

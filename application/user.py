@@ -407,7 +407,10 @@ class InviteByEmail(BaseHandler):
             invite_entity = Invite(inviter=inviter,
                                    invitee_email=email,
                                    invite_group=invite_group)
+            user = User.objects(email=email).first()
             invite_entity.save()
+            if user:
+                user._notify_invite(invite_entity, inviter)
             #TODO:send email
             info = str(invite_entity.id)
             print info
@@ -476,7 +479,7 @@ class Follow(BaseHandler):
 
         @apiDescription 关注用户，具体功能待定.
 
-        @apiParam {String} followed_user_id Id of group.
+        @apiParam {String} followed_user_id Id of user.
 
         @apiUse SuccessMsg
 
@@ -510,7 +513,7 @@ class Black(BaseHandler):
 
         @apiDescription 拉黑用户，不再接收其share.
 
-        @apiParam {String} blacked_user_id Id of group.
+        @apiParam {String} blacked_user_id Id of user.
 
         @apiUse SuccessMsg
 
@@ -544,7 +547,7 @@ class CancelFollow(BaseHandler):
 
         @apiDescription 取关.
 
-        @apiParam {String} unfollow_user_id Id of group.
+        @apiParam {String} unfollow_user_id Id of user.
 
         @apiUse SuccessMsg
 
@@ -578,7 +581,7 @@ class CancelBlack(BaseHandler):
 
         @apiDescription 取消拉黑用户.
 
-        @apiParam {String} cancelled_user_id Id of group.
+        @apiParam {String} cancelled_user_id Id of user.
 
         @apiUse SuccessMsg
 
