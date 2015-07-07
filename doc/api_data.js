@@ -2125,7 +2125,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/black",
+    "url": "/user/cancel_black",
     "title": "取消拉黑",
     "version": "0.1.0",
     "name": "CancelBlack",
@@ -2195,7 +2195,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/black",
+    "url": "/user/unfollow",
     "title": "取消关注",
     "version": "0.1.0",
     "name": "CancelFollow",

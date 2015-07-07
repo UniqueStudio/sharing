@@ -536,7 +536,7 @@ class CancelFollow(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /user/black 取消关注
+        @api {post} /user/unfollow 取消关注
         @apiVersion 0.1.0
         @apiName CancelFollow
         @apiGroup User
@@ -570,7 +570,7 @@ class CancelBlack(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /user/black 取消拉黑
+        @api {post} /user/cancel_black 取消拉黑
         @apiVersion 0.1.0
         @apiName CancelBlack
         @apiGroup User

@@ -278,9 +278,8 @@ class User(Document):
         :param comment_user: 评论用户
         :param comment: 评论
         """
-        from application.models import Notify
-        notify = Notify()
-        notify.notify_comment(user=self, comment_user=comment_user, comment=comment)
+        from application.utils.notify import NotifyCommentHandler
+        notify = NotifyCommentHandler.save(self.id, comment.id)
         #推送的键应该是被评论的share.id,当自己一条share被多次评论的时候可以合并一条
         self.notify_content.append(notify)
         self.save()
@@ -291,9 +290,11 @@ class User(Document):
         :param share_user: share的用户
         :param share:
         """
-        from application.models import Notify
-        notify = Notify()
-        notify.notify_share(user=self, share_user=share_user, share=share)
+        # from application.models import Notify
+        # notify = Notify()
+        # notify.notify_share(user=self, share_user=share_user, share=share)
+        from application.utils.notify import NotifyShareHandler
+        notify = NotifyShareHandler.save(self.id, share.id)
         #推送的键应该是share.id，以便当多个关注者分享一个share时候合并作为一条显示
         self.notify_content.append(notify)
         self.save()
@@ -303,9 +304,11 @@ class User(Document):
         向self用户的推送内容增加关注推送，提示follow_user关注了self
         :param follow_user: 关注者
         """
-        from application.models import Notify
-        notify = Notify()
-        notify.notify_follow(user=self, follow_user=follow_user)
+        # from application.models import Notify
+        # notify = Notify()
+        # notify.notify_follow(user=self, follow_user=follow_user)
+        from application.utils.notify import NotifyFollowHandler
+        notify = NotifyFollowHandler.save(self.id, follow_user.id)
         self.notify_content.append(notify)
         self.save()
 
@@ -315,21 +318,25 @@ class User(Document):
         :param gratitude_user: 感谢的用户
         :param share: 被感谢的share
         """
-        from application.models import Notify
-        notify = Notify()
-        notify.notify_gratitude(user=self, gratitude_user=gratitude_user, share=share)
+        # from application.models import Notify
+        # notify = Notify()
+        # notify.notify_gratitude(user=self, gratitude_user=gratitude_user, share=share)
+        from application.utils.notify import NotifyGratitudeHandler
+        notify = NotifyGratitudeHandler.save(self.id, share.id)
         self.notify_content.append(notify)
         self.save()
 
-    def notify_change_admin(self, old_admin, group):
+    def _notify_change_admin(self, group):
         """
         向self用户的推送内容增加group改变组管理员的推送
         :param old_admin: 以前的管理员
         :param group: 所在组
         """
-        from application.models import Notify
-        notify = Notify()
-        notify.notify_change_admin(user=self, old_admin=old_admin, group=group)
+        # from application.models import Notify
+        # notify = Notify()
+        # notify.notify_change_admin(user=self, old_admin=old_admin, group=group)
+        from application.utils.notify import NotifyAdminHandler
+        notify = NotifyAdminHandler.save(group.create_user.id, group.id)
         self.notify_content.append(notify)
         self.save()
 
@@ -363,7 +370,6 @@ class User(Document):
             comment = Comment.objects(id=comment_id).first()
             share._remove_comment(comment)  #comment的删除在里面操作了
 
-
     def admin_allow_user_entry(self, user, group):
         """
             使user加入group
@@ -387,6 +393,8 @@ class User(Document):
             self.save()
             user.save()
             group.change_admin(user)
+            for u in group.users:
+                u._notify_change_admin(group)
         else:
             if not user.is_in_the_group(group=group):
                 raise self.UserException(user.nickname + '不在' + group.name)
