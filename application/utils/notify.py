@@ -8,7 +8,8 @@ from application.models.notify import (COMMENT,
                                        FOLLOW,
                                        GRATITUDE,
                                        ADMIN,
-                                       INVITE)
+                                       INVITE,
+                                       FRESH_MEMBER)
 
 
 class NotifyBaseHandler(object):
@@ -26,6 +27,7 @@ class NotifyBaseHandler(object):
     @classmethod
     def save(cls, user, content):
         assert cls.notify_type
+        assert isinstance(user, User)
         notify = Notify(notify_id=content.id, notify_user=user.id, notify_type=cls.notify_type)
         notify.save()
         return notify
@@ -42,10 +44,10 @@ class NotifyCommentHandler(NotifyBaseHandler):
             raise BaseException(u'Illegal comment notify')
         return {
             "notify_type": self.notify_type,
+            "time": str(self.notify.notify_time),
             "comment_id": str(comment.id),
             "title": comment.share.title,
             "content": comment.content,
-            "time": str(comment.create_time),
             "user_id": str(comment.user.id),
             "nickname": comment.user.nickname,
             "avatar": comment.user.avatar
@@ -63,9 +65,9 @@ class NotifyShareHandler(NotifyBaseHandler):
             raise BaseException(u'Illegal share notify')
         return {
             "notify_type": self.notify_type,
+            "time": str(self.notify.notify_time),
             "share_id": str(share.id),
             "title": share.title,
-            "time": str(self.notify.notify_time),
             "user_id": str(self.notify.notify_user.id),
             "nickname": self.notify.notify_user.nickname,
             "avatar": self.notify.notify_user.avatar
@@ -150,6 +152,27 @@ class NotifyInviteHandler(NotifyBaseHandler):
         }
 
 
+class NotifyFreshMemberHandler(NotifyBaseHandler):
+
+    notify_type = FRESH_MEMBER
+
+    def output(self):
+        super(self.__class__, self).output()
+        group = ShareGroup.objects(id=self.notify.notify_id).first()
+        user = User.objects(id=self.notify.notify_user.id).first()
+        if not group or not user:
+            raise BaseException(u'Illegal fresh member notify')
+        return {
+            "notify_type": self.notify_type,
+            "time": str(self.notify.notify_time),
+            "group_id": str(group.id),
+            "group_name": group.name,
+            "user_id": str(user.id),
+            "nickname": user.nickname,
+            "avatar": user.avatar,
+        }
+
+
 class NotifyItem(object):
 
     route_map = {
@@ -159,6 +182,7 @@ class NotifyItem(object):
         GRATITUDE: NotifyGratitudeHandler,
         ADMIN: NotifyAdminHandler,
         INVITE: NotifyInviteHandler,
+        FRESH_MEMBER: NotifyFreshMemberHandler
     }
 
     def __init__(self, notify):

@@ -191,7 +191,7 @@ class Homepage(BaseHandler):
         uid = self.session['_id']
         query_uid = uid if uid_arugument is None else uid_arugument
         user = User.objects(id=query_uid).first()
-        result = {}
+        result = dict()
         result['nickname'] = user.nickname
         result['id'] = str(user.id)
         result['avatar'] = user.avatar

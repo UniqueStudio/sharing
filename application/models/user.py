@@ -352,6 +352,18 @@ class User(Document):
         self.notify_content.append(notify)
         self.save()
 
+    def _notify_fresh_member(self, group, user):
+        """
+        将组内新加入的人员的信息推送给当前组员
+        :param group:
+        :param user: fresh member
+        :return:
+        """
+        from application.utils.notify import NotifyFreshMemberHandler
+        notify = NotifyFreshMemberHandler.save(user, group)
+        self.notify_content.append(notify)
+        self.save()
+
 
     #管理员方法
     def is_admin(self, group):

@@ -76,7 +76,13 @@ class ShareGroup(Document):
             raise ShareGroup.GroupException('成员已在组中')
 
     def accept_apply(self, user):
+        """
+
+        :type user: application.models.User
+        """
         if user in self.apply_users:
+            for u in self.users:
+                u._notify_fresh_member(self, user)
             self.create_user.admin_allow_user_entry(user=user, group=self)
             self.apply_users.remove(user)
             self.save()

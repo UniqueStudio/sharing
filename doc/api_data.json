@@ -2453,7 +2453,7 @@
         "description": ""
       }
     ],
-    "description": "<p>获取未读的所有通知. notify_type包括<code>COMMENT</code>, <code>SHARE</code>, <code>FOLLOW</code>, <code>GRATITUDE</code>, <code>ADMIN</code>, <code>INVITE</code>.</p> ",
+    "description": "<p>获取未读的所有通知. notify_type包括:<code>COMMENT</code>, <code>SHARE</code>, <code>FOLLOW</code>, <code>GRATITUDE</code>, <code>ADMIN</code>, <code>INVITE</code>, <code>FRESH_MEMBER</code>.</p> ",
     "success": {
       "fields": {
         "Success 200": [
@@ -2468,39 +2468,48 @@
             "group": "Success 200",
             "type": "<p>String</p> ",
             "optional": false,
-            "field": "notifies.notify_id",
-            "description": "<p>Id of notify.</p> "
-          },
-          {
-            "group": "Success 200",
-            "type": "<p>String</p> ",
-            "optional": false,
-            "field": "notifies.notify_cid",
-            "description": "<p>Related id of component in notify.</p> "
-          },
-          {
-            "group": "Success 200",
-            "type": "<p>String</p> ",
-            "optional": false,
-            "field": "notifies.notify_uid",
-            "description": "<p>Related id of user in notify.</p> "
-          },
-          {
-            "group": "Success 200",
-            "type": "<p>String</p> ",
-            "optional": false,
-            "field": "notifies.notify_type",
-            "description": "<p>Type of notify.</p> "
-          },
-          {
-            "group": "Success 200",
-            "type": "<p>String</p> ",
-            "optional": false,
-            "field": "notifies.notify_time",
-            "description": "<p>Time of notify.</p> "
+            "field": "notifies.notify",
+            "description": "<p>Check examples below for detail.</p> "
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "COMMENT",
+          "content": "//别人对自己的share的评论\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"COMMENT\",\n    \"time\": time,\n    \"comment_id\": comment.id,\n    \"title\": share.title,\n    \"content\": comment.content,\n    \"user_id\": comment.user.id,\n    \"nickname\": comment.user.nickname,\n    \"avatar\": comment.user.avatar\n}",
+          "type": "json"
+        },
+        {
+          "title": "SHARE",
+          "content": "//关注的人发送的share\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"SHARE\",\n    \"time\": time,\n    \"share_id\": share.id,\n    \"title\": share.title,\n    \"user_id\": share.user.id,\n    \"nickname\": share.user.nickname,\n    \"avatar\": share.user.avatar\n}",
+          "type": "json"
+        },
+        {
+          "title": "FOLLOW",
+          "content": "//增加粉丝\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"FOLLOW\",\n    \"time\": time,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
+          "type": "json"
+        },
+        {
+          "title": "GRATITUDE",
+          "content": "//收到感谢\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"GRATITUDE\",\n    \"time\": time,\n    \"title\": share.title,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
+          "type": "json"
+        },
+        {
+          "title": "ADMIN",
+          "content": "//管理员变更\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"ADMIN\",\n    \"time\": time,\n    \"group_id\": group.id,\n    \"group_name\": group.name,\n    \"user_id\": new_admin.id,\n    \"nickname\": new_admin.nickname,\n    \"avatar\": new_admin.avatar\n}",
+          "type": "json"
+        },
+        {
+          "title": "INVITE",
+          "content": "//收到加组邀请\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"INVITE\",\n    \"time\": time,\n    \"key\": invite.key,\n    \"group_id\": group.id,\n    \"group_name\": group.name,\n    \"user_id\": inviter.id,\n    \"nickname\": inviter.nickname,\n    \"avatar\": inviter.avatar\n}",
+          "type": "json"
+        },
+        {
+          "title": "FRESH_MEMBER",
+          "content": "//新人入组\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"FRESH_MEMBER\",\n    \"time\": time,\n    \"group_id\": group.id,\n    \"group_name\": group.name,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
+          "type": "json"
+        }
+      ]
     },
     "filename": "application/notify.py",
     "groupTitle": "User",
