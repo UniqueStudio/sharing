@@ -43,6 +43,7 @@ class NotifyCommentHandler(NotifyBaseHandler):
         if comment is None:
             raise BaseException(u'Illegal comment notify')
         return {
+            "id": str(self.notify.id),
             "notify_type": self.notify_type,
             "time": str(self.notify.notify_time),
             "comment_id": str(comment.id),
@@ -64,6 +65,7 @@ class NotifyShareHandler(NotifyBaseHandler):
         if share is None:
             raise BaseException(u'Illegal share notify')
         return {
+            "id": str(self.notify.id),
             "notify_type": self.notify_type,
             "time": str(self.notify.notify_time),
             "share_id": str(share.id),
@@ -84,6 +86,7 @@ class NotifyFollowHandler(NotifyBaseHandler):
         if user is None:
             raise BaseException(u'Illegal follow notify')
         return {
+            "id": str(self.notify.id),
             "notify_type": self.notify_type,
             "time": str(self.notify.notify_time),
             "user_id": str(user.id),
@@ -102,6 +105,7 @@ class NotifyGratitudeHandler(NotifyBaseHandler):
         if share is None:
             raise BaseException(u'Illegal gratitude notify')
         return {
+            "id": str(self.notify.id),
             "notify_type": self.notify_type,
             "time": str(self.notify.notify_time),
             "title": share.title,
@@ -121,6 +125,7 @@ class NotifyAdminHandler(NotifyBaseHandler):
         if group is None:
             raise BaseException(u'Illegal gratitude notify')
         return {
+            "id": str(self.notify.id),
             "notify_type": self.notify_type,
             "time": str(self.notify.notify_time),
             "group_id": str(group.id),
@@ -141,6 +146,7 @@ class NotifyInviteHandler(NotifyBaseHandler):
         if invite is None:
             raise BaseException(u'Illegal invite notify')
         return {
+            "id": str(self.notify.id),
             "notify_type": self.notify_type,
             "time": str(self.notify.notify_time),
             "key": str(self.notify.notify_id),
@@ -163,6 +169,7 @@ class NotifyFreshMemberHandler(NotifyBaseHandler):
         if not group or not user:
             raise BaseException(u'Illegal fresh member notify')
         return {
+            "id": str(self.notify.id),
             "notify_type": self.notify_type,
             "time": str(self.notify.notify_time),
             "group_id": str(group.id),
@@ -194,3 +201,11 @@ class NotifyItem(object):
             raise NotImplementedError
         _handler = self.route_map[self.notify.notify_type](self.notify)
         return _handler.output()
+
+    def delete_notify(self, user_id):
+        user = User.objects(id=user_id).first()
+        if not user or self.notify not in user.notify_content:
+            print 'fail to delete notify', self.notify, user.notify_content
+            return False
+        print 'delete', self.notify, type(self.notify)
+        return True

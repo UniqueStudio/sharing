@@ -124,7 +124,6 @@ class Register(BaseHandler):
         invite = None
         if self.invite_id:
             invite = Invite.objects(id=self.invite_id).first()
-            email = invite.invitee_email
         if User.is_exist(email):
             raise User.UserException('Email已经被占用')
         user = User(email=email, nickname=nickname)

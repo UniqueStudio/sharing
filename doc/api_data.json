@@ -2271,6 +2271,92 @@
     }
   },
   {
+    "type": "delete",
+    "url": "/user/notify",
+    "title": "删除通知",
+    "version": "0.1.1",
+    "name": "DeleteNotify",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>通过notify_id删除通知，注意参数notify_id为一数组，将需要删除的 评论的id添加到该数组中，服务器将删除数组中所有对应的通知.</p> ",
+    "header": {
+      "examples": [
+        {
+          "title": "Header-Example",
+          "content": "{\n    \"Content-Type\": \"application/json\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String[]</p> ",
+            "optional": false,
+            "field": "notify_id",
+            "description": "<p>Id of notify.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example",
+          "content": "{\n    \"notify_id\":[\n        ...\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "application/notify.py",
+    "groupTitle": "User",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "post",
     "url": "/user/follow",
     "title": "关注",
@@ -2476,37 +2562,37 @@
       "examples": [
         {
           "title": "COMMENT",
-          "content": "//别人对自己的share的评论\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"COMMENT\",\n    \"time\": time,\n    \"comment_id\": comment.id,\n    \"title\": share.title,\n    \"content\": comment.content,\n    \"user_id\": comment.user.id,\n    \"nickname\": comment.user.nickname,\n    \"avatar\": comment.user.avatar\n}",
+          "content": "//别人对自己的share的评论\n\nHTTP/1.1 200 OK\n{\n    \"id\": notify.id,\n    \"notify_type\": \"COMMENT\",\n    \"time\": time,\n    \"comment_id\": comment.id,\n    \"title\": share.title,\n    \"content\": comment.content,\n    \"user_id\": comment.user.id,\n    \"nickname\": comment.user.nickname,\n    \"avatar\": comment.user.avatar\n}",
           "type": "json"
         },
         {
           "title": "SHARE",
-          "content": "//关注的人发送的share\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"SHARE\",\n    \"time\": time,\n    \"share_id\": share.id,\n    \"title\": share.title,\n    \"user_id\": share.user.id,\n    \"nickname\": share.user.nickname,\n    \"avatar\": share.user.avatar\n}",
+          "content": "//关注的人发送的share\n\nHTTP/1.1 200 OK\n{\n    \"id\": notify.id,\n    \"notify_type\": \"SHARE\",\n    \"time\": time,\n    \"share_id\": share.id,\n    \"title\": share.title,\n    \"user_id\": share.user.id,\n    \"nickname\": share.user.nickname,\n    \"avatar\": share.user.avatar\n}",
           "type": "json"
         },
         {
           "title": "FOLLOW",
-          "content": "//增加粉丝\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"FOLLOW\",\n    \"time\": time,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
+          "content": "//增加粉丝\n\nHTTP/1.1 200 OK\n{\n    \"id\": notify.id,\n    \"notify_type\": \"FOLLOW\",\n    \"time\": time,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
           "type": "json"
         },
         {
           "title": "GRATITUDE",
-          "content": "//收到感谢\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"GRATITUDE\",\n    \"time\": time,\n    \"title\": share.title,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
+          "content": "//收到感谢\n\nHTTP/1.1 200 OK\n{\n    \"id\": notify.id,\n    \"notify_type\": \"GRATITUDE\",\n    \"time\": time,\n    \"title\": share.title,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
           "type": "json"
         },
         {
           "title": "ADMIN",
-          "content": "//管理员变更\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"ADMIN\",\n    \"time\": time,\n    \"group_id\": group.id,\n    \"group_name\": group.name,\n    \"user_id\": new_admin.id,\n    \"nickname\": new_admin.nickname,\n    \"avatar\": new_admin.avatar\n}",
+          "content": "//管理员变更\n\nHTTP/1.1 200 OK\n{\n    \"id\": notify.id,\n    \"notify_type\": \"ADMIN\",\n    \"time\": time,\n    \"group_id\": group.id,\n    \"group_name\": group.name,\n    \"user_id\": new_admin.id,\n    \"nickname\": new_admin.nickname,\n    \"avatar\": new_admin.avatar\n}",
           "type": "json"
         },
         {
           "title": "INVITE",
-          "content": "//收到加组邀请\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"INVITE\",\n    \"time\": time,\n    \"key\": invite.key,\n    \"group_id\": group.id,\n    \"group_name\": group.name,\n    \"user_id\": inviter.id,\n    \"nickname\": inviter.nickname,\n    \"avatar\": inviter.avatar\n}",
+          "content": "//收到加组邀请\n\nHTTP/1.1 200 OK\n{\n    \"id\": notify.id,\n    \"notify_type\": \"INVITE\",\n    \"time\": time,\n    \"key\": invite.key,\n    \"group_id\": group.id,\n    \"group_name\": group.name,\n    \"user_id\": inviter.id,\n    \"nickname\": inviter.nickname,\n    \"avatar\": inviter.avatar\n}",
           "type": "json"
         },
         {
           "title": "FRESH_MEMBER",
-          "content": "//新人入组\n\nHTTP/1.1 200 OK\n{\n    \"notify_type\": \"FRESH_MEMBER\",\n    \"time\": time,\n    \"group_id\": group.id,\n    \"group_name\": group.name,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
+          "content": "//新人入组\n\nHTTP/1.1 200 OK\n{\n    \"id\": notify.id,\n    \"notify_type\": \"FRESH_MEMBER\",\n    \"time\": time,\n    \"group_id\": group.id,\n    \"group_name\": group.name,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
           "type": "json"
         }
       ]
