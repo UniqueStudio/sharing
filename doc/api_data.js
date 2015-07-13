@@ -1596,7 +1596,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/group/info",
+    "url": "/group/info?[group_id|group_name]=[:group_id|:group_name]",
     "title": "查询组信息，包括成员",
     "version": "0.1.0",
     "name": "GetGroupInfo",
@@ -1608,7 +1608,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>根据id或者name来搜索group信息,两个之间必须提供一个条件.</p> ",
+    "description": "<p>根据group_id或者group_name来搜索group信息,两个之间必须提供一个条件. 即group_id=组id，group_name=组名.</p> ",
     "parameter": {
       "fields": {
         "Parameter": [
@@ -1616,14 +1616,14 @@ define({ "api": [
             "group": "Parameter",
             "type": "<p>String</p> ",
             "optional": true,
-            "field": "name",
+            "field": "group_name",
             "description": "<p>the name of group.</p> "
           },
           {
             "group": "Parameter",
             "type": "<p>String</p> ",
             "optional": true,
-            "field": "id",
+            "field": "group_id",
             "description": "<p>the id of group.</p> "
           }
         ]

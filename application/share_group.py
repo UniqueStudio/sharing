@@ -102,16 +102,17 @@ class GroupInfo(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         """
-        @api {get} /group/info 查询组信息，包括成员
+        @api {get} /group/info?[group_id|group_name]=[:group_id|:group_name] 查询组信息，包括成员
         @apiVersion 0.1.0
         @apiName GetGroupInfo
         @apiGroup ShareGroup
         @apiPermission member
 
-        @apiDescription 根据id或者name来搜索group信息,两个之间必须提供一个条件.
+        @apiDescription 根据group_id或者group_name来搜索group信息,两个之间必须提供一个条件.
+        即group_id=组id，group_name=组名.
 
-        @apiParam {String} [name]     the name of group.
-        @apiParam {String} [id]       the id of group.
+        @apiParam {String} [group_name]     the name of group.
+        @apiParam {String} [group_id]       the id of group.
 
         @apiSuccess {String} group_name The name of group.
         @apiSuccess {String} group_id The id of group.
@@ -202,7 +203,7 @@ class GroupShare(BaseHandler):
                 if user and user.is_in_the_group(group=group):
                     shares = group.shares
                     result = {
-                        'shares':[{
+                        'shares': [{
                             'title': share.title,
                             'id': str(share.id),
                             'origin': {
