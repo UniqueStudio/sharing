@@ -91,9 +91,9 @@ class User(Document):
             share._gratitude(self)
             self.gratitude_shares.append(share)
             self.save()
-            #为该share的所有分享者都传递感谢
-            for share_user in share.share_users:
-                share_user._notify_gratitude(gratitude_user=self, share=share)
+            #为该share的origin传递感谢
+            assert len(share.share_users)
+            share.share_users[0]._notify_gratitude(gratitude_user=self, share=share)
         else:
             raise User.UserException(u'重复感谢')
 
@@ -196,9 +196,9 @@ class User(Document):
         comment = Comment(user=self, content=comment_content, share=share).save()
         share._add_comment(comment)
         self.comments.append(comment)
-        #向share的share_users中每一个推送
-        for share_user in share.share_users:
-            share_user._notify_comment(self, comment)
+        #向share的share_users中first one 推送
+        if len(share.share_users):
+            share.share_users[0]._notify_comment(self, comment)
         self.save()
 
     def remove_comment_to_share(self, comment_id):
@@ -208,6 +208,27 @@ class User(Document):
         """
         from application.models import Comment
         comment = Comment.objects(id=comment_id).first()
+        if comment in self.comments:    #只能删除自己的
+            comment.share._remove_comment(comment)  #comment的删除在里面操作了
+        else:
+            raise self.UserException(u'只能删除自己的')
+
+    # reply
+    def add_reply_to_share(self, share, comment_content, to_user_id):
+        from application.models import Comment
+        to_user = User.objects(id=to_user_id).first()
+        if to_user is None:
+            raise self.UserException('illegal to_user')
+        comment = Comment(user=self, content=comment_content,
+                          share=share, to_user=to_user).save()
+        share._add_comment(comment)
+        self.comments.append(comment)
+        to_user._notify_reply(self, comment)
+        self.save()
+
+    def remove_reply_to_share(self, reply_id):
+        from application.models import Comment
+        comment = Comment.objects(id=reply_id).first()
         if comment in self.comments:    #只能删除自己的
             comment.share._remove_comment(comment)  #comment的删除在里面操作了
         else:
@@ -361,6 +382,12 @@ class User(Document):
         """
         from application.utils.notify import NotifyFreshMemberHandler
         notify = NotifyFreshMemberHandler.save(user, group)
+        self.notify_content.append(notify)
+        self.save()
+
+    def _notify_reply(self, reply_user, reply):
+        from application.utils.notify import NotifyReplyHandler
+        notify = NotifyReplyHandler.save(self, reply)
         self.notify_content.append(notify)
         self.save()
 

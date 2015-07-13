@@ -2,6 +2,76 @@ define({ "api": [
   {
     "type": "delete",
     "url": "/comment",
+    "title": "删除评论/回复",
+    "version": "0.1.1",
+    "name": "DeleteComment",
+    "group": "Comment",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>通过comment_id删除评论/回复.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comment_id",
+            "description": "<p>Id of comment/reply.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/comment.py",
+    "groupTitle": "Comment",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "delete",
+    "url": "/comment",
     "title": "删除评论",
     "version": "0.1.0",
     "name": "DeleteComment",
@@ -27,7 +97,7 @@ define({ "api": [
         ]
       }
     },
-    "filename": "application/comment.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "Comment",
     "success": {
       "examples": [
@@ -38,6 +108,150 @@ define({ "api": [
         }
       ]
     },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/comment?share_id=:share_id",
+    "title": "获取评论",
+    "version": "0.1.1",
+    "name": "GetComment",
+    "group": "Comment",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>根据share_id获取组内某条share的评论，当is_reply为true时， 表示此评论为回复，并且有to_uid, to_nickname, to_avatar字段.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "share_id",
+            "description": "<p>Id of share in group.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "comments",
+            "description": "<p>Comments of share.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comments.id",
+            "description": "<p>Id of comment.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comments.uid",
+            "description": "<p>Comment.user.id.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comments.content",
+            "description": "<p>Content of comment.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comments.time",
+            "description": "<p>Time of comment.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comments.nickname",
+            "description": "<p>Nickname of user who made this comment.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "comments.avatar",
+            "description": "<p>Avatar of user who made this comment.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Boolean</p> ",
+            "optional": false,
+            "field": "comments.is_reply",
+            "description": ""
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comments.to_uid",
+            "description": "<p>Reply.to_user.id(available when is_reply is true)</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comments.to_nickname",
+            "description": "<p>Reply.to_user.nickname(available when is_reply is true)</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comments.to_avatar",
+            "description": "<p>Reply.to_user.avatar(available when is_reply is true)</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/comment.py",
+    "groupTitle": "Comment",
     "error": {
       "fields": {
         "Error 4xx": [
@@ -145,8 +359,92 @@ define({ "api": [
         ]
       }
     },
+    "filename": "application/apidoc/_apidoc.js",
+    "groupTitle": "Comment",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/comment",
+    "title": "发布评论/回复",
+    "version": "0.1.1",
+    "name": "PostComment",
+    "group": "Comment",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>只能对组内的share发表评论. 如果有to_user参数，则对该用户进行回复.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "share_id",
+            "description": "<p>Id of share..</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "content",
+            "description": "<p>Content of comment.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "to_user",
+            "description": "<p>ToUser.id</p> "
+          }
+        ]
+      }
+    },
     "filename": "application/comment.py",
     "groupTitle": "Comment",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "error": {
       "fields": {
         "Error 4xx": [
@@ -213,7 +511,7 @@ define({ "api": [
         ]
       }
     },
-    "filename": "application/comment.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "Comment",
     "success": {
       "examples": [
@@ -2271,92 +2569,6 @@ define({ "api": [
     }
   },
   {
-    "type": "delete",
-    "url": "/user/notify",
-    "title": "删除通知",
-    "version": "0.1.1",
-    "name": "DeleteNotify",
-    "group": "User",
-    "permission": [
-      {
-        "name": "login",
-        "title": "Login to get permission.",
-        "description": ""
-      }
-    ],
-    "description": "<p>通过notify_id删除通知，注意参数notify_id为一数组，将需要删除的 评论的id添加到该数组中，服务器将删除数组中所有对应的通知.</p> ",
-    "header": {
-      "examples": [
-        {
-          "title": "Header-Example",
-          "content": "{\n    \"Content-Type\": \"application/json\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "<p>String[]</p> ",
-            "optional": false,
-            "field": "notify_id",
-            "description": "<p>Id of notify.</p> "
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Request-Example",
-          "content": "{\n    \"notify_id\":[\n        ...\n    ]\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "filename": "application/notify.py",
-    "groupTitle": "User",
-    "success": {
-      "examples": [
-        {
-          "title": "Success-Response",
-          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "NotLogin",
-            "description": "<p>Users must login to invoke this api.</p> "
-          },
-          {
-            "group": "Error 4xx",
-            "optional": false,
-            "field": "SomeErrorInDetail",
-            "description": "<p>Errors in detail.</p> "
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 403 Forbidden",
-          "type": "json"
-        },
-        {
-          "title": "Error-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
-          "type": "json"
-        }
-      ]
-    }
-  },
-  {
     "type": "post",
     "url": "/user/follow",
     "title": "关注",
@@ -3068,6 +3280,92 @@ define({ "api": [
     },
     "filename": "application/user.py",
     "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/user/notify",
+    "title": "将通知设置为已读",
+    "version": "0.1.1",
+    "name": "PutNotify",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>通过notify_id操作通知，注意参数notify_id为一数组，将 评论的id添加到该数组中，服务器将把数组中所有对应的通知设为已读.</p> ",
+    "header": {
+      "examples": [
+        {
+          "title": "Header-Example",
+          "content": "{\n    \"Content-Type\": \"application/json\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String[]</p> ",
+            "optional": false,
+            "field": "notify_id",
+            "description": "<p>Id of notify.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example",
+          "content": "{\n    \"notify_id\":[\n        ...\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "application/notify.py",
+    "groupTitle": "User",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "error": {
       "fields": {
         "Error 4xx": [

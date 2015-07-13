@@ -144,21 +144,22 @@ class NotifyInfo(BaseHandler):
         user = User.objects(id=self.session['_id']).first()
         result = dict(notifies=list())
         for notify in user.notify_content:
-            result["notifies"].append(NotifyItem(notify).load_notify())
+            if not notify.read:
+                result["notifies"].append(NotifyItem(notify).load_notify())
         print result
         self.write(json.dumps(result))
 
     @tornado.web.authenticated
-    def delete(self):
+    def put(self):
         """
-        @api {delete} /user/notify 删除通知
+        @api {put} /user/notify 将通知设置为已读
         @apiVersion 0.1.1
-        @apiName DeleteNotify
+        @apiName PutNotify
         @apiGroup User
         @apiPermission login
 
-        @apiDescription 通过notify_id删除通知，注意参数notify_id为一数组，将需要删除的
-        评论的id添加到该数组中，服务器将删除数组中所有对应的通知.
+        @apiDescription 通过notify_id操作通知，注意参数notify_id为一数组，将
+        评论的id添加到该数组中，服务器将把数组中所有对应的通知设为已读.
 
         @apiHeaderExample {json} Header-Example
             {
@@ -187,7 +188,7 @@ class NotifyInfo(BaseHandler):
                 self.set_status(400)
                 self.finish('Bad request')
                 break
-            elif not NotifyItem(_notify).delete_notify(self.session['_id']):
+            elif not NotifyItem(_notify).read_notify(self.session['_id']):
                 self.set_status(403)
                 self.finish('Forbidden')
         else:

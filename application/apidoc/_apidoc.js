@@ -54,3 +54,62 @@
  *       "reason": String
  *     }
  */
+
+//History
+
+/**
+ * @api {delete} /comment 删除评论
+ * @apiVersion 0.1.0
+ * @apiName DeleteComment
+ * @apiGroup Comment
+ * @apiPermission login
+ *
+ * @apiDescription 通过comment_id删除评论.
+ *
+ * @apiParam {String} comment_id Id of comment.
+ *
+ * @apiUse SuccessMsg
+ *
+ * @apiUse NotLoginError
+ * @apiUse OtherError
+ */
+
+/**
+ * @api {post} /comment 发布评论
+ * @apiVersion 0.1.0
+ * @apiName PostComment
+ * @apiGroup Comment
+ * @apiPermission login
+ * 
+ * @apiDescription 只能对组内的share发表评论.
+ *
+ * @apiParam {String} share_id Id of share..
+ * @apiParam {String} content Content of comment.
+ *
+ * @apiUse SuccessMsg
+ *
+ * @apiUse NotLoginError
+ * @apiUse OtherError
+ */
+
+/**
+ @api {get} /comment?share_id=:share_id 获取评论
+ @apiVersion 0.1.0
+ @apiName GetComment
+ @apiGroup Comment
+ @apiPermission login
+
+ @apiDescription 根据share_id获取组内某条share的评论.
+
+ @apiParam {String} share_id Id of share in group.
+
+ @apiSuccess {Object[]} comments Comments of share.
+ @apiSuccess {String} comments.id Id of comment.
+ @apiSuccess {String} comments.content Content of comment.
+ @apiSuccess {String} comments.time Time of comment.
+ @apiSuccess {String} comments.nickname Nickname of user who made this comment.
+ @apiSuccess {String} comments.avatar Avatar of user who made this comment.
+
+ @apiUse NotLoginError
+ @apiUse OtherError
+ */

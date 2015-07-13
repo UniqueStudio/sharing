@@ -9,7 +9,8 @@ from application.models.notify import (COMMENT,
                                        GRATITUDE,
                                        ADMIN,
                                        INVITE,
-                                       FRESH_MEMBER)
+                                       FRESH_MEMBER,
+                                       REPLY)
 
 
 class NotifyBaseHandler(object):
@@ -28,6 +29,7 @@ class NotifyBaseHandler(object):
     def save(cls, user, content):
         assert cls.notify_type
         assert isinstance(user, User)
+        print cls.notify_type, cls
         notify = Notify(notify_id=content.id, notify_user=user.id, notify_type=cls.notify_type)
         notify.save()
         return notify
@@ -180,6 +182,28 @@ class NotifyFreshMemberHandler(NotifyBaseHandler):
         }
 
 
+class NotifyReplyHandler(NotifyBaseHandler):
+
+    notify_type = REPLY
+
+    def output(self):
+        super(self.__class__, self).output()
+        reply = Comment.objects(id=self.notify.notify_id).first()
+        if reply is None:
+            raise BaseException(u'Illegal reply notify')
+        return {
+            "id": str(self.notify.id),
+            "notify_type": self.notify_type,
+            "time": str(self.notify.notify_time),
+            "reply_id": str(reply.id),
+            "title": reply.share.title,
+            "content": reply.content,
+            "user_id": str(reply.user.id),
+            "nickname": reply.user.nickname,
+            "avatar": reply.user.avatar
+        }
+
+
 class NotifyItem(object):
 
     route_map = {
@@ -189,7 +213,8 @@ class NotifyItem(object):
         GRATITUDE: NotifyGratitudeHandler,
         ADMIN: NotifyAdminHandler,
         INVITE: NotifyInviteHandler,
-        FRESH_MEMBER: NotifyFreshMemberHandler
+        FRESH_MEMBER: NotifyFreshMemberHandler,
+        REPLY: NotifyReplyHandler
     }
 
     def __init__(self, notify):
@@ -202,10 +227,12 @@ class NotifyItem(object):
         _handler = self.route_map[self.notify.notify_type](self.notify)
         return _handler.output()
 
-    def delete_notify(self, user_id):
+    def read_notify(self, user_id):
         user = User.objects(id=user_id).first()
         if not user or self.notify not in user.notify_content:
-            print 'fail to delete notify', self.notify, user.notify_content
+            print 'fail to read notify', self.notify, user.notify_content
             return False
-        print 'delete', self.notify, type(self.notify)
+        print 'read', self.notify, type(self.notify)
+        self.notify.read = True
+        self.notify.save()
         return True

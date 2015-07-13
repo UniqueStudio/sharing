@@ -8,6 +8,7 @@ import datetime
 
 
 class Comment(Document):
+    to_user = ReferenceField('User')
     user = ReferenceField('User', required=True)
     content = StringField(required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)

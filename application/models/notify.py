@@ -17,11 +17,13 @@ GRATITUDE = 'GRATITUDE'
 ADMIN = 'ADMIN'
 INVITE = 'INVITE'
 FRESH_MEMBER = 'FRESH_MEMBER'
+REPLY = 'REPLY'
 
 class Notify(Document):
     """
         存储推送信息
     """
+    read = BooleanField(required=True, default=False)
     notify_id = ObjectIdField(required=True)    #收到推送通知内容的_id
     notify_user = ReferenceField('User', required=True)    #需要通知的用户
     notify_type = StringField(required=True)
