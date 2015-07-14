@@ -102,17 +102,15 @@ class GroupInfo(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         """
-        @api {get} /group/info?[group_id|group_name]=[:group_id|:group_name] 查询组信息，包括成员
-        @apiVersion 0.1.0
+        @api {get} /group/info?group_id=:group_id 查询组信息，包括成员
+        @apiVersion 0.1.1
         @apiName GetGroupInfo
         @apiGroup ShareGroup
         @apiPermission member
 
-        @apiDescription 根据group_id或者group_name来搜索group信息,两个之间必须提供一个条件.
-        即group_id=组id，group_name=组名.
+        @apiDescription 根据group_id来搜索group信息
 
-        @apiParam {String} [group_name]     the name of group.
-        @apiParam {String} [group_id]       the id of group.
+        @apiParam {String} group_id the id of group.
 
         @apiSuccess {String} group_name The name of group.
         @apiSuccess {String} group_id The id of group.
@@ -134,10 +132,8 @@ class GroupInfo(BaseHandler):
         self.session = self.get_session()
         group_id = self.get_argument('group_id')
         if not group_id:
-            group_name = self.get_argument('group_name')
-            group = ShareGroup.objects(name=group_name).first()
-        else:
-            group = ShareGroup.objects(id=group_id).first()
+            raise BaseException(u'该组不存在')
+        group = ShareGroup.objects(id=group_id).first()
         user = User.objects(id=self.session['_id']).first()
         if group and user and user.is_in_the_group(group=group):
             result = dict()

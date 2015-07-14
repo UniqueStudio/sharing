@@ -109,15 +109,13 @@ class ShareHandler(BaseHandler):
         if len(self.get_body_arguments('groups')):
             comment_content = self.get_body_argument('comment', default=None)
             print self.get_body_arguments('groups')
-            share = Share(title=title, url=url).save()
-            if comment_content:
-                user.add_comment_to_share(share, comment_content)
             for name in self.get_body_arguments('groups'):
                 group = ShareGroup.objects(name=name).first()
                 # if group not exist, skip it.
                 if group is None:
                     continue
-                user.share_to_group(share, group)
+                user.add_share(url, title, group, comment_content)
+                # user.share_to_group(share, group, comment_content)
         else:
             share = InboxShare(title=title, url=url)
             try:

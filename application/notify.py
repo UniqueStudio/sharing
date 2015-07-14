@@ -23,14 +23,14 @@ class NotifyInfo(BaseHandler):
     def get_notify(self, response):
         """
         @api {get} /user/notify 获取通知（测试用）
-        @apiVersion 0.1.0
+        @apiVersion 0.1.1
         @apiName GetNotify
         @apiGroup User
         @apiPermission login
 
         @apiDescription 获取未读的所有通知.
         notify_type包括:`COMMENT`, `SHARE`, `FOLLOW`, `GRATITUDE`,
-        `ADMIN`, `INVITE`, `FRESH_MEMBER`.
+        `ADMIN`, `INVITE`, `FRESH_MEMBER`, `REPLY`.
 
         @apiSuccess {Object[]} notifies Notifies of user.
         @apiSuccess {String} notifies.notify Check examples below for detail.
@@ -134,6 +134,22 @@ class NotifyInfo(BaseHandler):
                 "time": time,
                 "group_id": group.id,
                 "group_name": group.name,
+                "user_id": user.id,
+                "nickname": user.nickname,
+                "avatar": user.avatar
+            }
+
+        @apiSuccessExample REPLY
+            //回复
+
+            HTTP/1.1 200 OK
+            {
+                "id": notify.id,
+                "notify_type": "FRESH_MEMBER",
+                "time": time,
+                "reply_id": reply.id,
+                "title": reply.share.title,
+                "content": reply.content,
                 "user_id": user.id,
                 "nickname": user.nickname,
                 "avatar": user.avatar

@@ -48,12 +48,12 @@ class Share(Document):
             self.save()
             group._add_share(self)
 
-    def _add_share_user(self, user):  #添加分享用户
+    def add_share_user(self, user):  #添加分享用户
         if user not in self.share_users:
             self.share_users.append(user)
             self.save()
         else:
-            raise Share.ShareException('user已存在')
+            raise Share.ShareException('user已分享过')
 
     def _share_delete(self):
         for comment in self.comments:
@@ -65,7 +65,7 @@ class Share(Document):
             self.share_users.remove(user)
             self.save()
 
-    def _add_comment(self, comment):  #添加评论
+    def add_comment(self, comment):  #添加评论
         self.comments.append(comment)
         self.save()
 

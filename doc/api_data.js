@@ -1596,9 +1596,9 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/group/info?[group_id|group_name]=[:group_id|:group_name]",
+    "url": "/group/info?group_id=:group_id",
     "title": "查询组信息，包括成员",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "name": "GetGroupInfo",
     "group": "ShareGroup",
     "permission": [
@@ -1608,21 +1608,14 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>根据group_id或者group_name来搜索group信息,两个之间必须提供一个条件. 即group_id=组id，group_name=组名.</p> ",
+    "description": "<p>根据group_id来搜索group信息</p> ",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
             "type": "<p>String</p> ",
-            "optional": true,
-            "field": "group_name",
-            "description": "<p>the name of group.</p> "
-          },
-          {
-            "group": "Parameter",
-            "type": "<p>String</p> ",
-            "optional": true,
+            "optional": false,
             "field": "group_id",
             "description": "<p>the id of group.</p> "
           }
@@ -2741,7 +2734,7 @@ define({ "api": [
     "type": "get",
     "url": "/user/notify",
     "title": "获取通知（测试用）",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "name": "GetNotify",
     "group": "User",
     "permission": [
@@ -2751,7 +2744,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>获取未读的所有通知. notify_type包括:<code>COMMENT</code>, <code>SHARE</code>, <code>FOLLOW</code>, <code>GRATITUDE</code>, <code>ADMIN</code>, <code>INVITE</code>, <code>FRESH_MEMBER</code>.</p> ",
+    "description": "<p>获取未读的所有通知. notify_type包括:<code>COMMENT</code>, <code>SHARE</code>, <code>FOLLOW</code>, <code>GRATITUDE</code>, <code>ADMIN</code>, <code>INVITE</code>, <code>FRESH_MEMBER</code>, <code>REPLY</code>.</p> ",
     "success": {
       "fields": {
         "Success 200": [
@@ -2805,6 +2798,11 @@ define({ "api": [
         {
           "title": "FRESH_MEMBER",
           "content": "//新人入组\n\nHTTP/1.1 200 OK\n{\n    \"id\": notify.id,\n    \"notify_type\": \"FRESH_MEMBER\",\n    \"time\": time,\n    \"group_id\": group.id,\n    \"group_name\": group.name,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
+          "type": "json"
+        },
+        {
+          "title": "REPLY",
+          "content": "//回复\n\nHTTP/1.1 200 OK\n{\n    \"id\": notify.id,\n    \"notify_type\": \"FRESH_MEMBER\",\n    \"time\": time,\n    \"reply_id\": reply.id,\n    \"title\": reply.share.title,\n    \"content\": reply.content,\n    \"user_id\": user.id,\n    \"nickname\": user.nickname,\n    \"avatar\": user.avatar\n}",
           "type": "json"
         }
       ]

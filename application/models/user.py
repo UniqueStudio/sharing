@@ -1,6 +1,7 @@
 # encoding:utf-8
 __author__ = 'bing'
 
+from tornado.web import HTTPError
 from mongoengine import Document
 from mongoengine.fields import *
 import md5
@@ -108,31 +109,50 @@ class User(Document):
     def is_share(self, share, group):  #是否分享到某个组
         return share in self.self_shares and share.own_group == group
 
-    def share_to_group(self, share, group, comment_content=None):  #将share分享到group中
-        from application.models import Share
-        if not self.is_share(share, group) \
-                and self.is_in_the_group(group) \
-                and share not in self.self_shares:
-            if Share.is_exist(share.url, group):
-                share = Share.objects(url=share.url, own_group=group).first()
-                share._add_share_user(self)
-            else:
-                print 'add share'
-                share._add_share(self, group)
-            if comment_content:
-                self.add_comment_to_share(share, comment_content)
-            self.self_shares.append(share)
-            self.save()
-            #为自己的关注者说明已share了
-            for follower in self.followers:
-                follower._notify_share(share_user=self, share=share)
+    def add_share(self, url, title, group, comment_content=None):
+        from application.models import ShareGroup, Share
+        assert isinstance(group, ShareGroup)
+        if not self.is_in_the_group(group):
+            raise HTTPError(400)
+        if Share.is_exist(url, group):
+            share = Share.objects(url=url, own_group=group).first()
+            share.share_time = datetime.datetime.now()
         else:
-            print '已分享或不是该组成员'
-            from mongoengine import ValidationError
-            try:
-                share.delete()
-            except ValidationError:
-                pass
+            share = Share(title=title, url=url, own_group=group)
+        share.add_share_user(self)
+        if comment_content:
+            self.add_comment_to_share(share, comment_content)
+        self.self_shares.append(share)
+        self.save()
+        for follower in self.following:
+            follower._notify_share(share_user=self, share=share)
+
+    # def share_to_group(self, share, group, comment_content=None):  #将share分享到group中
+    #     from application.models import Share
+    #     if not self.is_share(share, group) \
+    #             and self.is_in_the_group(group) \
+    #             and share not in self.self_shares:
+    #         if Share.is_exist(share.url, group):
+    #             share.delete()
+    #             share = Share.objects(url=share.url, own_group=group).first()
+    #             share.add_share_user(self)
+    #         else:
+    #             print 'add share'
+    #             share._add_share(self, group)
+    #         if comment_content:
+    #             self.add_comment_to_share(share, comment_content)
+    #         self.self_shares.append(share)
+    #         self.save()
+    #         #为自己的关注者说明已share了
+    #         for follower in self.followers:
+    #             follower._notify_share(share_user=self, share=share)
+    #     else:
+    #         print '已分享或不是该组成员'
+    #         from mongoengine import ValidationError
+    #         try:
+    #             share.delete()
+    #         except ValidationError:
+    #             pass
 
     def remove_share_to_group(self, share, group):  #从group删除自己分享了的share
         from application.models import Share
@@ -179,9 +199,10 @@ class User(Document):
     def send_share(self, inbox_share, group):  #将inbox_share投递入具体组
         from application.models import Share, InboxShare
         if self.is_in_inbox(inbox_share) and InboxShare.is_exist(inbox_share.url, self):
-            share = Share(title=inbox_share.title, url=inbox_share.url)
-            share.save()
-            self.share_to_group(share=share, group=group)
+            # share = Share(title=inbox_share.title, url=inbox_share.url)
+            # share.save()
+            # self.share_to_group(share=share, group=group)
+            self.add_share(inbox_share.url, inbox_share.title, group)
             self.remove_inbox_share(inbox_share=inbox_share)
         else:
             raise InboxShare.InboxShareException(u'inbox中该share并不存在')
@@ -194,10 +215,10 @@ class User(Document):
         """
         from application.models import Comment
         comment = Comment(user=self, content=comment_content, share=share).save()
-        share._add_comment(comment)
+        share.add_comment(comment)
         self.comments.append(comment)
-        #向share的share_users中first one 推送
-        if len(share.share_users):
+        # notify first user except self comment
+        if len(share.share_users) and self is not share.share_users[0]:
             share.share_users[0]._notify_comment(self, comment)
         self.save()
 
@@ -221,7 +242,7 @@ class User(Document):
             raise self.UserException('illegal to_user')
         comment = Comment(user=self, content=comment_content,
                           share=share, to_user=to_user).save()
-        share._add_comment(comment)
+        share.add_comment(comment)
         self.comments.append(comment)
         to_user._notify_reply(self, comment)
         self.save()
