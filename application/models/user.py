@@ -119,6 +119,9 @@ class User(Document):
             share.share_time = datetime.datetime.now()
         else:
             share = Share(title=title, url=url, own_group=group)
+            share.save()
+            group.shares.append(share)
+            group.save()
         share.add_share_user(self)
         if comment_content:
             self.add_comment_to_share(share, comment_content)

@@ -46,10 +46,6 @@ class ShareGroup(Document):
         self.users.remove(user)
         self.save()
 
-    def _add_share(self, share):
-        self.shares.append(share)
-        self.save()
-
     def _remove_share(self, share):
         """
         删除已经分享了的share

@@ -41,13 +41,6 @@ class Share(Document):
         self.gratitude_users.remove(user)
         self.save()
 
-    def _add_share(self, user, group):
-        if not Share.is_exist(self.url, group):
-            self.share_users.append(user)
-            self.own_group = group
-            self.save()
-            group._add_share(self)
-
     def add_share_user(self, user):  #添加分享用户
         if user not in self.share_users:
             self.share_users.append(user)

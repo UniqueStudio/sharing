@@ -157,7 +157,7 @@ class GroupShare(BaseHandler):
     def get(self):
         """
         @api {get} /group/shares?group_id=:group_id 获取组内的share
-        @apiVersion 0.1.0
+        @apiVersion 0.1.1
         @apiName GetGroupShare
         @apiGroup ShareGroup
         @apiPermission member
@@ -168,6 +168,7 @@ class GroupShare(BaseHandler):
 
         @apiSuccess {Object[]} shares Shares in the group.
         @apiSuccess {String} shares.title The title of shares.
+        @apiSuccess {String} shares.intro Introduction("" if not exists).
         @apiSuccess {String} shares.id The id of shares.
         @apiSuccess {String} shares.share_time Time when share first made.
         @apiSuccess {Number} shares.comment_sum The sum of comments.
@@ -201,6 +202,7 @@ class GroupShare(BaseHandler):
                     result = {
                         'shares': [{
                             'title': share.title,
+                            'intro': '' if not len(share.comments) else share.comments[0].content,
                             'id': str(share.id),
                             'origin': {
                                 'nickname': share.share_users[0].nickname,
