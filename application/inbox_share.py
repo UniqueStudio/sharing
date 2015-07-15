@@ -10,6 +10,7 @@ import json
 
 
 class InboxShareHandler(BaseHandler):
+
     """
     @api {post} /share 投递InboxShare（外部）
     @apiVersion 0.1.0

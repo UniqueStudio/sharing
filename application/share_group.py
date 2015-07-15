@@ -467,3 +467,46 @@ class RejectApply(BaseHandler):
             self.write(json.dumps({'message': 'success'}))
         else:
             raise BaseException('用户权限不足')
+
+
+class FetchAllGroup(BaseHandler):
+
+    @tornado.web.asynchronous
+    @tornado.web.authenticated
+    def get(self):
+        """
+        @api {get} /group/all 获取用户所在的所有组
+        @apiVersion 0.1.1
+        @apiName GetAllGroup
+        @apiGroup ShareGroup
+        @apiPermission login
+
+        @apiSuccess {Object[]} groups
+        @apiSuccess {String} group_name The name of group.
+        @apiSuccess {String} group_id The id of group.
+
+        @apiSuccessExample {json} Success-Example
+            HTTP/1.1 200 OK
+            {
+                "groups": [
+                    {
+                        "group_id": group.id,
+                        "group_name": group.name
+                    }
+                ]
+            }
+        """
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.fetch_groups)
+
+    @BaseHandler.sandbox
+    def fetch_groups(self, response):
+        user = User.objects(id=self.session['_id']).first()
+        self.write(json.dumps({
+            'groups': [
+                {
+                    'group_id': str(group.id),
+                    'group_name': group.name
+                } for group in user.groups
+            ]
+        }))

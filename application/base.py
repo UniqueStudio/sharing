@@ -72,6 +72,7 @@ class BaseHandler(tornado.web.RequestHandler):
         def sandbox_wrapper(self, *args, **kw):
             try:
                 func(self, *args, **kw)
+                self.finish()
             except application.exception.BaseException as e:
                 print 'BaseException'
                 print traceback.format_exc()
@@ -79,6 +80,7 @@ class BaseHandler(tornado.web.RequestHandler):
                     'message': 'failure',
                     'reason': e.description
                 }))
+                self.finish()
             except ValidationError as e:
                 print 'ValidationError '
                 print traceback.format_exc()
@@ -86,6 +88,7 @@ class BaseHandler(tornado.web.RequestHandler):
                     'message': 'failure',
                     'reason': e.message
                 }))
-            finally:
                 self.finish()
+            # finally:
+            #     self.finish()
         return sandbox_wrapper

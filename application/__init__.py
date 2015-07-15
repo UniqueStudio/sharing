@@ -2,12 +2,31 @@
 
 import tornado.web
 from tornado.web import url
-from application.user import Login, Logout, Register, MyInformation, Homepage, UploadImage, \
-    InviteByEmail, Follow, Black, CancelBlack, CancelFollow, AcceptInvite, \
-    ApplyGroup
-from application.share_group import CreateGroup, GroupInfo, GroupShare, GroupUser, \
-    ChangeAdmin, ApplyUser, AcceptApply, RejectApply
-from application.share import ShareHandler, GratitudeHandler
+from application.user import (Login,
+                              Logout,
+                              Register,
+                              MyInformation,
+                              Homepage,
+                              UploadImage,
+                              InviteByEmail,
+                              Follow,
+                              Black,
+                              CancelBlack,
+                              CancelFollow,
+                              AcceptInvite,
+                              ApplyGroup)
+from application.share_group import (CreateGroup,
+                                     GroupInfo,
+                                     GroupShare,
+                                     GroupUser,
+                                     ChangeAdmin,
+                                     ApplyUser,
+                                     AcceptApply,
+                                     RejectApply,
+                                     FetchAllGroup)
+from application.share import (ShareHandler,
+                               GratitudeHandler,
+                               ShareForwardGroup)
 from application.notify import NotifyInfo
 from application.comment import CommentHandler
 from application.base import BaseHandler
@@ -32,6 +51,7 @@ class Application(tornado.web.Application):
 
             url(r'/share', ShareHandler),
             url(r'/inbox_share', InboxShareHandler),
+            url(r'/share/forward', ShareForwardGroup),
 
             url(r'/user/follow', Follow),
             url(r'/user/black', Black),
@@ -43,6 +63,7 @@ class Application(tornado.web.Application):
             url(r'/comment', CommentHandler),
 
             url(r'/group', CreateGroup),
+            url(r'/group/all', FetchAllGroup),
             url(r'/group/info', GroupInfo),
             url(r'/group/shares', GroupShare),
             url(r'/group/users', GroupUser),

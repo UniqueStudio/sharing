@@ -624,6 +624,24 @@
     }
   },
   {
+    "type": "post",
+    "url": "/share/forward",
+    "title": "投递inbox_share（转发）",
+    "version": "0.1.1",
+    "name": "ForwardInboxShare",
+    "group": "InboxShare",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>与&quot;投递share（转发）&quot;几乎相同，差别在于参数groups为空数组 具体参数查看&quot;投递share（转发）&quot;</p> ",
+    "filename": "application/apidoc/_apidoc.js",
+    "groupTitle": "InboxShare"
+  },
+  {
     "type": "get",
     "url": "/inbox_share?inbox_share_id=:inbox_share_id",
     "title": "获取InboxShare",
@@ -1004,6 +1022,97 @@
           }
         ]
       }
+    },
+    "filename": "application/share.py",
+    "groupTitle": "Share",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/share/forward",
+    "title": "投递share（转发）",
+    "version": "0.1.1",
+    "name": "ForwardShare",
+    "group": "Share",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>从信息流中转发share，如果不选发送组（即groups为空数组），则发送到@me</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "share_id",
+            "description": "<p>share.id</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comment",
+            "description": "<p>Comment of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": "<p>Name of groups to send share.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example",
+          "content": "{\n    \"share_id\": \"\",\n    \"comment\": \"\",\n    \"groups\": [\n        \"\"\n    ]\n}",
+          "type": "form-data"
+        }
+      ]
     },
     "filename": "application/share.py",
     "groupTitle": "Share",
@@ -1516,6 +1625,57 @@
         }
       ]
     }
+  },
+  {
+    "type": "get",
+    "url": "/group/all",
+    "title": "获取用户所在的所有组",
+    "version": "0.1.1",
+    "name": "GetAllGroup",
+    "group": "ShareGroup",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": ""
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_name",
+            "description": "<p>The name of group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>The id of group.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Example",
+          "content": "HTTP/1.1 200 OK\n{\n    \"groups\": [\n        {\n            \"group_id\": group.id,\n            \"group_name\": group.name\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "application/share_group.py",
+    "groupTitle": "ShareGroup"
   },
   {
     "type": "get",

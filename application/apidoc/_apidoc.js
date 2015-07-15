@@ -141,3 +141,15 @@
 @apiUse GroupNotExistError
 @apiUse NotLoginError
 */
+
+/**
+@api {post} /share/forward 投递inbox_share（转发）
+@apiVersion 0.1.1
+@apiName ForwardInboxShare
+@apiGroup InboxShare
+@apiPermission login
+
+@apiDescription 与"投递share（转发）"几乎相同，差别在于参数groups为空数组
+ 具体参数查看"投递share（转发）"
+
+*/

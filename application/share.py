@@ -3,6 +3,7 @@
 import json
 import tornado.web
 import tornado.httpclient
+from tornado.web import HTTPError
 from mongoengine.errors import ValidationError
 from application.base import BaseHandler
 from application.models import Share, User, ShareGroup, InboxShare
@@ -222,4 +223,66 @@ class GratitudeHandler(BaseHandler):
         if share is None or not user.is_in_the_group(share.own_group):
             raise BaseException(u'非法id')
         user.cancel_gratitude(share)
+        self.write(json.dumps({'message': 'success'}))
+
+
+class ShareForwardGroup(BaseHandler):
+
+    @tornado.web.asynchronous
+    @tornado.web.authenticated
+    def post(self):
+        client = tornado.httpclient.AsyncHTTPClient()
+        client.fetch(request=self.request, callback=self.forward_share)
+
+    @BaseHandler.sandbox
+    def forward_share(self, response):
+        """
+        @api {post} /share/forward 投递share（转发）
+        @apiVersion 0.1.1
+        @apiName ForwardShare
+        @apiGroup Share
+        @apiPermission login
+
+        @apiDescription 从信息流中转发share，如果不选发送组（即groups为空数组），则发送到@me
+
+        @apiParam {String} share_id share.id
+        @apiParam {String} [comment] Comment of share.
+        @apiParam {String[]} groups Name of groups to send share.
+
+        @apiParamExample {form-data} Request-Example
+            {
+                "share_id": "",
+                "comment": "",
+                "groups": [
+                    ""
+                ]
+            }
+
+        @apiUse SuccessMsg
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
+        share = Share.objects(id=self.get_body_argument('share_id')).first()
+        user = User.objects(id=self.session['_id']).first()
+        if share.own_group not in user.groups:
+            print 'HTTPError(403)'
+            raise HTTPError(403)
+        print "len(self.get_body_arguments('groups'))", len(self.get_body_arguments('groups'))
+        if len(self.get_body_arguments('groups')):
+            comment_content = self.get_body_argument('comment', default=None)
+            print self.get_body_arguments('groups')
+            for name in self.get_body_arguments('groups'):
+                group = ShareGroup.objects(name=name).first()
+                # if group not exist, skip it.
+                if group is None:
+                    continue
+                user.add_share(share.url, share.title, group, comment_content)
+                # user.share_to_group(share, group, comment_content)
+        else:
+            share = InboxShare(title=share.title, url=share.url)
+            try:
+                user.add_inbox_share(share)
+            except ValidationError:
+                raise BaseException(u'非法url')
         self.write(json.dumps({'message': 'success'}))
