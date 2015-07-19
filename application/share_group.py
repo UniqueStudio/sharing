@@ -103,7 +103,7 @@ class GroupInfo(BaseHandler):
     def get(self):
         """
         @api {get} /group/info?group_id=:group_id 查询组信息，包括成员
-        @apiVersion 0.1.1
+        @apiVersion 0.1.2
         @apiName GetGroupInfo
         @apiGroup ShareGroup
         @apiPermission member
@@ -114,6 +114,7 @@ class GroupInfo(BaseHandler):
 
         @apiSuccess {String} group_name The name of group.
         @apiSuccess {String} group_id The id of group.
+        @apiSuccess {String} group_intro Group.intro
         @apiSuccess {String} create_time The time of group created.
         @apiSuccess {Object} admin Admin of the group.
         @apiSuccess {String} admin.name The name of admin.
@@ -139,6 +140,7 @@ class GroupInfo(BaseHandler):
             result = dict()
             result['group_name'] = group.name
             result['group_id'] = str(group.id)
+            result['group_intro'] = group.intro
             result['admin'] = dict()
             result['admin']['name'] = group.create_user.nickname
             result['admin']['id'] = str(group.create_user.id)
@@ -149,6 +151,34 @@ class GroupInfo(BaseHandler):
             self.write(json.dumps({'message': 'failure',
                                    'reason': u'该组不存在'}))
 
+    @BaseHandler.sync_sandbox
+    @tornado.web.authenticated
+    def put(self):
+        """
+        @api {put} /group/info 修改组介绍
+        @apiVersion 0.1.2
+        @apiName UpdateGroupIntro
+        @apiGroup ShareGroup
+        @apiPermission admin
+
+
+        @apiParam {String} group_id Group.id
+        @apiParam {String} intro Group.intro
+
+        @apiUse SuccessMsg
+
+        @apiUse GroupNotExistError
+        @apiUse ForbiddenError
+        """
+        group_id = self.get_body_argument('group_id')
+        group = ShareGroup.objects(id=group_id).first()
+        if group is None:
+            raise BaseException(u'该组不存在')
+        if self.current_user.id != group.create_user.id:
+            raise tornado.web.HTTPError(403)
+        group.intro = self.get_body_argument('intro')
+        group.save()
+        self.write(json.dumps({'message': 'success'}))
 
 class GroupShare(BaseHandler):
 

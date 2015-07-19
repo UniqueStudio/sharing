@@ -12,6 +12,7 @@ from application.exception import BaseException
 class ShareGroup(Document):
 
     name = StringField(required=True, unique=True)
+    intro = StringField(required=True, default="")
     create_user = ReferenceField('User', required=True)
     create_time = DateTimeField(required=True, default=datetime.datetime.now)
 

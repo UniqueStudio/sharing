@@ -4,6 +4,7 @@ import tornado.web
 from mongoengine import ValidationError
 import application.utils.session
 from application.exception import BaseException
+from application.models import User
 import json
 import traceback
 
@@ -36,9 +37,11 @@ class BaseHandler(tornado.web.RequestHandler):
             raise BaseException('missing ' + e.arg_name)
 
     def get_current_user(self):
-        self.get_session()
+        if self.session is None:
+            self.session = self.get_session()
         print self.session['_id'], 23333333
-        return True if self.session['_id'] else False
+        return User.objects(id=self.session['_id']).first()
+        # return True if self.session['_id'] else False
 
     def get_session(self):
         session_id = self.get_secure_cookie('session_id')
@@ -92,3 +95,28 @@ class BaseHandler(tornado.web.RequestHandler):
             # finally:
             #     self.finish()
         return sandbox_wrapper
+
+    @staticmethod
+    def sync_sandbox(func):
+        def sandbox_wrapper(self, *args, **kw):
+            try:
+                func(self, *args, **kw)
+            except application.exception.BaseException as e:
+                print 'BaseException'
+                print traceback.format_exc()
+                self.write(json.dumps({
+                    'message': 'failure',
+                    'reason': e.description
+                }))
+            except ValidationError as e:
+                print 'ValidationError '
+                print traceback.format_exc()
+                self.write(json.dumps({
+                    'message': 'failure',
+                    'reason': e.message
+                }))
+        return sandbox_wrapper
+
+    def prepare(self):
+        if self.session is None:
+            self.session = self.get_session()

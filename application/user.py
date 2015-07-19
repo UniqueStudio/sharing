@@ -140,11 +140,13 @@ class Register(BaseHandler):
 
 
 class Homepage(BaseHandler):
-    @tornado.web.asynchronous
+
+    @BaseHandler.sync_sandbox
+    @tornado.web.authenticated
     def get(self):
         """
         @api {get} /homepage[?uid=:uid] 个人主页
-        @apiVersion 0.1.0
+        @apiVersion 0.1.2
         @apiName Homepage
         @apiGroup User
         @apiPermission login
@@ -176,20 +178,16 @@ class Homepage(BaseHandler):
         @apiSuccess {String} [followers_sum] The sum of followers.
         @apiSuccess {String} [following_sum] The sum of following.
 
+
+        @apiUse UserNotExistError
         @apiUse NotLoginError
         """
-        client = tornado.httpclient.AsyncHTTPClient()
-        client.fetch(request=self.request, callback=self.get_homepage)
-
-    @tornado.web.authenticated
-    @BaseHandler.sandbox
-    def get_homepage(self, response):
-        print self.session['_id']
-        self.session = self.get_session()
-        uid_arugument = self.get_body_argument('uid', default=None)
+        uid_arugument = self.get_argument('uid', default=None)
         uid = self.session['_id']
         query_uid = uid if uid_arugument is None else uid_arugument
         user = User.objects(id=query_uid).first()
+        if user is None:
+            raise BaseException('Illegal uid')
         result = dict()
         result['nickname'] = user.nickname
         result['id'] = str(user.id)
