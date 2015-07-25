@@ -48,6 +48,14 @@
  */
 
 /**
+ * @apiDefine RequestError
+ * @apiVersion 0.1.3
+ * @apiError Bad Request.
+ * @apiErrorExample Bad request:
+ *     HTTP/1.1 400 Bad request
+ */
+
+/**
  * @apiDefine NotLoginError
  * @apiVersion 0.1.0
  * @apiError NotLogin  Users must login to invoke this api.

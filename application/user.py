@@ -11,6 +11,8 @@ import json
 import os
 import time
 import hashlib
+import magic
+import shutil
 
 
 class Login(BaseHandler):
@@ -172,7 +174,7 @@ class Homepage(BaseHandler):
         @apiSuccess {String} shares.title Title of shares.
         @apiSuccess {String} shares.group Group of shares.
         @apiSuccess {String} shares.share_time Time shared.
-        @apiSuccess {String} [gratitude_shares_sum] The sum of gratitude received.
+        @apiSuccess {String} gratitude_shares_sum The sum of gratitude received.
         @apiSuccess {String} [comment_sum] The sum of comments made before.
         @apiSuccess {String} [black_users_sum] The sum of user in blacklist.
         @apiSuccess {String} [followers_sum] The sum of followers.
@@ -195,6 +197,7 @@ class Homepage(BaseHandler):
         result['is_man'] = user.is_man
         result['brief'] = user.brief
         result['register_time'] = str(user.register_time)
+        result['gratitude_shares_sum'] = len(user.gratitude_shares)
         result['groups'] = [
             {
                 'id': str(group.id),
@@ -202,7 +205,6 @@ class Homepage(BaseHandler):
             }
             for group in user.groups]
         if uid_arugument is None:
-            result['gratitude_shares_sum'] = len(user.gratitude_shares)
             result['comments_sum'] = len(user.comments)
             result['black_users_sum'] = len(user.black_users)
             result['followers_sum'] = len(user.followers)
@@ -316,45 +318,91 @@ class MyInformation(BaseHandler):
 
 class UploadImage(BaseHandler):
 
-    def get(self):
-        self.write(
-            """
-<html>
-  <head><title>Upload File</title></head>
-  <body>
-    <form action='upload_image' enctype="multipart/form-data" method='post'>
-    <input type='file' name='avatar'/><br/>
-    <input type='submit' value='submit'/>
-    </form>
-  </body>
-</html>
-            """
-        )
+#     def get(self):
+#         self.write(
+#             """
+# <html>
+#   <head><title>Upload File</title></head>
+#   <body>
+#     <form action='upload_image' enctype="multipart/form-data" method='post'>
+#     <input type='file' name='avatar'/><br/>
+#     <input type='submit' value='submit'/>
+#     </form>
+#   </body>
+# </html>
+#             """
+#         )
+#
+#     def post(self):
+#         self.session = self.get_session()
+#         id = self.session['_id']
+#         if id:
+#             user = User.objects(id=id).first()
+#             upload_path = os.path.join(os.path.dirname(__file__), 'avatar')
+#             if self.request.files:
+#                 avatar = self.request.files['avatar'][0]
+#                 self.save_file(avatar, upload_path, user)
+#                 self.write(json.dumps({'message': 'success'}))
+#             else:
+#                 self.write(json.dumps({'message': '无文件'}))
+#         else:
+#             self.write(json.dumps({'message': '未登陆'}))
+#
+#     def save_file(self, file, save_dir, user):
+#         file_name = file['filename'] + str(time.time())
+#         file_name = hashlib.md5(file_name).hexdigest()
+#         save_file_name = os.path.join(save_dir, file_name)
+#         #TODO:对图片进行压缩处理
+#         with open(save_file_name, 'wb') as up:
+#             up.write(file['body'])
+#         user.set_avatar(save_file_name)
+#         self.finish()
 
-    def post(self):
-        self.session = self.get_session()
-        id = self.session['_id']
-        if id:
-            user = User.objects(id=id).first()
-            upload_path = os.path.join(os.path.dirname(__file__), 'avatar')
-            if self.request.files:
-                avatar = self.request.files['avatar'][0]
-                self.save_file(avatar, upload_path, user)
-                self.write(json.dumps({'message': 'success'}))
-            else:
-                self.write(json.dumps({'message': '无文件'}))
-        else:
-            self.write(json.dumps({'message': '未登陆'}))
+    @BaseHandler.sync_sandbox
+    @tornado.web.authenticated
+    def put(self):
+        """
+        @api {put} /upload_image 更改头像
+        @apiVersion 0.1.3
+        @apiName UpdateAvatar
+        @apiGroup User
+        @apiPermission login
 
-    def save_file(self, file, save_dir, user):
-        file_name = file['filename'] + str(time.time())
-        file_name = hashlib.md5(file_name).hexdigest()
-        save_file_name = os.path.join(save_dir, file_name)
-        #TODO:对图片进行压缩处理
-        with open(save_file_name, 'wb') as up:
-            up.write(file['body'])
-        user.set_avatar(save_file_name)
-        self.finish()
+        @apiDescription 个人修改头像使用。参数为base64字符串形式（不带标识头）
+
+        @apiParam {String} avatar New avatar(base64 encoded).
+
+        @apiSuccess {String} message Success.
+        @apiSuccess {String} url New avatar url.
+
+        @apiUse RequestError
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
+        print self.current_user
+        upload_path = os.path.join(os.path.dirname(__file__), "avatar")
+        print self.get_body_argument("avatar")
+        try:
+            avatar_str = self.get_body_argument("avatar").decode("base64")
+        except:
+            raise BaseException("Illegal encoding")
+        mime_type = magic.from_buffer(avatar_str[:1024], mime=True)
+        if mime_type not in ["image/png", "image/jpeg"]:
+            raise BaseException("Illegal file type")
+        file_name = hashlib.md5(str(time.time())).hexdigest() + '.' + mime_type.split('/')[1]
+        save_path = os.path.join(upload_path, file_name)
+        if self.current_user.avatar:
+            old_avatar_path = os.path.dirname(__file__) + self.current_user.avatar
+            if os.path.isfile(old_avatar_path):
+                os.remove(old_avatar_path)
+        with open(save_path, 'wb') as fh:
+            fh.write(avatar_str)
+        avatar_uri = os.path.join("/avatar", file_name)
+        self.current_user.set_avatar(avatar_uri)
+        self.write(json.dumps({
+            "message": "success",
+            "url": avatar_uri
+        }))
 
 
 class InviteByEmail(BaseHandler):

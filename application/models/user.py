@@ -16,12 +16,12 @@ class User(Document):
     password = StringField(required=True)
     nickname = StringField(required=True)
     register_time = DateTimeField(required=True, default=datetime.datetime.now())
-    avatar = StringField(required=True, default='have no')
+    avatar = StringField(required=True, default="")
 
     phone_number = StringField()
-    is_man = BooleanField(null=True)
+    is_man = BooleanField(required=True, default=True)
     education_information = StringField()
-    brief = StringField()
+    brief = StringField(default="")
 
     self_shares = ListField(ReferenceField('Share'), default=list)
     self_inbox_shares = ListField(ReferenceField('InboxShare'), default=list)

@@ -3481,7 +3481,7 @@
           {
             "group": "Success 200",
             "type": "<p>String</p> ",
-            "optional": true,
+            "optional": false,
             "field": "gratitude_shares_sum",
             "description": "<p>The sum of gratitude received.</p> "
           },
@@ -4261,6 +4261,98 @@
         ]
       },
       "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/upload_image",
+    "title": "更改头像",
+    "version": "0.1.3",
+    "name": "UpdateAvatar",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>个人修改头像使用。参数为base64字符串形式（不带标识头）</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "avatar",
+            "description": "<p>New avatar(base64 encoded).</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "url",
+            "description": "<p>New avatar url.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Bad",
+            "description": "<p>Request.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Bad request:",
+          "content": "HTTP/1.1 400 Bad request",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
         {
           "title": "Error-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
