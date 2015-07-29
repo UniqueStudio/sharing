@@ -15,7 +15,7 @@ class CreateGroup(BaseHandler):
     def post(self):
         """
         @api {post} /group 新建一个share组
-        @apiVersion 0.1.0
+        @apiVersion 0.1.4
         @apiName CreateGroup
         @apiGroup ShareGroup
         @apiPermission login
@@ -24,6 +24,7 @@ class CreateGroup(BaseHandler):
         执行此操作的人自动成为管理员。否则报错。
 
         @apiParam {String} name     the name of group to be created.
+        @apiParam {String} intro    introduction of the group
 
         @apiUse MessageSuccess
 
@@ -41,15 +42,13 @@ class CreateGroup(BaseHandler):
     @BaseHandler.sandbox
     def create_group(self, response):
         name = self.get_body_argument('name')
-        self.session = self.get_session()
-        user_id = self.session['_id']
-        create_user = User.objects(id=user_id).first()
-        message = self.local_create_group(group_name=name, create_user=create_user)
+        intro = self.get_body_argument('intro')
+        message = self.local_create_group(group_name=name, intro=intro, create_user=self.get_current_user())
         self.write(message)
 
-    def local_create_group(self, create_user, group_name):
+    def local_create_group(self, create_user, group_name, intro):
         if not ShareGroup.is_exist(group_name):
-            group = ShareGroup(name=group_name, create_user=create_user)
+            group = ShareGroup(name=group_name, intro=intro, create_user=create_user)
             group.save()
             create_user.manager_groups.append(group)
             create_user.save()
@@ -63,7 +62,7 @@ class CreateGroup(BaseHandler):
     def get(self):
         """
         @api {get} /group?group_name=:group_name 搜索share组
-        @apiVersion 0.1.0
+        @apiVersion 0.1.4
         @apiName GetGroup
         @apiGroup ShareGroup
         @apiPermission login
@@ -75,6 +74,7 @@ class CreateGroup(BaseHandler):
         @apiSuccess {String} group_name The name of group.
         @apiSuccess {String} group_id The id of group.
         @apiSuccess {String} create_time The time of group created.
+        @apiSuccess {String} group_intro The intro of group.
 
         @apiUse GroupNotExistError
         """
@@ -90,6 +90,7 @@ class CreateGroup(BaseHandler):
             result['group_name'] = group.name
             result['group_id'] = str(group.id)
             result['create_time'] = str(group.create_time)
+            result['group_intro'] = group.intro
             self.write(json.dumps(result))
         else:
             self.write(json.dumps({'message': 'failure',
@@ -506,7 +507,7 @@ class FetchAllGroup(BaseHandler):
     def get(self):
         """
         @api {get} /group/all 获取用户所在的所有组
-        @apiVersion 0.1.1
+        @apiVersion 0.1.4
         @apiName GetAllGroup
         @apiGroup ShareGroup
         @apiPermission login
@@ -521,7 +522,8 @@ class FetchAllGroup(BaseHandler):
                 "groups": [
                     {
                         "group_id": group.id,
-                        "group_name": group.name
+                        "group_name": group.name,
+                        "group_intro": group.intro
                     }
                 ]
             }
@@ -536,7 +538,8 @@ class FetchAllGroup(BaseHandler):
             'groups': [
                 {
                     'group_id': str(group.id),
-                    'group_name': group.name
+                    'group_name': group.name,
+                    'group_intro': group.intro
                 } for group in user.groups
             ]
         }))

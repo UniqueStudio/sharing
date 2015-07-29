@@ -1560,7 +1560,7 @@
     "type": "post",
     "url": "/group",
     "title": "新建一个share组",
-    "version": "0.1.0",
+    "version": "0.1.4",
     "name": "CreateGroup",
     "group": "ShareGroup",
     "permission": [
@@ -1580,6 +1580,13 @@
             "optional": false,
             "field": "name",
             "description": "<p>the name of group to be created.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "intro",
+            "description": "<p>introduction of the group</p> "
           }
         ]
       }
@@ -1627,6 +1634,127 @@
     }
   },
   {
+    "type": "post",
+    "url": "/group",
+    "title": "新建一个share组",
+    "version": "0.1.0",
+    "name": "CreateGroup",
+    "group": "ShareGroup",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>首先检查是否有相同名字的组，如果没有，则直接创建该组， 执行此操作的人自动成为管理员。否则报错。</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "name",
+            "description": "<p>the name of group to be created.</p> "
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "GroupExist",
+            "description": "<p>The group exists.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组已存在\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "application/apidoc/_apidoc.js",
+    "groupTitle": "ShareGroup",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "message",
+            "description": "<p>message = success.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/group/all",
+    "title": "获取用户所在的所有组",
+    "version": "0.1.4",
+    "name": "GetAllGroup",
+    "group": "ShareGroup",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": ""
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_name",
+            "description": "<p>The name of group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>The id of group.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Example",
+          "content": "HTTP/1.1 200 OK\n{\n    \"groups\": [\n        {\n            \"group_id\": group.id,\n            \"group_name\": group.name,\n            \"group_intro\": group.intro\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "application/share_group.py",
+    "groupTitle": "ShareGroup"
+  },
+  {
     "type": "get",
     "url": "/group/all",
     "title": "获取用户所在的所有组",
@@ -1669,13 +1797,97 @@
       "examples": [
         {
           "title": "Success-Example",
-          "content": "HTTP/1.1 200 OK\n{\n    \"groups\": [\n        {\n            \"group_id\": group.id,\n            \"group_name\": group.name\n        }\n    ]\n}",
+          "content": "HTTP/1.1 200 OK\n{\n    \"groups\": [\n        {\n            \"group_id\": group.id,\n            \"group_name\": group.name,\n            \"group_intro\": group.intro\n        }\n    ]\n}",
           "type": "json"
         }
       ]
     },
-    "filename": "application/share_group.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "ShareGroup"
+  },
+  {
+    "type": "get",
+    "url": "/group?group_name=:group_name",
+    "title": "搜索share组",
+    "version": "0.1.4",
+    "name": "GetGroup",
+    "group": "ShareGroup",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>根据name来搜索group信息.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_name",
+            "description": "<p>The name of group.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_name",
+            "description": "<p>The name of group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>The id of group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "create_time",
+            "description": "<p>The time of group created.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_intro",
+            "description": "<p>The intro of group.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share_group.py",
+    "groupTitle": "ShareGroup",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "GroupNotFound",
+            "description": "<p>Can not find the group.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
+          "type": "json"
+        }
+      ]
+    }
   },
   {
     "type": "get",
@@ -1732,7 +1944,7 @@
         ]
       }
     },
-    "filename": "application/share_group.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "ShareGroup",
     "error": {
       "fields": {

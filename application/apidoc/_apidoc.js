@@ -241,3 +241,68 @@
 
 @apiUse NotLoginError
 */
+
+/**
+ @api {post} /group 新建一个share组
+ @apiVersion 0.1.0
+ @apiName CreateGroup
+ @apiGroup ShareGroup
+ @apiPermission login
+
+ @apiDescription 首先检查是否有相同名字的组，如果没有，则直接创建该组，
+ 执行此操作的人自动成为管理员。否则报错。
+
+ @apiParam {String} name     the name of group to be created.
+
+ @apiUse MessageSuccess
+
+ @apiError GroupExist The group exists.
+ @apiErrorExample Response:
+ HTTP/1.1 200 OK
+ {
+   "message": "failure",
+   "reason": "该组已存在"
+ }
+ */
+
+/**
+ @api {get} /group?group_name=:group_name 搜索share组
+ @apiVersion 0.1.0
+ @apiName GetGroup
+ @apiGroup ShareGroup
+ @apiPermission login
+
+ @apiDescription 根据name来搜索group信息.
+
+ @apiParam {String} group_name The name of group.
+
+ @apiSuccess {String} group_name The name of group.
+ @apiSuccess {String} group_id The id of group.
+ @apiSuccess {String} create_time The time of group created.
+
+ @apiUse GroupNotExistError
+ */
+
+/**
+ @api {get} /group/all 获取用户所在的所有组
+ @apiVersion 0.1.1
+ @apiName GetAllGroup
+ @apiGroup ShareGroup
+ @apiPermission login
+
+ @apiSuccess {Object[]} groups
+ @apiSuccess {String} group_name The name of group.
+ @apiSuccess {String} group_id The id of group.
+
+ @apiSuccessExample {json} Success-Example
+ HTTP/1.1 200 OK
+ {
+     "groups": [
+         {
+             "group_id": group.id,
+             "group_name": group.name,
+             "group_intro": group.intro
+         }
+     ]
+ }
+ */
