@@ -23,6 +23,9 @@ class Comment(Document):
         return Comment.objects(id=id).first() is not None
 
     def _comment_delete(self):
+        print "delete comment"
+        print self.user.comments
         self.user.comments.remove(self)
         self.user.save()
+        print self.user.comments
         self.delete()

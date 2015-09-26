@@ -184,9 +184,10 @@ class Homepage(BaseHandler):
         @apiUse UserNotExistError
         @apiUse NotLoginError
         """
-        uid_arugument = self.get_argument('uid', default=None)
+        uuid_argument = self.get_argument('uid', default=None)
         uid = self.session['_id']
-        query_uid = uid if uid_arugument is None else uid_arugument
+        query_uid = uid if uuid_argument is None else uuid_argument
+        print query_uid
         user = User.objects(id=query_uid).first()
         if user is None:
             raise BaseException('Illegal uid')
@@ -204,19 +205,19 @@ class Homepage(BaseHandler):
                 'name': group.name
             }
             for group in user.groups]
-        if uid_arugument is None:
+        if uuid_argument is None:
             result['comments_sum'] = len(user.comments)
             result['black_users_sum'] = len(user.black_users)
             result['followers_sum'] = len(user.followers)
             result['following_sum'] = len(user.following)
+            print user.self_shares
             result['shares'] = [
                 {
                     'id': str(share.id),
                     'title': share.title,
                     'group': share.own_group.name,
                     'share_time': str(share.share_time)
-                }
-                for share in user.self_shares]
+                } for share in user.self_shares]
             result['manager_groups'] = [
                 {
                     'id': str(group.id),
@@ -652,8 +653,8 @@ class ApplyGroup(BaseHandler):
     @tornado.web.asynchronous
     def post(self):
         """
-        @api {post} /user/group/apply 申请加组
-        @apiVersion 0.1.0
+        @api {post} /user/apply 申请加组
+        @apiVersion 0.1.5
         @apiName ApplyGroup
         @apiGroup User
         @apiPermission login

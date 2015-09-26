@@ -14,7 +14,8 @@ from application.user import (Login,
                               CancelBlack,
                               CancelFollow,
                               AcceptInvite,
-                              ApplyGroup)
+                              ApplyGroup,
+                              )
 from application.share_group import (CreateGroup,
                                      GroupInfo,
                                      GroupShare,
@@ -23,7 +24,10 @@ from application.share_group import (CreateGroup,
                                      ApplyUser,
                                      AcceptApply,
                                      RejectApply,
-                                     FetchAllGroup)
+                                     FetchAllGroup,
+                                     Expel,
+                                     ExitGroup,
+                                     )
 from application.share import (ShareHandler,
                                GratitudeHandler,
                                ShareForwardGroup)
@@ -31,6 +35,7 @@ from application.notify import NotifyInfo
 from application.comment import CommentHandler
 from application.base import BaseHandler
 from application.inbox_share import InboxShareHandler
+
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -71,6 +76,8 @@ class Application(tornado.web.Application):
             url(r'/group/apply_users', ApplyUser),
             url(r'/group/accept', AcceptApply),
             url(r'/group/reject', RejectApply),
+            url(r'/group/expel', Expel),
+            url(r'/group/exit', ExitGroup),
         ]
 
         settings = {

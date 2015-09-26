@@ -306,3 +306,32 @@
      ]
  }
  */
+
+/**
+ @api {get} /group/shares?group_id=:group_id 获取组内的share
+ @apiVersion 0.1.1
+ @apiName GetGroupShare
+ @apiGroup ShareGroup
+ @apiPermission member
+
+ @apiDescription 根据group_id获取组内share.
+
+ @apiParam {String} group_id The id of group.
+
+ @apiSuccess {Object[]} shares Shares in the group.
+ @apiSuccess {String} shares.title The title of shares.
+ @apiSuccess {String} shares.intro Introduction("" if not exists).
+ @apiSuccess {String} shares.id The id of shares.
+ @apiSuccess {String} shares.share_time Time when share first made.
+ @apiSuccess {Number} shares.comment_sum The sum of comments.
+ @apiSuccess {Object} shares.origin First author of this share.
+ @apiSuccess {String} shares.origin.nickname Name of first author.
+ @apiSuccess {String} shares.origin.id Id of first author.
+ @apiSuccess {String} shares.origin.avatar Avatar of first author.
+ @apiSuccess {Object[]} shares.origin.others The rest of user who shared it.
+ @apiSuccess {String} shares.origin.others.id Id of user.
+ @apiSuccess {String} shares.origin.others.nickname Name of user.
+
+ @apiUse GroupNotExistError
+ @apiUse NotLoginError
+ */

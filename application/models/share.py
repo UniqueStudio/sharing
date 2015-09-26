@@ -5,7 +5,6 @@ from mongoengine import Document
 from mongoengine.fields import *
 import md5
 from mongoengine import connect
-from mongoengine.queryset import CASCADE
 
 import datetime
 
@@ -23,7 +22,7 @@ class Share(Document):
     share_time = DateTimeField(required=True, default=datetime.datetime.now)
 
     gratitude_users = ListField(ReferenceField('User'), default=list)
-    comments = ListField(ReferenceField('Comment', reverse_delete_rule=CASCADE))
+    comments = ListField(ReferenceField('Comment'))
 
     def __str__(self):
         return '<Share: \nurl:%s \nown_group:%s \n>' \
@@ -52,11 +51,6 @@ class Share(Document):
         for comment in self.comments:
             comment._comment_delete()
         self.delete()
-
-    def _remove_share_user(self, user, group):  #删除分享的用户
-        if Share.is_exist(self.url, group):
-            self.share_users.remove(user)
-            self.save()
 
     def add_comment(self, comment):  #添加评论
         self.comments.append(comment)

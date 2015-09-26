@@ -5,6 +5,7 @@ from tornado.web import HTTPError
 from mongoengine import Document
 from mongoengine.fields import *
 import md5
+from mongoengine.queryset import CASCADE
 
 import datetime
 
@@ -74,14 +75,42 @@ class User(Document):
     def remove_the_group(self, group):  #退组,管理员另处理
         from application.models import ShareGroup
         if not group.is_create_user(self):
-            if self.is_in_the_group(group) and ShareGroup.is_exist(group.name):
-                self.groups.remove(group)
-                group.users.remove(self)
-                self.save()
+            assert self.is_in_the_group(group)
+            assert ShareGroup.is_exist(group.name)
+            self.groups.remove(group)
+            group.users.remove(self)
+            self.save()
         else:
             print '暂时不处理组创建人退组行为'
+            raise User.UserException(u'暂时不处理组创建人退组行为')
 
-    #感谢部分
+    def exit_group(self, group):
+        # Delete user's comments in the group
+        for comment in self.comments:
+            print comment.id
+            if str(comment.share.own_group.id) == str(group.id):
+                self.comments.remove(comment)
+                comment.share.comments.remove(comment)
+                comment.share.save()
+                comment.delete()
+        self.save()
+        # Delete user's shares in the group
+        for share in self.self_shares:
+            if str(share.own_group.id) == str(group.id):
+                print "delete share"
+                self.remove_share_to_group(share, group)
+        # Delete user's gratitude in the group
+        for share in self.gratitude_shares:
+            if str(share.own_group.id) == str(group.id):
+                print "delete gratitude"
+                self.gratitude_shares.remove(share)
+        self.groups.remove(group)
+        self.save()
+        group.users.remove(self)
+        group.save()
+
+
+    # 感谢部分
     def is_gratitude(self, share):
         return share in self.gratitude_shares
 
@@ -159,23 +188,26 @@ class User(Document):
 
     def remove_share_to_group(self, share, group):  #从group删除自己分享了的share
         from application.models import Share
-        if self.is_share(share, group) and self.is_in_the_group(group):
-            if Share.is_exist(share.url, group):
-                share = Share.objects(url=share.url, own_group=group).first()
-                if len(share.share_users) == 1:  #该条share只有一个分享者直接删除
-                    share._share_delete()
-                    self.self_shares.remove(share)
-                    group._remove_share(share)
-                    self.save()
-                else:
-                    if self in share.share_users:
-                        share._remove_share_user()
-                        self.self_shares.remove(share)
-                        self.save()
-                    else:
-                        raise Share.ShareException('并没有分享过')
+        assert self.is_share(share, group)
+        assert self.is_in_the_group(group)
+        if Share.is_exist(share.url, group):
+            share = Share.objects(url=share.url, own_group=group).first()
+            if len(share.share_users) == 1:  #该条share只有一个分享者直接删除
+                for comment in share.comments:
+                    comment._comment_delete()
+                for gratitude_user in share.gratitude_users:
+                    gratitude_user.gratitude_shares.remove(share)
+                    gratitude_user.save()
+                self.self_shares.remove(share)
+                group._remove_share(share)
+                share.delete()
+                self.save()
             else:
-                raise Share.ShareException('该share不存在')
+                assert self in share.share_users
+                self.self_shares.remove(share)
+                self.save()
+        else:
+            raise Share.ShareException('该share不存在')
 
     #inbox部分
     def is_in_inbox(self, inbox_share):
@@ -233,6 +265,7 @@ class User(Document):
         from application.models import Comment
         comment = Comment.objects(id=comment_id).first()
         if comment in self.comments:    #只能删除自己的
+            comment._comment_delete()
             comment.share._remove_comment(comment)  #comment的删除在里面操作了
         else:
             raise self.UserException(u'只能删除自己的')
@@ -427,17 +460,31 @@ class User(Document):
         """
             从group中删除user
         """
-        if self.is_admin(group) and not user.is_admin(group):  #管理员不能删除管理员
-            user.remove_the_group(group)
-            group._remove_user(user=user)
+        from application.models import  ShareGroup
+        assert self.is_admin(group)
+        assert not user.is_admin(group)
+        assert user.is_in_the_group(group)
+        assert ShareGroup.is_exist(group.name)
+        user.groups.remove(group)
+        user.save()
+
 
     def admin_remove_share_from_group(self, share, group):
         """
             删除group中分享的share
         """
         from application.models import Share
+        assert isinstance(share, Share)
         if self.is_admin(group) and Share.is_exist(share.url, group):
-            share._share_delete()
+            for comment in share.comments:
+                comment._comment_delete()
+            for gratitude_user in share.gratitude_users:
+                gratitude_user.gratitude_shares.remove(share)
+                gratitude_user.save()
+            for share_user in share.share_users:
+                share_user.self_shares.remove(share)
+                share_user.save()
+            share.delete()
 
     def admin_remove_comment_to_share(self, share, comment_id):
         from application.models import Comment
@@ -473,6 +520,14 @@ class User(Document):
         else:
             if not user.is_in_the_group(group=group):
                 raise self.UserException(user.nickname + '不在' + group.name)
+
+    def destroy_group(self, group):
+        assert self.is_admin(group)
+        self.groups.remove(group)
+        self.manager_groups.remove(group)
+        self.save()
+        group.delete()
+
 
     #异常部分
     class UserException(BaseException):

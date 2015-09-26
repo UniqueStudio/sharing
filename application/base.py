@@ -40,7 +40,7 @@ class BaseHandler(tornado.web.RequestHandler):
         if self.session is None:
             self.session = self.get_session()
         print self.session['_id'], 23333333
-        return User.objects(id=self.session['_id']).first()
+        return None if self.session['_id'] is None else User.objects(id=self.session['_id']).first()
         # return True if self.session['_id'] else False
 
     def get_session(self):

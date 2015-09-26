@@ -96,6 +96,38 @@ class CreateGroup(BaseHandler):
             self.write(json.dumps({'message': 'failure',
                                    'reason': u'该组不存在'}))
 
+    @BaseHandler.sync_sandbox
+    @tornado.web.authenticated
+    def delete(self):
+        """
+        @api {delete} /group 管理员解散组
+        @apiVersion 0.1.5
+        @apiName DestroyGroup
+        @apiGroup ShareGroup
+        @apiPermission admin
+
+
+        @apiParam {String} group_id Group.id
+
+        @apiUse SuccessMsg
+
+        @apiUse GroupNotExistError
+        @apiUse ForbiddenError
+        """
+        group = ShareGroup.objects(id=self.get_body_argument('group_id')).first()
+        if group is None or not self.current_user.is_admin(group):
+            raise tornado.web.HTTPError(403)
+        for share in group.shares:
+            print share.url
+            assert isinstance(share, Share)
+            self.current_user.admin_remove_share_from_group(share, group)
+        for user in group.users:
+            if str(user.id) != str(self.current_user.id):
+                print str(user.id), str(self.current_user.id)
+                self.current_user.admin_remove_user_from_group(user, group)
+        self.current_user.destroy_group(group)
+        self.write(json.dumps({'message': 'success'}))
+
 
 class GroupInfo(BaseHandler):
 
@@ -181,6 +213,7 @@ class GroupInfo(BaseHandler):
         group.save()
         self.write(json.dumps({'message': 'success'}))
 
+
 class GroupShare(BaseHandler):
 
     @tornado.web.asynchronous
@@ -188,7 +221,7 @@ class GroupShare(BaseHandler):
     def get(self):
         """
         @api {get} /group/shares?group_id=:group_id 获取组内的share
-        @apiVersion 0.1.1
+        @apiVersion 0.1.5
         @apiName GetGroupShare
         @apiGroup ShareGroup
         @apiPermission member
@@ -201,6 +234,7 @@ class GroupShare(BaseHandler):
         @apiSuccess {String} shares.title The title of shares.
         @apiSuccess {String} shares.intro Introduction("" if not exists).
         @apiSuccess {String} shares.id The id of shares.
+        @apiSuccess {String} shares.url The url of shares.
         @apiSuccess {String} shares.share_time Time when share first made.
         @apiSuccess {Number} shares.comment_sum The sum of comments.
         @apiSuccess {Object} shares.origin First author of this share.
@@ -235,6 +269,7 @@ class GroupShare(BaseHandler):
                             'title': share.title,
                             'intro': '' if not len(share.comments) else share.comments[0].content,
                             'id': str(share.id),
+                            'url': share.url,
                             'origin': {
                                 'nickname': share.share_users[0].nickname,
                                 'id': str(share.share_users[0].id),
@@ -543,3 +578,68 @@ class FetchAllGroup(BaseHandler):
                 } for group in user.groups
             ]
         }))
+
+
+class ExitGroup(BaseHandler):
+
+    @BaseHandler.sync_sandbox
+    @tornado.web.authenticated
+    def put(self):
+        """
+        @api {put} /group/exit 组员退组
+        @apiVersion 0.1.5
+        @apiName ExitGroup
+        @apiGroup ShareGroup
+        @apiPermission member
+
+
+        @apiParam {String} group_id Group.id
+
+        @apiUse SuccessMsg
+
+        @apiUse GroupNotExistError
+        @apiUse ForbiddenError
+        """
+        group = ShareGroup.objects(id=self.get_body_argument('group_id')).first()
+        if group is None or not self.current_user.is_in_the_group(group=group):
+            raise BaseException(u'该组不存在')
+        user = self.current_user
+
+        user.exit_group(group)
+
+        self.write(json.dumps({'message': 'success'}))
+
+
+class Expel(BaseHandler):
+
+    @BaseHandler.sync_sandbox
+    @tornado.web.authenticated
+    def put(self):
+        """
+        @api {delete} /group/expel 踢人出组
+        @apiVersion 0.1.5
+        @apiName Expel
+        @apiGroup ShareGroup
+        @apiPermission admin
+
+        @apiParam {String} group_id Group.id
+        @apiParam {String} user_id User.id
+
+        @apiUse SuccessMsg
+
+        @apiUse GroupNotExistError
+        @apiUse ForbiddenError
+        """
+        group = ShareGroup.objects(id=self.get_body_argument('group_id')).first()
+        user = User.objects(id=self.get_body_argument('user_id')).first()
+
+        # Admin can NOT expel admins
+        if group is None or not self.current_user.is_admin(group) or user.is_admin(group):
+            raise tornado.web.HTTPError(403)
+        # User to be expelled must be a member of group
+        if user is None or not user.is_in_the_group(group):
+            raise BaseException(u"该组员不存在")
+
+        user.exit_group(group)
+
+        self.write(json.dumps({'message': 'success'}))
