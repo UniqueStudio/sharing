@@ -335,3 +335,138 @@
  @apiUse GroupNotExistError
  @apiUse NotLoginError
  */
+
+/**
+ @api {get} /homepage[?uid=:uid] 个人主页
+ @apiVersion 0.1.2
+ @apiName Homepage
+ @apiGroup User
+ @apiPermission login
+
+ @apiDescription 查看个人主页内容，包括分享的share.
+ 如果加上可选的uid，则可以看到这个uid对应用户的信息，
+ 其同组的share可见，否则不可见.
+ 带optional的返回字段仅自己可见.
+
+ @apiParam {String} [uid] User id.
+
+ @apiSuccess {String} nickname Nickname of user.
+ @apiSuccess {String} id Id of user.
+ @apiSuccess {String} avatar Avatar of user.
+ @apiSuccess {Boolean} is_man Gender of user.
+ @apiSuccess {String} brief Self description of user.
+ @apiSuccess {String} register_time Register time of user.
+ @apiSuccess {Object[]} groups Groups of user.
+ @apiSuccess {String} groups.id Id of groups.
+ @apiSuccess {String} groups.name Name of groups.
+ @apiSuccess {Object[]} shares Shares of user.
+ @apiSuccess {String} shares.id Id of shares.
+ @apiSuccess {String} shares.title Title of shares.
+ @apiSuccess {String} shares.group Group of shares.
+ @apiSuccess {String} shares.share_time Time shared.
+ @apiSuccess {String} gratitude_shares_sum The sum of gratitude received.
+ @apiSuccess {String} [comment_sum] The sum of comments made before.
+ @apiSuccess {String} [black_users_sum] The sum of user in blacklist.
+ @apiSuccess {String} [followers_sum] The sum of followers.
+ @apiSuccess {String} [following_sum] The sum of following.
+
+
+ @apiUse UserNotExistError
+ @apiUse NotLoginError
+ */
+
+/**
+ @api {get} /group/info?group_id=:group_id 查询组信息，包括成员
+ @apiVersion 0.1.2
+ @apiName GetGroupInfo
+ @apiGroup ShareGroup
+ @apiPermission member
+
+ @apiDescription 根据group_id来搜索group信息
+
+ @apiParam {String} group_id the id of group.
+
+ @apiSuccess {String} group_name The name of group.
+ @apiSuccess {String} group_id The id of group.
+ @apiSuccess {String} group_intro Group.intro
+ @apiSuccess {String} create_time The time of group created.
+ @apiSuccess {Object} admin Admin of the group.
+ @apiSuccess {String} admin.name The name of admin.
+ @apiSuccess {String} admin.id The id of admin.
+ @apiSuccess {Object[]} users Users in the group.
+ @apiSuccess {String} users.name The name of users.
+ @apiSuccess {String} users.id The id of users.
+
+ @apiUse GroupNotExistError
+ */
+
+/**
+ @api {get} /group/shares?group_id=:group_id 获取组内的share
+ @apiVersion 0.1.5
+ @apiName GetGroupShare
+ @apiGroup ShareGroup
+ @apiPermission member
+
+ @apiDescription 根据group_id获取组内share.
+
+ @apiParam {String} group_id The id of group.
+
+ @apiSuccess {Object[]} shares Shares in the group.
+ @apiSuccess {String} shares.title The title of shares.
+ @apiSuccess {String} shares.intro Introduction("" if not exists).
+ @apiSuccess {String} shares.id The id of shares.
+ @apiSuccess {String} shares.url The url of shares.
+ @apiSuccess {String} shares.share_time Time when share first made.
+ @apiSuccess {Number} shares.comment_sum The sum of comments.
+ @apiSuccess {Object} shares.origin First author of this share.
+ @apiSuccess {String} shares.origin.nickname Name of first author.
+ @apiSuccess {String} shares.origin.id Id of first author.
+ @apiSuccess {String} shares.origin.avatar Avatar of first author.
+ @apiSuccess {Object[]} shares.origin.others The rest of user who shared it.
+ @apiSuccess {String} shares.origin.others.id Id of user.
+ @apiSuccess {String} shares.origin.others.nickname Name of user.
+
+ @apiUse GroupNotExistError
+ @apiUse NotLoginError
+ */
+
+/**
+ @api {post} /share 投递share（外部）
+ @apiVersion 0.1.0
+ @apiName PostShare
+ @apiGroup Share
+ @apiPermission login
+
+ @apiDescription 从外部投递share，如果不选发送组，则发送到@me，
+ 接口对应inbox_share，这点需**格外注意**
+
+ @apiParam {String} title Title of share.
+ @apiParam {String} url Title of share.
+ @apiParam {String} [comment] Comment of share.
+ @apiParam {String[]} groups Name of groups to send share.
+
+ @apiUse SuccessMsg
+
+ @apiUse NotLoginError
+ @apiUse OtherError
+ */
+
+/**
+ @api {post} /share 投递InboxShare（外部）
+ @apiVersion 0.1.0
+ @apiName PostInboxShare
+ @apiGroup InboxShare
+ @apiPermission login
+
+ @apiDescription 与投递到某个组的接口几乎相同，仅是groups为空数组.
+
+ @apiParam {String} title Title of share.
+ @apiParam {String} url Title of share.
+ @apiParam {String} [comment] Comment of share.
+ @apiParam {String[]} groups Name of groups to send share.
+
+ @apiUse SuccessMsg
+
+ @apiUse NotLoginError
+ @apiUse OtherError
+ */

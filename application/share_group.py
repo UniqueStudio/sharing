@@ -136,7 +136,7 @@ class GroupInfo(BaseHandler):
     def get(self):
         """
         @api {get} /group/info?group_id=:group_id 查询组信息，包括成员
-        @apiVersion 0.1.2
+        @apiVersion 0.1.6
         @apiName GetGroupInfo
         @apiGroup ShareGroup
         @apiPermission member
@@ -148,13 +148,16 @@ class GroupInfo(BaseHandler):
         @apiSuccess {String} group_name The name of group.
         @apiSuccess {String} group_id The id of group.
         @apiSuccess {String} group_intro Group.intro
+        @apiSuccess {Number} group_share_sum Group.group_share_sum
         @apiSuccess {String} create_time The time of group created.
         @apiSuccess {Object} admin Admin of the group.
         @apiSuccess {String} admin.name The name of admin.
         @apiSuccess {String} admin.id The id of admin.
+        @apiSuccess {String} admin.avatar The avatar of admin.
         @apiSuccess {Object[]} users Users in the group.
         @apiSuccess {String} users.name The name of users.
         @apiSuccess {String} users.id The id of users.
+        @apiSuccess {String} users.avatar The avatar of users.
 
         @apiUse GroupNotExistError
         """
@@ -174,11 +177,13 @@ class GroupInfo(BaseHandler):
             result['group_name'] = group.name
             result['group_id'] = str(group.id)
             result['group_intro'] = group.intro
+            result['group_share_sum'] = len(group.shares)
             result['admin'] = dict()
             result['admin']['name'] = group.create_user.nickname
             result['admin']['id'] = str(group.create_user.id)
+            result['admin']['avatar'] = str(group.create_user.avatar)
             result['create_time'] = str(group.create_time)
-            result['users'] = [{'name': user.nickname, 'id': str(user.id)} for user in group.users]
+            result['users'] = [{'name': user.nickname, 'id': str(user.id), 'avatar': user.avatar} for user in group.users]
             self.write(json.dumps(result))
         else:
             self.write(json.dumps({'message': 'failure',
@@ -221,7 +226,7 @@ class GroupShare(BaseHandler):
     def get(self):
         """
         @api {get} /group/shares?group_id=:group_id 获取组内的share
-        @apiVersion 0.1.5
+        @apiVersion 0.1.6
         @apiName GetGroupShare
         @apiGroup ShareGroup
         @apiPermission member
@@ -237,6 +242,7 @@ class GroupShare(BaseHandler):
         @apiSuccess {String} shares.url The url of shares.
         @apiSuccess {String} shares.share_time Time when share first made.
         @apiSuccess {Number} shares.comment_sum The sum of comments.
+        @apiSuccess {String} shares.is_gratitude true|false.
         @apiSuccess {Object} shares.origin First author of this share.
         @apiSuccess {String} shares.origin.nickname Name of first author.
         @apiSuccess {String} shares.origin.id Id of first author.
@@ -282,7 +288,8 @@ class GroupShare(BaseHandler):
                                 } for person in share.share_users[1:]
                             ],
                             'comment_sum': len(share.comments),
-                            'share_time': str(share.share_time)
+                            'share_time': str(share.share_time),
+                            'is_gratitude': share in user.gratitude_shares
                         } for share in shares]
                     }
                     self.write(json.dumps(result))

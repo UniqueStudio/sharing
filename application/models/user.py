@@ -23,6 +23,7 @@ class User(Document):
     is_man = BooleanField(required=True, default=True)
     education_information = StringField()
     brief = StringField(default="")
+    gratitude_count = IntField(required=True, default=0, min_value=0)
 
     self_shares = ListField(ReferenceField('Share'), default=list)
     self_inbox_shares = ListField(ReferenceField('InboxShare'), default=list)
@@ -64,7 +65,7 @@ class User(Document):
     def is_exist(cls, email):
         return cls.objects(email=email).first() is not None
 
-    #组部分
+    # 组部分
     def is_in_the_group(self, group):
         return group in self.groups
 
@@ -121,7 +122,7 @@ class User(Document):
             share._gratitude(self)
             self.gratitude_shares.append(share)
             self.save()
-            #为该share的origin传递感谢
+            # 为该share的origin传递感谢
             assert len(share.share_users)
             share.share_users[0]._notify_gratitude(gratitude_user=self, share=share)
         else:

@@ -148,7 +148,7 @@ class Homepage(BaseHandler):
     def get(self):
         """
         @api {get} /homepage[?uid=:uid] 个人主页
-        @apiVersion 0.1.2
+        @apiVersion 0.1.6
         @apiName Homepage
         @apiGroup User
         @apiPermission login
@@ -174,6 +174,7 @@ class Homepage(BaseHandler):
         @apiSuccess {String} shares.title Title of shares.
         @apiSuccess {String} shares.group Group of shares.
         @apiSuccess {String} shares.share_time Time shared.
+        @apiSuccess {String} shares.url
         @apiSuccess {String} gratitude_shares_sum The sum of gratitude received.
         @apiSuccess {String} [comment_sum] The sum of comments made before.
         @apiSuccess {String} [black_users_sum] The sum of user in blacklist.
@@ -216,7 +217,8 @@ class Homepage(BaseHandler):
                     'id': str(share.id),
                     'title': share.title,
                     'group': share.own_group.name,
-                    'share_time': str(share.share_time)
+                    'share_time': str(share.share_time),
+                    'url': share.url
                 } for share in user.self_shares]
             result['manager_groups'] = [
                 {
@@ -230,7 +232,8 @@ class Homepage(BaseHandler):
                     'id': str(share.id),
                     'title': share.title,
                     'group': share.own_group.name,
-                    'share_time': str(share.share_time)
+                    'share_time': str(share.share_time),
+                    'url': share.url
                 }
                 for share in user.self_shares if share.own_group in mine.groups]
         self.write(json.dumps(result))

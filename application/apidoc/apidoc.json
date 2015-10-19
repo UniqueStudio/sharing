@@ -1,9 +1,9 @@
 {
   "name": "SHR--分享团队兴趣",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "SHR beta版，@联创团队",
   "title": "SHR api document",
-  "url": "http://104.236.46.64:8888",
+  "url": "http://139.129.22.121:23333",
   "header": {
     "title": "Important",
     "filename": "application/apidoc/header.md"

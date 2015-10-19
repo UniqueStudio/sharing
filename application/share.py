@@ -5,6 +5,7 @@ import tornado.web
 import tornado.httpclient
 from tornado.web import HTTPError
 from mongoengine.errors import ValidationError
+from bs4 import BeautifulSoup
 from application.base import BaseHandler
 from application.models import Share, User, ShareGroup, InboxShare
 from application.exception import BaseException
@@ -81,15 +82,15 @@ class ShareHandler(BaseHandler):
     def post(self):
         """
         @api {post} /share 投递share（外部）
-        @apiVersion 0.1.0
+        @apiVersion 0.1.6
         @apiName PostShare
         @apiGroup Share
         @apiPermission login
 
         @apiDescription 从外部投递share，如果不选发送组，则发送到@me，
-        接口对应inbox_share，这点需**格外注意**
+        接口对应inbox_share，这点需**格外注意**. 在0.1.6版本之后， share的title由后台自动生成， 默认是网页的title
 
-        @apiParam {String} title Title of share.
+        @apiParam {String} [title] Title of share.
         @apiParam {String} url Title of share.
         @apiParam {String} [comment] Comment of share.
         @apiParam {String[]} groups Name of groups to send share.
@@ -100,11 +101,25 @@ class ShareHandler(BaseHandler):
         @apiUse OtherError
         """
         client = tornado.httpclient.AsyncHTTPClient()
-        client.fetch(request=self.request, callback=self.create_share)
+        title = self.get_body_argument('title', None)
+        if title:
+            client.fetch(self.request, callback=self.create_share)
+        else:
+            try:
+                client.fetch(self.get_body_argument('url'), callback=self.create_share)
+            except:
+                self.write(json.dumps({'message': 'failure', 'reason': u'非法url'}))
+                self.finish()
 
     @BaseHandler.sandbox
     def create_share(self, response):
-        title = self.get_body_argument('title')
+        title = self.get_body_argument('title', None)
+        if title is None:
+            if response.error:
+                print response.error
+                raise BaseException(str(response.error))
+            soup = BeautifulSoup(response.body, "html.parser")
+            title = soup.title.string
         url = self.get_body_argument('url')
         user = User.objects(id=self.session['_id']).first()
         if len(self.get_body_arguments('groups')):
@@ -187,11 +202,10 @@ class GratitudeHandler(BaseHandler):
 
     @BaseHandler.sandbox
     def post_gratitude(self, response):
-        user = User.objects(id=self.session['_id']).first()
         share = Share.objects(id=self.get_body_argument('share_id')).first()
-        if share is None or not user.is_in_the_group(share.own_group):
+        if share is None or not self.current_user.is_in_the_group(share.own_group):
             raise BaseException(u'非法id')
-        user.gratitude(share)
+        self.current_user.gratitude(share)
         self.write(json.dumps({'message': 'success'}))
 
     @tornado.web.asynchronous
@@ -218,11 +232,10 @@ class GratitudeHandler(BaseHandler):
 
     @BaseHandler.sandbox
     def delete_gratitude(self, response):
-        user = User.objects(id=self.session['_id']).first()
         share = Share.objects(id=self.get_body_argument('share_id')).first()
-        if share is None or not user.is_in_the_group(share.own_group):
+        if share is None or not self.current_user.is_in_the_group(share.own_group):
             raise BaseException(u'非法id')
-        user.cancel_gratitude(share)
+        self.current_user.cancel_gratitude(share)
         self.write(json.dumps({'message': 'success'}))
 
 

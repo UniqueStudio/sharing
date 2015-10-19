@@ -643,6 +643,116 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/inbox_share",
+    "title": "获取所有InboxShare",
+    "version": "0.1.6",
+    "name": "GetAllInboxShare",
+    "group": "InboxShare",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>从<code>@me</code>中获取所有share.</p> ",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "inbox_shares",
+            "description": ""
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "inbox_shares.id",
+            "description": "<p>Id of share.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "inbox_shares.title",
+            "description": "<p>Title of share.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "inbox_shares.url",
+            "description": "<p>Url of share.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "inbox_shares.send_time",
+            "description": "<p>Time of share created.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "inbox_shares.nickname",
+            "description": "<p>Name of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "inbox_shares.uid",
+            "description": "<p>Id of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "inbox_shares.avatar",
+            "description": "<p>Avatar of user.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/inbox_share.py",
+    "groupTitle": "InboxShare",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/inbox_share?inbox_share_id=:inbox_share_id",
     "title": "获取InboxShare",
     "version": "0.1.0",
@@ -761,6 +871,90 @@ define({ "api": [
     "type": "post",
     "url": "/share",
     "title": "投递InboxShare（外部）",
+    "version": "0.1.6",
+    "name": "PostInboxShare",
+    "group": "InboxShare",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>与投递到某个组的接口几乎相同，仅是groups为空数组.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "title",
+            "description": "<p>Title of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "url",
+            "description": "<p>Title of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": "<p>Name of groups to send share.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/inbox_share.py",
+    "groupTitle": "InboxShare",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/share",
+    "title": "投递InboxShare（外部）",
     "version": "0.1.0",
     "name": "PostInboxShare",
     "group": "InboxShare",
@@ -806,7 +1000,7 @@ define({ "api": [
         ]
       }
     },
-    "filename": "application/inbox_share.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "InboxShare",
     "success": {
       "examples": [
@@ -2184,6 +2378,153 @@ define({ "api": [
     "type": "get",
     "url": "/group/info?group_id=:group_id",
     "title": "查询组信息，包括成员",
+    "version": "0.1.6",
+    "name": "GetGroupInfo",
+    "group": "ShareGroup",
+    "permission": [
+      {
+        "name": "member",
+        "title": "To be member of this group",
+        "description": ""
+      }
+    ],
+    "description": "<p>根据group_id来搜索group信息</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>the id of group.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_name",
+            "description": "<p>The name of group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>The id of group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_intro",
+            "description": "<p>Group.intro</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "group_share_sum",
+            "description": "<p>Group.group_share_sum</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "create_time",
+            "description": "<p>The time of group created.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Object</p> ",
+            "optional": false,
+            "field": "admin",
+            "description": "<p>Admin of the group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "admin.name",
+            "description": "<p>The name of admin.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "admin.id",
+            "description": "<p>The id of admin.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "admin.avatar",
+            "description": "<p>The avatar of admin.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "users",
+            "description": "<p>Users in the group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "users.name",
+            "description": "<p>The name of users.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "users.id",
+            "description": "<p>The id of users.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "users.avatar",
+            "description": "<p>The avatar of users.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share_group.py",
+    "groupTitle": "ShareGroup",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "GroupNotFound",
+            "description": "<p>Can not find the group.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/group/info?group_id=:group_id",
+    "title": "查询组信息，包括成员",
     "version": "0.1.2",
     "name": "GetGroupInfo",
     "group": "ShareGroup",
@@ -2284,7 +2625,7 @@ define({ "api": [
         ]
       }
     },
-    "filename": "application/share_group.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "ShareGroup",
     "error": {
       "fields": {
@@ -2429,6 +2770,178 @@ define({ "api": [
     "type": "get",
     "url": "/group/shares?group_id=:group_id",
     "title": "获取组内的share",
+    "version": "0.1.6",
+    "name": "GetGroupShare",
+    "group": "ShareGroup",
+    "permission": [
+      {
+        "name": "member",
+        "title": "To be member of this group",
+        "description": ""
+      }
+    ],
+    "description": "<p>根据group_id获取组内share.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>The id of group.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "shares",
+            "description": "<p>Shares in the group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.title",
+            "description": "<p>The title of shares.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.intro",
+            "description": "<p>Introduction(&quot;&quot; if not exists).</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.id",
+            "description": "<p>The id of shares.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.url",
+            "description": "<p>The url of shares.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.share_time",
+            "description": "<p>Time when share first made.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "shares.comment_sum",
+            "description": "<p>The sum of comments.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.is_gratitude",
+            "description": "<p>true|false.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Object</p> ",
+            "optional": false,
+            "field": "shares.origin",
+            "description": "<p>First author of this share.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.origin.nickname",
+            "description": "<p>Name of first author.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.origin.id",
+            "description": "<p>Id of first author.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.origin.avatar",
+            "description": "<p>Avatar of first author.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "shares.origin.others",
+            "description": "<p>The rest of user who shared it.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.origin.others.id",
+            "description": "<p>Id of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.origin.others.nickname",
+            "description": "<p>Name of user.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share_group.py",
+    "groupTitle": "ShareGroup",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "GroupNotFound",
+            "description": "<p>Can not find the group.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"该组不存在\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/group/shares?group_id=:group_id",
+    "title": "获取组内的share",
     "version": "0.1.5",
     "name": "GetGroupShare",
     "group": "ShareGroup",
@@ -2557,7 +3070,7 @@ define({ "api": [
         ]
       }
     },
-    "filename": "application/share_group.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "ShareGroup",
     "error": {
       "fields": {
@@ -3242,6 +3755,97 @@ define({ "api": [
     "type": "post",
     "url": "/share",
     "title": "投递share（外部）",
+    "version": "0.1.6",
+    "name": "PostShare",
+    "group": "Share",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>从外部投递share，如果不选发送组，则发送到@me， 接口对应inbox_share，这点需<strong>格外注意</strong>. 在0.1.6版本之后， share的title由后台自动生成， 默认是网页的title</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "title",
+            "description": "<p>Title of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "url",
+            "description": "<p>Title of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comment",
+            "description": "<p>Comment of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": "<p>Name of groups to send share.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share.py",
+    "groupTitle": "Share",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/share",
+    "title": "投递share（外部）",
     "version": "0.1.0",
     "name": "PostShare",
     "group": "Share",
@@ -3287,7 +3891,7 @@ define({ "api": [
         ]
       }
     },
-    "filename": "application/share.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "Share",
     "success": {
       "examples": [
@@ -3944,6 +4548,213 @@ define({ "api": [
     "type": "get",
     "url": "/homepage[?uid=:uid]",
     "title": "个人主页",
+    "version": "0.1.6",
+    "name": "Homepage",
+    "group": "User",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>查看个人主页内容，包括分享的share. 如果加上可选的uid，则可以看到这个uid对应用户的信息， 其同组的share可见，否则不可见. 带optional的返回字段仅自己可见.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "uid",
+            "description": "<p>User id.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "nickname",
+            "description": "<p>Nickname of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>Id of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "avatar",
+            "description": "<p>Avatar of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Boolean</p> ",
+            "optional": false,
+            "field": "is_man",
+            "description": "<p>Gender of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "brief",
+            "description": "<p>Self description of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "register_time",
+            "description": "<p>Register time of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": "<p>Groups of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "groups.id",
+            "description": "<p>Id of groups.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "groups.name",
+            "description": "<p>Name of groups.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "shares",
+            "description": "<p>Shares of user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.id",
+            "description": "<p>Id of shares.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.title",
+            "description": "<p>Title of shares.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.group",
+            "description": "<p>Group of shares.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.share_time",
+            "description": "<p>Time shared.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "shares.url",
+            "description": ""
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "gratitude_shares_sum",
+            "description": "<p>The sum of gratitude received.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comment_sum",
+            "description": "<p>The sum of comments made before.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "black_users_sum",
+            "description": "<p>The sum of user in blacklist.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "followers_sum",
+            "description": "<p>The sum of followers.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "following_sum",
+            "description": "<p>The sum of following.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/user.py",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "UserNotFound",
+            "description": "<p>Can not find the user.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": \"Illegal uid\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/homepage[?uid=:uid]",
+    "title": "个人主页",
     "version": "0.1.2",
     "name": "Homepage",
     "group": "User",
@@ -4107,7 +4918,7 @@ define({ "api": [
         ]
       }
     },
-    "filename": "application/user.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "User",
     "error": {
       "fields": {

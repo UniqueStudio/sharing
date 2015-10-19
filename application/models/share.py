@@ -1,15 +1,18 @@
 # encoding:utf-8
 __author__ = 'bing'
 
-from mongoengine import Document
+from mongoengine import Document, EmbeddedDocument
 from mongoengine.fields import *
 import md5
-from mongoengine import connect
 
 import datetime
 
 from application.exception import BaseException
 
+
+class GratitudeEmbedded(EmbeddedDocument):
+    g_from = ReferenceField('User')  # 投递感谢的人
+    g_to = ReferenceField('User')    # 被感谢的人
 
 class Share(Document):
     """
@@ -18,10 +21,11 @@ class Share(Document):
     title = StringField(required=True)
     url = URLField(required=True)
     own_group = ReferenceField('ShareGroup')
-    share_users = ListField(ReferenceField('User'), default=list)  #单个组分析用户
+    share_users = ListField(ReferenceField('User'), default=list)  #单个组分析
     share_time = DateTimeField(required=True, default=datetime.datetime.now)
 
-    gratitude_users = ListField(ReferenceField('User'), default=list)
+    # gratitude_users = ListField(ReferenceField('User'), default=list)
+    gratitude_users = ListField(EmbeddedDocumentField('GratitudeEmbedded'), default=list)
     comments = ListField(ReferenceField('Comment'))
 
     def __str__(self):
@@ -33,11 +37,21 @@ class Share(Document):
         return Share.objects(url=url, own_group=group).first() is not None
 
     def _gratitude(self, user):
-        self.gratitude_users.append(user)
+        gratitude = GratitudeEmbedded()
+        gratitude.g_from = user
+        gratitude.g_to = self.share_users[0]
+        self.gratitude_users.append(gratitude)
+        self.share_users[0].gratitude_count += 1
+        self.share_users[0].save()
         self.save()
 
     def _cancel_gratitude(self, user):
-        self.gratitude_users.remove(user)
+        for x in self.gratitude_users:
+            if x.g_from.id == user.id:
+                x.g_to.gratitude_count -= 1
+                x.g_to.save()
+                self.gratitude_users.remove(x)
+                break
         self.save()
 
     def add_share_user(self, user):  #添加分享用户
