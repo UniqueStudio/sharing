@@ -470,3 +470,19 @@
  @apiUse NotLoginError
  @apiUse OtherError
  */
+
+/**
+ @api {post} /login 登录
+ @apiVersion 0.1.0
+ @apiName Login
+ @apiGroup User
+
+ @apiDescription 使用邮箱密码登录.
+
+ @apiParam {String} email Email as account.
+ @apiParam {String} password Password.
+
+ @apiUse MessageSuccess
+
+ @apiUse OtherError
+ */

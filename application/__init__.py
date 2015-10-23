@@ -15,6 +15,7 @@ from application.user import (Login,
                               CancelFollow,
                               AcceptInvite,
                               ApplyGroup,
+                              UpdatePassword,
                               )
 from application.share_group import (CreateGroup,
                                      GroupInfo,
@@ -27,6 +28,7 @@ from application.share_group import (CreateGroup,
                                      FetchAllGroup,
                                      Expel,
                                      ExitGroup,
+                                     GroupInvite,
                                      )
 from application.share import (ShareHandler,
                                GratitudeHandler,
@@ -63,6 +65,7 @@ class Application(tornado.web.Application):
             url(r'/user/unfollow', CancelFollow),
             url(r'/user/cancel_black', CancelBlack),
             url(r'/user/notify', NotifyInfo),
+            url(r'/user/update_passwd', UpdatePassword),
 
             url(r'/gratitude', GratitudeHandler),
             url(r'/comment', CommentHandler),
@@ -78,6 +81,7 @@ class Application(tornado.web.Application):
             url(r'/group/reject', RejectApply),
             url(r'/group/expel', Expel),
             url(r'/group/exit', ExitGroup),
+            url(r'/group/invite', GroupInvite),
         ]
 
         settings = {

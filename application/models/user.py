@@ -21,6 +21,7 @@ class User(Document):
 
     phone_number = StringField()
     is_man = BooleanField(required=True, default=True)
+    is_activated = BooleanField(required=True, default=False)
     education_information = StringField()
     brief = StringField(default="")
     gratitude_count = IntField(required=True, default=0, min_value=0)

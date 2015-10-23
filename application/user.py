@@ -4,7 +4,7 @@ import tornado.web
 import tornado.httpclient
 from mongoengine import Q
 from application.base import BaseHandler
-from application.models import User, Share, ShareGroup, Comment, Invite
+from application.models import User, Share, ShareGroup, Comment, Invite, Notify
 from application.exception import BaseException
 
 import json
@@ -12,7 +12,6 @@ import os
 import time
 import hashlib
 import magic
-import shutil
 
 
 class Login(BaseHandler):
@@ -24,7 +23,7 @@ class Login(BaseHandler):
     def post(self):
         """
         @api {post} /login 登录
-        @apiVersion 0.1.0
+        @apiVersion 0.1.6
         @apiName Login
         @apiGroup User
 
@@ -32,6 +31,7 @@ class Login(BaseHandler):
 
         @apiParam {String} email Email as account.
         @apiParam {String} password Password.
+        @apiParam {Boolean} is_activated 登录后修改一次密码就算是激活
 
         @apiUse MessageSuccess
 
@@ -51,7 +51,8 @@ class Login(BaseHandler):
             raise User.UserException('密码不正确')
         else:
             self.recode_status_login(user)
-            self.write(json.dumps({'message': 'success'}))
+            r = {'message': 'success', 'is_activated': False if not user.is_activated else True}
+            self.write(json.dumps(r))
 
 
 class Logout(BaseHandler):
@@ -74,7 +75,6 @@ class Logout(BaseHandler):
         self.session.save()
         self.clear_cookie('session_id')
         self.write(json.dumps({'message': 'success'}))
-
 
 
 class Register(BaseHandler):
@@ -128,7 +128,7 @@ class Register(BaseHandler):
             invite = Invite.objects(id=self.invite_id).first()
         if User.is_exist(email):
             raise User.UserException('Email已经被占用')
-        user = User(email=email, nickname=nickname)
+        user = User(email=email, nickname=nickname, is_activated=True)
         user.set_password(password=password)
         user.save()
         if invite:
@@ -139,6 +139,44 @@ class Register(BaseHandler):
             invite.invite_delete()
         self.recode_status_login(user)
         self.write(json.dumps({'message': 'success'}))
+
+
+class UpdatePassword(BaseHandler):
+
+    @BaseHandler.sync_sandbox
+    @tornado.web.authenticated
+    def put(self):
+        """
+        @api {put} /user/update_passwd 修改密码
+        @apiVersion 0.1.6
+        @apiName UpdatePassword
+        @apiGroup User
+        @apiPermission login
+
+        @apiDescription 修改密码后**不用**重新登录, 修改密码即激活帐号
+
+        @apiParam {String} old_password old password.
+        @apiParam {String} new_password new password.
+
+        @apiUse MessageSuccess
+
+        @apiUse UserNotExistError
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
+        old_password = self.get_body_argument('old_password')
+        new_password = self.get_body_argument('new_password')
+        if old_password == new_password:
+            raise User.UserException(u'两次密码一致')
+        if not self.current_user.check_password(old_password):
+            raise User.UserException(u'密码不正确')
+        else:
+            self.recode_status_login(self.current_user)
+            self.current_user.set_password(password=new_password)
+            if not self.current_user.is_activated:
+                self.current_user.is_activated = True
+            self.current_user.save()
+            self.write(json.dumps({'message': 'success'}))
 
 
 class Homepage(BaseHandler):
@@ -496,12 +534,18 @@ class AcceptInvite(BaseHandler):
         invite = Invite.objects(id=self.invite_id).first()
         if not invite:
             raise BaseException(u'邀请码错误')
-        user = User.objects(id=self.session['_id']).first()
+        user = self.current_user
         group = invite.invite_group
         group.add_apply_user(user)
         user.inviter = invite.inviter
-        user.save()
+        if invite.inviter.is_admin(invite.invite_group):
+            group.accept_apply(user)
         invite.invite_delete()
+        notify = Notify.objects(notify_type="INVITE", notify_id=self.invite_id).first()
+        if notify:
+            notify.delete()
+            user.notify_content.remove(notify)
+        user.save()
         self.write(json.dumps({'message': 'success'}))
 
 

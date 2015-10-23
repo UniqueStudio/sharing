@@ -1,10 +1,13 @@
 # encoding:utf-8
 
+from mongoengine import Q
 from application.base import BaseHandler
-from application.models import User, Share, ShareGroup
+from application.models import User, Share, ShareGroup, Invite
 from application.exception import BaseException
 
 import tornado.web
+import tornado.httpclient
+import urllib
 import json
 
 
@@ -650,3 +653,103 @@ class Expel(BaseHandler):
         user.exit_group(group)
 
         self.write(json.dumps({'message': 'success'}))
+
+
+class GroupInvite(BaseHandler):
+
+    @BaseHandler.sync_sandbox
+    @tornado.web.authenticated
+    def get(self):
+        """
+        @api {get} /group/invite?group_id=:group_id 获取帐号列表
+        @apiVersion 0.1.6
+        @apiName GetAccountList
+        @apiGroup ShareGroup
+        @apiPermission admin
+
+        @apiDescription 尽量少调用这个接口， 对数据库和后台的压力不小
+
+        @apiParam {String} group_id 组id.
+
+        @apiSuccess {String} email 邮箱
+        @apiSuccess {String} nickname 昵称
+        @apiSuccess {String} avatar 头像
+        @apiSuccess {Boolean} is_member 是否为组成员
+        @apiSuccess {Boolean} is_inviting 是否已发出邀请
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
+        group = ShareGroup.objects(id=self.get_argument('group_id')).first()
+        if group is None or not self.current_user.is_admin(group):
+            raise tornado.web.HTTPError(403)
+        inviting = [inv.invitee_email for inv in Invite.objects(invite_group=group.id).all()]
+        applying = [user.email for user in group.apply_users]
+        processing_user_emails = inviting + applying
+        users = User.objects().all()
+        r = [{
+            "email": user.email,
+            "nickname": user.nickname,
+            "avatar": user.avatar,
+            "is_member": user in group.users,
+            "is_inviting": False if user in group.users else user.email in processing_user_emails
+        } for user in users]
+        self.write(json.dumps({"accounts": r}))
+
+    @tornado.web.asynchronous
+    @tornado.web.authenticated
+    def post(self):
+        """
+        @api {post} /group/invite 邀请加组
+        @apiVersion 0.1.6
+        @apiName GroupInvite
+        @apiGroup ShareGroup
+        @apiPermission login
+
+        @apiDescription 邀请用户加组， 如果该用户没有激活， 则发送邮件到他的邮箱（团队邮箱）
+        现阶段为了防止大量的垃圾邮件，我把发邮件的功能暂时**封印**了
+
+        @apiParam {String} group_id Id of group.
+        @apiParam {String} email Email of user to be invited.
+
+        @apiSuccess {String} message Success.
+
+        @apiUse NotLoginError
+        @apiUse OtherError
+        """
+        inviter_id = self.session['_id']
+        invite_group_id = self.get_body_argument('group_id')
+        email = self.get_body_argument("email")
+
+        _invite = Invite.objects(Q(inviter=inviter_id)
+                                 & Q(invitee_email=email)
+                                 & Q(invite_group=invite_group_id)).first()
+        if _invite is not None:
+            raise BaseException(u'邀请已发出')
+        if inviter_id and invite_group_id and email:
+            invite_group = ShareGroup.objects(id=invite_group_id).first()
+            if invite_group is None:
+                raise BaseException(u'该组不存在')
+            invite_entity = Invite(inviter=self.current_user,
+                                   invitee_email=email,
+                                   invite_group=invite_group)
+            user = User.objects(email=email).first()
+            invite_entity.save()
+            if user:
+                user._notify_invite(invite_entity, self.current_user)
+                if not user.is_activated:
+                    pass
+                    # client = tornado.httpclient.AsyncHTTPClient()
+                    # request_body = urllib.urlencode({"email": email})
+                    # client.fetch("http://104.128.81.102:44444/mail", self.check_postman_result, method="POST", body=request_body)
+            else:
+                raise BaseException(u'该用户不存在')
+            self.write(json.dumps({'message': 'success'}))
+            self.finish()
+
+    @BaseHandler.sandbox
+    def check_postman_result(self, response):
+        if response.code == 200:
+            self.write(json.dumps({"message": "success"}))
+        else:
+            self.write(json.dumps({"message": "failed"}))

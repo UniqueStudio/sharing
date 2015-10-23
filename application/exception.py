@@ -1,5 +1,6 @@
 #encoding:utf-8
 
+
 class BaseException(Exception):
     def __init__(self, description=None):
         self.description = description
