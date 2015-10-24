@@ -1046,6 +1046,90 @@ define({ "api": [
     "type": "put",
     "url": "/inbox_share",
     "title": "推送InboxShare到group",
+    "version": "0.1.7",
+    "name": "PutInboxShare",
+    "group": "InboxShare",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>通过inbox_share_id和group_id推送InboxShare到特定的组.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "inbox_share_id",
+            "description": "<p>Id of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>Id of group.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comment",
+            "description": "<p>评论</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/inbox_share.py",
+    "groupTitle": "InboxShare",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/inbox_share",
+    "title": "推送InboxShare到group",
     "version": "0.1.0",
     "name": "PutInboxShare",
     "group": "InboxShare",
@@ -1077,7 +1161,7 @@ define({ "api": [
         ]
       }
     },
-    "filename": "application/inbox_share.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "InboxShare",
     "success": {
       "examples": [

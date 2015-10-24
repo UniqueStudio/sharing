@@ -156,7 +156,11 @@ class User(Document):
         share.add_share_user(self)
         if comment_content:
             self.add_comment_to_share(share, comment_content)
-        self.self_shares.append(share)
+
+        # 能正确处理同一个用户发送相同的share
+        if share not in self.self_shares:
+            self.self_shares.append(share)
+
         self.save()
         for follower in self.following:
             follower._notify_share(share_user=self, share=share)
@@ -233,13 +237,13 @@ class User(Document):
         else:
             raise InboxShare.InboxShareException(u'inbox中该share并不存在')
 
-    def send_share(self, inbox_share, group):  #将inbox_share投递入具体组
+    def send_share(self, inbox_share, group, comment):  #将inbox_share投递入具体组
         from application.models import Share, InboxShare
         if self.is_in_inbox(inbox_share) and InboxShare.is_exist(inbox_share.url, self):
             # share = Share(title=inbox_share.title, url=inbox_share.url)
             # share.save()
             # self.share_to_group(share=share, group=group)
-            self.add_share(inbox_share.url, inbox_share.title, group)
+            self.add_share(inbox_share.url, inbox_share.title, group, comment)
             self.remove_inbox_share(inbox_share=inbox_share)
         else:
             raise InboxShare.InboxShareException(u'inbox中该share并不存在')

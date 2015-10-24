@@ -237,7 +237,7 @@ class Homepage(BaseHandler):
         result['is_man'] = user.is_man
         result['brief'] = user.brief
         result['register_time'] = str(user.register_time)
-        result['gratitude_shares_sum'] = len(user.gratitude_shares)
+        result['gratitude_shares_sum'] = user.gratitude_count
         result['groups'] = [
             {
                 'id': str(group.id),

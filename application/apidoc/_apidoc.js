@@ -486,3 +486,21 @@
 
  @apiUse OtherError
  */
+
+/**
+ @api {put} /inbox_share 推送InboxShare到group
+ @apiVersion 0.1.0
+ @apiName PutInboxShare
+ @apiGroup InboxShare
+ @apiPermission login
+
+ @apiDescription 通过inbox_share_id和group_id推送InboxShare到特定的组.
+
+ @apiParam {String} inbox_share_id Id of share.
+ @apiParam {String} group_id Id of group.
+
+ @apiUse SuccessMsg
+
+ @apiUse NotLoginError
+ @apiUse OtherError
+ */

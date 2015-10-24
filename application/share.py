@@ -116,12 +116,12 @@ class ShareHandler(BaseHandler):
         title = self.get_body_argument('title', None)
         if title is None:
             if response.error:
-                print response.error
+                print "response.error", response.error, response
                 raise BaseException(str(response.error))
             soup = BeautifulSoup(response.body, "html.parser")
             title = soup.title.string
         url = self.get_body_argument('url')
-        user = User.objects(id=self.session['_id']).first()
+        user = self.current_user
         if len(self.get_body_arguments('groups')):
             comment_content = self.get_body_argument('comment', default=None)
             print self.get_body_arguments('groups')

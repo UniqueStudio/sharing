@@ -113,7 +113,7 @@ class InboxShareHandler(BaseHandler):
     def put(self):
         """
         @api {put} /inbox_share 推送InboxShare到group
-        @apiVersion 0.1.0
+        @apiVersion 0.1.7
         @apiName PutInboxShare
         @apiGroup InboxShare
         @apiPermission login
@@ -122,6 +122,7 @@ class InboxShareHandler(BaseHandler):
 
         @apiParam {String} inbox_share_id Id of share.
         @apiParam {String} group_id Id of group.
+        @apiParam {String} [comment] 评论
 
         @apiUse SuccessMsg
 
@@ -136,9 +137,10 @@ class InboxShareHandler(BaseHandler):
         user = User.objects(id=self.session['_id']).first()
         inbox_share = InboxShare.objects(id=self.get_body_argument('inbox_share_id')).first()
         group = ShareGroup.objects(id=self.get_body_argument('group_id')).first()
+        comment = self.get_body_argument("comment", "")
         if inbox_share is None:
             raise BaseException(u'非法id')
-        user.send_share(inbox_share, group)
+        user.send_share(inbox_share, group, comment)
         self.write(json.dumps({'message': 'success'}))
 
     @tornado.web.asynchronous

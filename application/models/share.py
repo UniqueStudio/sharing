@@ -58,8 +58,6 @@ class Share(Document):
         if user not in self.share_users:
             self.share_users.append(user)
             self.save()
-        else:
-            raise Share.ShareException('user已分享过')
 
     def _share_delete(self):
         for comment in self.comments:
