@@ -105,8 +105,13 @@ class ShareHandler(BaseHandler):
         if title:
             client.fetch(self.request, callback=self.create_share)
         else:
+            headers = {
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36",
+                "Accept-Language": "zh-CN,zh;q=0.8,en;q=0.6",
+            }
             try:
-                client.fetch(self.get_body_argument('url'), callback=self.create_share)
+                client.fetch(self.get_body_argument('url'), callback=self.create_share, headers=headers)
             except:
                 self.write(json.dumps({'message': 'failure', 'reason': u'非法url'}))
                 self.finish()

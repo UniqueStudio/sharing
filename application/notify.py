@@ -161,7 +161,12 @@ class NotifyInfo(BaseHandler):
         result = dict(notifies=list())
         for notify in user.notify_content:
             if not notify.read:
-                result["notifies"].append(NotifyItem(notify).load_notify())
+                notify_item = NotifyItem(notify, user)
+                if notify_item.check():
+                    result["notifies"].append(notify_item.load_notify())
+                else:
+                    notify_item.remove()
+                    user.save()
         print result
         self.write(json.dumps(result))
 

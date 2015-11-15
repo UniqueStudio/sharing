@@ -17,13 +17,30 @@ class NotifyBaseHandler(object):
 
     notify_type = None
 
-    def __init__(self, notify=None):
+    def __init__(self, notify=None, user=None):
         assert self.notify_type
         self.notify = notify
+        self.user = user
 
     def output(self):
         if self.notify is None:
             raise BaseException(u'Illegal notify')
+
+    def check(self):
+        """To check the legality of notify.
+
+        Returns True by default, you can override it in derived class
+        :return: Boolean
+        """
+        return True
+
+    def remove(self):
+        """Do cleaning job.
+
+        Override it in derived class.
+        :return: None
+        """
+        pass
 
     @classmethod
     def save(cls, user, content):
@@ -145,8 +162,7 @@ class NotifyInviteHandler(NotifyBaseHandler):
     def output(self):
         super(self.__class__, self).output()
         invite = Invite.objects(id=self.notify.notify_id).first()
-        if invite is None:
-            raise BaseException(u'Illegal invite notify')
+        assert invite
         return {
             "id": str(self.notify.id),
             "notify_type": self.notify_type,
@@ -158,6 +174,20 @@ class NotifyInviteHandler(NotifyBaseHandler):
             "nickname": self.notify.notify_user.nickname,
             "avatar": self.notify.notify_user.avatar
         }
+
+    def check(self):
+        invite = Invite.objects(id=self.notify.notify_id).first()
+        if invite is None:
+            raise BaseException(u'Illegal invite notify')
+        group = ShareGroup.objects(id=invite.invite_group.id).first()
+        return group is not None
+
+    def remove(self):
+        invite = Invite.objects(id=self.notify.notify_id).first()
+        if invite:
+            self.user.notify_content.remove(self.notify)
+            self.notify.delete()
+            invite.delete()
 
 
 class NotifyFreshMemberHandler(NotifyBaseHandler):
@@ -217,15 +247,32 @@ class NotifyItem(object):
         REPLY: NotifyReplyHandler
     }
 
-    def __init__(self, notify):
+    def __init__(self, notify, user):
         assert isinstance(notify, Notify)
+        assert isinstance(user, User)
         self.notify = notify
+        self.user = user
+        self.handler = None
 
-    def load_notify(self):
+    def get_handler(self):
         if self.notify.notify_type not in self.route_map:
             raise NotImplementedError
-        _handler = self.route_map[self.notify.notify_type](self.notify)
-        return _handler.output()
+        if self.handler is None:
+            self.handler = self.route_map[self.notify.notify_type](self.notify, self.user)
+        return self.handler
+
+    def load_notify(self):
+        # if self.notify.notify_type not in self.route_map:
+        #     raise NotImplementedError
+        # _handler = self.route_map[self.notify.notify_type](self.notify)
+        # return _handler.output()
+        return self.get_handler().output()
+
+    def check(self):
+        return self.get_handler().check()
+
+    def remove(self):
+        return self.get_handler().remove()
 
     def read_notify(self, user_id):
         user = User.objects(id=user_id).first()
