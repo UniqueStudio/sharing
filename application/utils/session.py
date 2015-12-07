@@ -93,7 +93,7 @@ class MemcacheSessionManager(SessionManageBase):
 
     def save_session(self, session):
         session_data = dict(session.items())
-        self.conn.set(key=session.get_session_id(), val=session_data, time=60*60*24)
+        self.conn.set(key=session.get_session_id(), val=session_data, time=60*60*24*7)
 
     def create_new(self, session_id):
         return BaseSession(session_id=session_id, mgr=self, data={})

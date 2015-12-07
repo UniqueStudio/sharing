@@ -1046,6 +1046,101 @@
     "type": "put",
     "url": "/inbox_share",
     "title": "推送InboxShare到group",
+    "version": "0.1.8",
+    "name": "PutInboxShare",
+    "group": "InboxShare",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>通过inbox_share_id和group_id推送InboxShare到特定的组.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "inbox_share_id",
+            "description": "<p>Id of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "group_id",
+            "description": "<p>Id of group.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comment",
+            "description": "<p>评论</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;success&quot;</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Boolean</p> ",
+            "optional": false,
+            "field": "duplicated",
+            "description": "<p>如果该组已经有相同url的shr，则返回true，否则返回false</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/inbox_share.py",
+    "groupTitle": "InboxShare",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/inbox_share",
+    "title": "推送InboxShare到group",
     "version": "0.1.7",
     "name": "PutInboxShare",
     "group": "InboxShare",
@@ -1084,7 +1179,7 @@
         ]
       }
     },
-    "filename": "application/inbox_share.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "InboxShare",
     "success": {
       "examples": [
@@ -1347,6 +1442,108 @@
     "type": "post",
     "url": "/share/forward",
     "title": "投递share（转发）",
+    "version": "0.1.8",
+    "name": "ForwardShare",
+    "group": "Share",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>从信息流中转发share，如果不选发送组（即groups为空数组），则发送到@me</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "share_id",
+            "description": "<p>share.id</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comment",
+            "description": "<p>Comment of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": "<p>Name of groups to send share.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example",
+          "content": "{\n    \"share_id\": \"\",\n    \"comment\": \"\",\n    \"groups\": [\n        \"\"\n    ]\n}",
+          "type": "form-data"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;success&quot;</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String[]</p> ",
+            "optional": false,
+            "field": "duplicated",
+            "description": "<p>返回一个数组，数组的元素是有相同url的shr的组的名字（即重复分享）， 如果没有重复则返回空数组</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/share.py",
+    "groupTitle": "Share",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/share/forward",
+    "title": "投递share（转发）",
     "version": "0.1.1",
     "name": "ForwardShare",
     "group": "Share",
@@ -1392,7 +1589,7 @@
         }
       ]
     },
-    "filename": "application/share.py",
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "Share",
     "success": {
       "examples": [
@@ -4067,7 +4264,109 @@
         ]
       }
     },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;success&quot;</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String[]</p> ",
+            "optional": false,
+            "field": "duplicated",
+            "description": "<p>返回一个数组，数组的元素是有相同url的shr的组的名字（即重复分享）， 如果没有重复则返回空数组</p> "
+          }
+        ]
+      }
+    },
     "filename": "application/share.py",
+    "groupTitle": "Share",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotLogin",
+            "description": "<p>Users must login to invoke this api.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 403 Forbidden",
+          "type": "json"
+        },
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/share",
+    "title": "投递share（外部）",
+    "version": "0.1.6",
+    "name": "PostShare",
+    "group": "Share",
+    "permission": [
+      {
+        "name": "login",
+        "title": "Login to get permission.",
+        "description": ""
+      }
+    ],
+    "description": "<p>从外部投递share，如果不选发送组，则发送到@me， 接口对应inbox_share，这点需<strong>格外注意</strong>. 在0.1.6版本之后， share的title由后台自动生成， 默认是网页的title</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "title",
+            "description": "<p>Title of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "url",
+            "description": "<p>Title of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String</p> ",
+            "optional": true,
+            "field": "comment",
+            "description": "<p>Comment of share.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "<p>String[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": "<p>Name of groups to send share.</p> "
+          }
+        ]
+      }
+    },
+    "filename": "application/apidoc/_apidoc.js",
     "groupTitle": "Share",
     "success": {
       "examples": [

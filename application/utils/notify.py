@@ -14,6 +14,16 @@ from application.models.notify import (COMMENT,
 
 
 class NotifyBaseHandler(object):
+    """The base handler for notify handler.
+
+    This base class aims to be derived, so you'd better NOT initiate this class
+
+    notify_type: must be set, it's a flag to determine the notify type
+    __init__: derived classes should invoke super()
+    output: determine the message format in result of json, derived classes should invoke super()
+    check: check the validity of notify
+    remove: do clean jobs(do not delete notifies, which would be done afterwards together)
+    """
 
     notify_type = None
 
@@ -56,11 +66,13 @@ class NotifyCommentHandler(NotifyBaseHandler):
 
     notify_type = COMMENT
 
+    def __init__(self, notify=None, user=None):
+        super(self.__class__, self).__init__(notify, user)
+        self._comment = Comment.objects(id=self.notify.notify_id).first()
+
     def output(self):
         super(self.__class__, self).output()
-        comment = Comment.objects(id=self.notify.notify_id).first()
-        if comment is None:
-            raise BaseException(u'Illegal comment notify')
+        comment = self._comment
         return {
             "id": str(self.notify.id),
             "notify_type": self.notify_type,
@@ -73,14 +85,21 @@ class NotifyCommentHandler(NotifyBaseHandler):
             "avatar": comment.user.avatar
         }
 
+    def check(self):
+        return self._comment is not None
+
 
 class NotifyShareHandler(NotifyBaseHandler):
 
     notify_type = SHARE
 
+    def __init__(self, notify=None, user=None):
+        super(self.__class__, self).__init__(notify, user)
+        self._share = Share.objects(id=self.notify.notify_id).first()
+
     def output(self):
         super(self.__class__, self).output()
-        share = Share.objects(id=self.notify.notify_id).first()
+        share = self._share
         if share is None:
             raise BaseException(u'Illegal share notify')
         return {
@@ -94,14 +113,21 @@ class NotifyShareHandler(NotifyBaseHandler):
             "avatar": self.notify.notify_user.avatar
         }
 
+    def check(self):
+        return self._share is not None
+
 
 class NotifyFollowHandler(NotifyBaseHandler):
 
     notify_type = FOLLOW
 
+    def __init__(self, notify=None, user=None):
+        super(self.__class__, self).__init__(notify, user)
+        self._user = User.objects(id=self.notify.notify_id).first()
+
     def output(self):
         super(self.__class__, self).output()
-        user = User.objects(id=self.notify.notify_id).first()
+        user = self._user
         if user is None:
             raise BaseException(u'Illegal follow notify')
         return {
@@ -113,10 +139,17 @@ class NotifyFollowHandler(NotifyBaseHandler):
             "avatar": user.avatar
         }
 
+    def check(self):
+        return self._user is not None
+
 
 class NotifyGratitudeHandler(NotifyBaseHandler):
 
     notify_type = GRATITUDE
+
+    def __init__(self, notify=None, user=None):
+        super(self.__class__, self).__init__(notify, user)
+        self._share = Share.objects(id=self.notify.notify_id).first()
 
     def output(self):
         super(self.__class__, self).output()
@@ -133,14 +166,21 @@ class NotifyGratitudeHandler(NotifyBaseHandler):
             "avatar": self.notify.notify_user.avatar
         }
 
+    def check(self):
+        return self._share is not None
+
 
 class NotifyAdminHandler(NotifyBaseHandler):
 
     notify_type = ADMIN
 
+    def __init__(self, notify=None, user=None):
+        super(self.__class__, self).__init__(notify, user)
+        self._group = ShareGroup.objects(id=self.notify.notify_id).first()
+
     def output(self):
         super(self.__class__, self).output()
-        group = ShareGroup.objects(id=self.notify.notify_id).first()
+        group = self._group
         if group is None:
             raise BaseException(u'Illegal gratitude notify')
         return {
@@ -154,14 +194,21 @@ class NotifyAdminHandler(NotifyBaseHandler):
             "avatar": self.notify.notify_user.avatar
         }
 
+    def check(self):
+        return self._group is not None
+
 
 class NotifyInviteHandler(NotifyBaseHandler):
 
     notify_type = INVITE
 
+    def __init__(self, notify=None, user=None):
+        super(self.__class__, self).__init__(notify, user)
+        self._invite = Invite.objects(id=self.notify.notify_id).first()
+
     def output(self):
         super(self.__class__, self).output()
-        invite = Invite.objects(id=self.notify.notify_id).first()
+        invite = self._invite
         assert invite
         return {
             "id": str(self.notify.id),
@@ -176,29 +223,31 @@ class NotifyInviteHandler(NotifyBaseHandler):
         }
 
     def check(self):
-        invite = Invite.objects(id=self.notify.notify_id).first()
-        if invite is None:
+        if self._invite is None:
             raise BaseException(u'Illegal invite notify')
-        group = ShareGroup.objects(id=invite.invite_group.id).first()
+        group = ShareGroup.objects(id=self._invite.invite_group.id).first()
         return group is not None
 
     def remove(self):
-        invite = Invite.objects(id=self.notify.notify_id).first()
-        if invite:
-            self.user.notify_content.remove(self.notify)
-            self.notify.delete()
-            invite.delete()
+        if self._invite:
+            self._invite.delete()
 
 
 class NotifyFreshMemberHandler(NotifyBaseHandler):
 
     notify_type = FRESH_MEMBER
 
+    def __init__(self, notify=None, user=None):
+        super(self.__class__, self).__init__(notify, user)
+        self._fresh_member_group = ShareGroup.objects(id=self.notify.notify_id).first()
+        self._fresh_member_user = User.objects(id=self.notify.notify_user.id).first()
+
     def output(self):
         super(self.__class__, self).output()
-        group = ShareGroup.objects(id=self.notify.notify_id).first()
-        user = User.objects(id=self.notify.notify_user.id).first()
+        group = self._fresh_member_group
+        user = self._fresh_member_user
         if not group or not user:
+            print self.notify.id
             raise BaseException(u'Illegal fresh member notify')
         return {
             "id": str(self.notify.id),
@@ -211,14 +260,25 @@ class NotifyFreshMemberHandler(NotifyBaseHandler):
             "avatar": user.avatar,
         }
 
+    def check(self):
+        return self._fresh_member_group and self._fresh_member_user
+
+    def remove(self):
+        self.user.notify_content.remove(self.notify)
+        self.notify.delete()
+
 
 class NotifyReplyHandler(NotifyBaseHandler):
 
     notify_type = REPLY
 
+    def __init__(self, notify=None, user=None):
+        super(self.__class__, self).__init__(notify, user)
+        self._reply = Comment.objects(id=self.notify.notify_id).first()
+
     def output(self):
         super(self.__class__, self).output()
-        reply = Comment.objects(id=self.notify.notify_id).first()
+        reply = self._reply
         if reply is None:
             raise BaseException(u'Illegal reply notify')
         return {
@@ -232,6 +292,9 @@ class NotifyReplyHandler(NotifyBaseHandler):
             "nickname": reply.user.nickname,
             "avatar": reply.user.avatar
         }
+
+    def check(self):
+        return self._reply is not None
 
 
 class NotifyItem(object):

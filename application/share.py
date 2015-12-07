@@ -95,7 +95,9 @@ class ShareHandler(BaseHandler):
         @apiParam {String} [comment] Comment of share.
         @apiParam {String[]} groups Name of groups to send share.
 
-        @apiUse SuccessMsg
+        @apiSuccess {String} message "success"
+        @apiSuccess {String[]} duplicated 返回一个数组，数组的元素是有相同url的shr的组的名字（即重复分享），
+                                          如果没有重复则返回空数组
 
         @apiUse NotLoginError
         @apiUse OtherError
@@ -127,15 +129,18 @@ class ShareHandler(BaseHandler):
             title = soup.title.string
         url = self.get_body_argument('url')
         user = self.current_user
+        duplicated = list()
         if len(self.get_body_arguments('groups')):
             comment_content = self.get_body_argument('comment', default=None)
-            print self.get_body_arguments('groups')
+            print self.get_body_arguments('groups'), len(self.get_body_arguments('groups'))
             for name in self.get_body_arguments('groups'):
                 group = ShareGroup.objects(name=name).first()
                 # if group not exist, skip it.
                 if group is None:
                     continue
-                user.add_share(url, title, group, comment_content)
+                r = user.add_share(url, title, group, comment_content)
+                if r["duplicated"]:
+                    duplicated.append(name)
                 # user.share_to_group(share, group, comment_content)
         else:
             share = InboxShare(title=title, url=url)
@@ -143,7 +148,7 @@ class ShareHandler(BaseHandler):
                 user.add_inbox_share(share)
             except ValidationError:
                 raise BaseException(u'非法url')
-        self.write(json.dumps({'message': 'success'}))
+        self.write(json.dumps({"message": "success", "duplicated": duplicated}))
 
     @tornado.web.asynchronous
     @tornado.web.authenticated
@@ -256,7 +261,7 @@ class ShareForwardGroup(BaseHandler):
     def forward_share(self, response):
         """
         @api {post} /share/forward 投递share（转发）
-        @apiVersion 0.1.1
+        @apiVersion 0.1.8
         @apiName ForwardShare
         @apiGroup Share
         @apiPermission login
@@ -276,7 +281,9 @@ class ShareForwardGroup(BaseHandler):
                 ]
             }
 
-        @apiUse SuccessMsg
+        @apiSuccess {String} message "success"
+        @apiSuccess {String[]} duplicated 返回一个数组，数组的元素是有相同url的shr的组的名字（即重复分享），
+                                          如果没有重复则返回空数组
 
         @apiUse NotLoginError
         @apiUse OtherError
@@ -287,6 +294,7 @@ class ShareForwardGroup(BaseHandler):
             print 'HTTPError(403)'
             raise HTTPError(403)
         print "len(self.get_body_arguments('groups'))", len(self.get_body_arguments('groups'))
+        duplicated = list()
         if len(self.get_body_arguments('groups')):
             comment_content = self.get_body_argument('comment', default=None)
             print self.get_body_arguments('groups')
@@ -295,7 +303,9 @@ class ShareForwardGroup(BaseHandler):
                 # if group not exist, skip it.
                 if group is None:
                     continue
-                user.add_share(share.url, share.title, group, comment_content)
+                r = user.add_share(share.url, share.title, group, comment_content)
+                if r["duplicated"]:
+                    duplicated.append(name)
                 # user.share_to_group(share, group, comment_content)
         else:
             share = InboxShare(title=share.title, url=share.url)
@@ -303,4 +313,4 @@ class ShareForwardGroup(BaseHandler):
                 user.add_inbox_share(share)
             except ValidationError:
                 raise BaseException(u'非法url')
-        self.write(json.dumps({'message': 'success'}))
+        self.write(json.dumps({"message": "success", "duplicated": duplicated}))

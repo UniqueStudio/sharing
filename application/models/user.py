@@ -148,11 +148,13 @@ class User(Document):
         if Share.is_exist(url, group):
             share = Share.objects(url=url, own_group=group).first()
             share.share_time = datetime.datetime.now()
+            duplicated = True
         else:
             share = Share(title=title, url=url, own_group=group)
             share.save()
             group.shares.append(share)
             group.save()
+            duplicated = False
         share.add_share_user(self)
         if comment_content:
             self.add_comment_to_share(share, comment_content)
@@ -164,6 +166,8 @@ class User(Document):
         self.save()
         for follower in self.following:
             follower._notify_share(share_user=self, share=share)
+
+        return {"duplicated": duplicated}
 
     # def share_to_group(self, share, group, comment_content=None):  #将share分享到group中
     #     from application.models import Share
@@ -243,8 +247,9 @@ class User(Document):
             # share = Share(title=inbox_share.title, url=inbox_share.url)
             # share.save()
             # self.share_to_group(share=share, group=group)
-            self.add_share(inbox_share.url, inbox_share.title, group, comment)
+            r = self.add_share(inbox_share.url, inbox_share.title, group, comment)
             self.remove_inbox_share(inbox_share=inbox_share)
+            return r
         else:
             raise InboxShare.InboxShareException(u'inbox中该share并不存在')
 

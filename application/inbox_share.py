@@ -113,7 +113,7 @@ class InboxShareHandler(BaseHandler):
     def put(self):
         """
         @api {put} /inbox_share 推送InboxShare到group
-        @apiVersion 0.1.7
+        @apiVersion 0.1.8
         @apiName PutInboxShare
         @apiGroup InboxShare
         @apiPermission login
@@ -124,7 +124,8 @@ class InboxShareHandler(BaseHandler):
         @apiParam {String} group_id Id of group.
         @apiParam {String} [comment] 评论
 
-        @apiUse SuccessMsg
+        @apiSuccess {String} message "success"
+        @apiSuccess {Boolean} duplicated 如果该组已经有相同url的shr，则返回true，否则返回false
 
         @apiUse NotLoginError
         @apiUse OtherError
@@ -140,8 +141,8 @@ class InboxShareHandler(BaseHandler):
         comment = self.get_body_argument("comment", "")
         if inbox_share is None:
             raise BaseException(u'非法id')
-        user.send_share(inbox_share, group, comment)
-        self.write(json.dumps({'message': 'success'}))
+        r = user.send_share(inbox_share, group, comment)
+        self.write(json.dumps({"message": "success", "duplicated": r["duplicated"]}))
 
     @tornado.web.asynchronous
     @tornado.web.authenticated

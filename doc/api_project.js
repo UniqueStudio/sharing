@@ -1,6 +1,6 @@
 define({
   "name": "SHR--分享团队兴趣",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "SHR beta版，@联创团队",
   "title": "SHR api document",
   "url": "http://139.129.22.121:23333",
@@ -16,7 +16,7 @@ define({
   "apidoc": "0.2.0",
   "generator": {
     "name": "apidoc",
-    "time": "2015-10-23T13:39:37.091Z",
+    "time": "2015-12-07T05:31:16.976Z",
     "url": "http://apidocjs.com",
     "version": "0.13.1"
   }

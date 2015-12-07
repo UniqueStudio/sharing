@@ -360,46 +360,6 @@ class MyInformation(BaseHandler):
 
 class UploadImage(BaseHandler):
 
-#     def get(self):
-#         self.write(
-#             """
-# <html>
-#   <head><title>Upload File</title></head>
-#   <body>
-#     <form action='upload_image' enctype="multipart/form-data" method='post'>
-#     <input type='file' name='avatar'/><br/>
-#     <input type='submit' value='submit'/>
-#     </form>
-#   </body>
-# </html>
-#             """
-#         )
-#
-#     def post(self):
-#         self.session = self.get_session()
-#         id = self.session['_id']
-#         if id:
-#             user = User.objects(id=id).first()
-#             upload_path = os.path.join(os.path.dirname(__file__), 'avatar')
-#             if self.request.files:
-#                 avatar = self.request.files['avatar'][0]
-#                 self.save_file(avatar, upload_path, user)
-#                 self.write(json.dumps({'message': 'success'}))
-#             else:
-#                 self.write(json.dumps({'message': '无文件'}))
-#         else:
-#             self.write(json.dumps({'message': '未登陆'}))
-#
-#     def save_file(self, file, save_dir, user):
-#         file_name = file['filename'] + str(time.time())
-#         file_name = hashlib.md5(file_name).hexdigest()
-#         save_file_name = os.path.join(save_dir, file_name)
-#         #TODO:对图片进行压缩处理
-#         with open(save_file_name, 'wb') as up:
-#             up.write(file['body'])
-#         user.set_avatar(save_file_name)
-#         self.finish()
-
     @BaseHandler.sync_sandbox
     @tornado.web.authenticated
     def put(self):
@@ -421,9 +381,7 @@ class UploadImage(BaseHandler):
         @apiUse NotLoginError
         @apiUse OtherError
         """
-        print self.current_user
         upload_path = os.path.join(os.path.dirname(__file__), "avatar")
-        print self.get_body_argument("avatar")
         try:
             avatar_str = self.get_body_argument("avatar").decode("base64")
         except:

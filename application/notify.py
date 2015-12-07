@@ -159,6 +159,7 @@ class NotifyInfo(BaseHandler):
         """
         user = User.objects(id=self.session['_id']).first()
         result = dict(notifies=list())
+        to_be_deleted = list()
         for notify in user.notify_content:
             if not notify.read:
                 notify_item = NotifyItem(notify, user)
@@ -166,7 +167,9 @@ class NotifyInfo(BaseHandler):
                     result["notifies"].append(notify_item.load_notify())
                 else:
                     notify_item.remove()
-                    user.save()
+                    to_be_deleted.append(notify)
+        map(lambda n: Notify.delete_notify(user, n), to_be_deleted)
+        user.save()
         print result
         self.write(json.dumps(result))
 

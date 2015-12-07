@@ -19,6 +19,7 @@ class InboxShare(Document):
     url = URLField(required=True)
     own_user = ReferenceField('User')
     send_time = DateTimeField(required=True, default=datetime.datetime.now)
+    InboxShareException = BaseException
 
     def __str__(self):
         return '<Share: \nurl:%s \nuser:%s \n>' \

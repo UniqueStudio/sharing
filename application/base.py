@@ -7,6 +7,7 @@ from application.exception import BaseException
 from application.models import User
 import json
 import traceback
+import sys
 
 class BaseHandler(tornado.web.RequestHandler):
     """
@@ -79,14 +80,16 @@ class BaseHandler(tornado.web.RequestHandler):
             except application.exception.BaseException as e:
                 print 'BaseException'
                 print traceback.format_exc()
+                sys.stdout.flush()
                 self.write(json.dumps({
                     'message': 'failure',
-                    'reason': e.description
+                    'reason': 'Exception' + e.description
                 }))
                 self.finish()
             except ValidationError as e:
                 print 'ValidationError '
                 print traceback.format_exc()
+                sys.stdout.flush()
                 self.write(json.dumps({
                     'message': 'failure',
                     'reason': e.message
@@ -104,6 +107,7 @@ class BaseHandler(tornado.web.RequestHandler):
             except application.exception.BaseException as e:
                 print 'BaseException'
                 print traceback.format_exc()
+                sys.stdout.flush()
                 self.write(json.dumps({
                     'message': 'failure',
                     'reason': e.description
@@ -111,6 +115,7 @@ class BaseHandler(tornado.web.RequestHandler):
             except ValidationError as e:
                 print 'ValidationError '
                 print traceback.format_exc()
+                sys.stdout.flush()
                 self.write(json.dumps({
                     'message': 'failure',
                     'reason': e.message

@@ -28,3 +28,8 @@ class Notify(Document):
     notify_user = ReferenceField('User', required=True)    #需要通知的用户
     notify_type = StringField(required=True)
     notify_time = DateTimeField(required=True, default=datetime.datetime.now())
+
+    @staticmethod
+    def delete_notify(user, notify):
+        user.notify_content.remove(notify)
+        notify.delete()

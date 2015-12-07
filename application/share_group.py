@@ -262,16 +262,11 @@ class GroupShare(BaseHandler):
 
     @BaseHandler.sandbox
     def get_shares(self, response):
-        self.session = self.get_session()
-        user_id = self.session['_id']
-        user = None
-        if user_id:
-            user = User.objects(id=user_id).first()
         group_id = self.get_argument('group_id')
         if group_id:
             group = ShareGroup.objects(id=group_id).first()
             if group:
-                if user and user.is_in_the_group(group=group):
+                if self.current_user and self.current_user.is_in_the_group(group=group):
                     shares = group.shares
                     result = {
                         'shares': [{
@@ -292,8 +287,8 @@ class GroupShare(BaseHandler):
                             ],
                             'comment_sum': len(share.comments),
                             'share_time': str(share.share_time),
-                            'is_gratitude': share in user.gratitude_shares
-                        } for share in shares]
+                            'is_gratitude': share in self.current_user.gratitude_shares
+                        } for share in shares if share.share_users[0] not in self.current_user.black_users]
                     }
                     self.write(json.dumps(result))
                 else:

@@ -504,3 +504,71 @@
  @apiUse NotLoginError
  @apiUse OtherError
  */
+
+/**
+ @api {put} /inbox_share 推送InboxShare到group
+ @apiVersion 0.1.7
+ @apiName PutInboxShare
+ @apiGroup InboxShare
+ @apiPermission login
+
+ @apiDescription 通过inbox_share_id和group_id推送InboxShare到特定的组.
+
+ @apiParam {String} inbox_share_id Id of share.
+ @apiParam {String} group_id Id of group.
+ @apiParam {String} [comment] 评论
+
+ @apiUse SuccessMsg
+
+ @apiUse NotLoginError
+ @apiUse OtherError
+ */
+
+/**
+ @api {post} /share/forward 投递share（转发）
+ @apiVersion 0.1.1
+ @apiName ForwardShare
+ @apiGroup Share
+ @apiPermission login
+
+ @apiDescription 从信息流中转发share，如果不选发送组（即groups为空数组），则发送到@me
+
+ @apiParam {String} share_id share.id
+ @apiParam {String} [comment] Comment of share.
+ @apiParam {String[]} groups Name of groups to send share.
+
+ @apiParamExample {form-data} Request-Example
+ {
+     "share_id": "",
+     "comment": "",
+     "groups": [
+         ""
+     ]
+ }
+
+ @apiUse SuccessMsg
+
+ @apiUse NotLoginError
+ @apiUse OtherError
+ */
+
+/**
+ @api {post} /share 投递share（外部）
+ @apiVersion 0.1.6
+ @apiName PostShare
+ @apiGroup Share
+ @apiPermission login
+
+ @apiDescription 从外部投递share，如果不选发送组，则发送到@me，
+ 接口对应inbox_share，这点需**格外注意**. 在0.1.6版本之后， share的title由后台自动生成， 默认是网页的title
+
+ @apiParam {String} [title] Title of share.
+ @apiParam {String} url Title of share.
+ @apiParam {String} [comment] Comment of share.
+ @apiParam {String[]} groups Name of groups to send share.
+
+ @apiUse SuccessMsg
+
+ @apiUse NotLoginError
+ @apiUse OtherError
+ */
