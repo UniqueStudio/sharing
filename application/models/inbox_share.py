@@ -11,6 +11,7 @@ import datetime
 
 from application.exception import BaseException
 
+
 class InboxShare(Document):
     """
         inbox中存放的share
@@ -20,6 +21,7 @@ class InboxShare(Document):
     own_user = ReferenceField('User')
     send_time = DateTimeField(required=True, default=datetime.datetime.now)
     InboxShareException = BaseException
+    passage = ReferenceField('Passage', reverse_delete_rule=CASCADE)
 
     def __str__(self):
         return '<Share: \nurl:%s \nuser:%s \n>' \
@@ -39,6 +41,7 @@ class InboxShare(Document):
 
     def _delete_from_inbox(self, ):
         if InboxShare.is_exist(self.url, self.own_user):
+            self.passage.decrease_ref()
             self.delete()
         else:
             raise InboxShare.InboxShareException('share已经在inbox被删除')

@@ -11,14 +11,6 @@ import datetime
 from application.exception import BaseException
 
 
-class Passage(Document):
-
-    url = URLField(required=True)
-    last_modified = DateTimeField(required=True, default=datetime.datetime.now)
-    last_updated = DateTimeField(required=True, default=datetime.datetime.now)
-    html = StringField(required=True)
-
-
 class GratitudeEmbedded(EmbeddedDocument):
     g_from = ReferenceField('User')  # 投递感谢的人
     g_to = ReferenceField('User')    # 被感谢的人
@@ -37,7 +29,7 @@ class Share(Document):
     # gratitude_users = ListField(ReferenceField('User'), default=list)
     gratitude_users = ListField(EmbeddedDocumentField('GratitudeEmbedded'), default=list)
     comments = ListField(ReferenceField('Comment'))
-    passage = ReferenceField('Passage')
+    passage = ReferenceField('Passage', reverse_delete_rule=CASCADE)
 
     def __str__(self):
         return '<Share: \nurl:%s \nown_group:%s \n>' \
@@ -86,7 +78,4 @@ class Share(Document):
 
     class ShareException(BaseException):
         pass
-
-
-Share.register_delete_rule(Passage, "passage", CASCADE)
 

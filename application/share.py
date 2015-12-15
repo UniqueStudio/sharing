@@ -6,8 +6,10 @@ import tornado.httpclient
 from tornado.web import HTTPError
 from mongoengine.errors import ValidationError
 from bs4 import BeautifulSoup
+from readability.readability import Document
+from datetime import datetime
 from application.base import BaseHandler
-from application.models import Share, User, ShareGroup, InboxShare
+from application.models import Share, User, ShareGroup, InboxShare, Passage
 from application.exception import BaseException
 
 
@@ -18,7 +20,7 @@ class ShareHandler(BaseHandler):
     def get(self):
         """
         @api {get} /share?share_id=:share_id 获取组内某条share
-        @apiVersion 0.1.0
+        @apiVersion 0.1.9
         @apiName GetShare
         @apiGroup Share
         @apiPermission login
@@ -31,6 +33,7 @@ class ShareHandler(BaseHandler):
         @apiSuccess {String} title Title of share.
         @apiSuccess {String} url Url of share.
         @apiSuccess {String} share_time Time of share created.
+        @apiSuccess {String} content 排版后的文章内容
         @apiSuccess {Number} comment_sum Sum of comments.
         @apiSuccess {Number} gratitude_sum Sum of users gratitude.
         @apiSuccess {Object} origin First user who made this share.
@@ -63,6 +66,7 @@ class ShareHandler(BaseHandler):
             'id': str(share.id),
             'title': share.title,
             'url': share.url,
+            'content': share.passage.html,
             'origin': {
                 'nickname': share.share_users[0].nickname,
                 'id': str(share.share_users[0].id),
@@ -103,32 +107,35 @@ class ShareHandler(BaseHandler):
         @apiUse OtherError
         """
         client = tornado.httpclient.AsyncHTTPClient()
-        title = self.get_body_argument('title', None)
-        if title:
-            client.fetch(self.request, callback=self.create_share)
-        else:
-            headers = {
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36",
-                "Accept-Language": "zh-CN,zh;q=0.8,en;q=0.6",
-            }
-            try:
-                client.fetch(self.get_body_argument('url'), callback=self.create_share, headers=headers)
-            except:
-                self.write(json.dumps({'message': 'failure', 'reason': u'非法url'}))
-                self.finish()
+        headers = {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36",
+            "Accept-Language": "zh-CN,zh;q=0.8,en;q=0.6",
+        }
+        try:
+            client.fetch(self.get_body_argument('url'), callback=self.create_share, headers=headers)
+        except:
+            self.write(json.dumps({'message': 'failure', 'reason': u'非法url'}))
+            self.finish()
 
     @BaseHandler.sandbox
     def create_share(self, response):
-        title = self.get_body_argument('title', None)
-        if title is None:
-            if response.error:
-                print "response.error", response.error, response
-                raise BaseException(str(response.error))
-            soup = BeautifulSoup(response.body, "html.parser")
-            title = soup.title.string
-        title = title.lstrip()
+        _title = self.get_body_argument('title', None)
+        if response.error:
+            print "response.error", response.error, response
+            raise BaseException(str(response.error))
+        soup = BeautifulSoup(response.body, "html.parser")
+        title = _title if _title else soup.title.string.lstrip()
         url = self.get_body_argument('url')
+        p_exist = Passage.objects(url=url).first()
+        if p_exist:
+            p_exist.last_updated = datetime.now()
+            p_exist.ref += 1
+            p_exist.html = Document(response.body).summary()
+            p = p_exist
+        else:
+            p = Passage(url=url, html=Document(response.body).summary())
+            p.save()
         user = self.current_user
         duplicated = list()
         if len(self.get_body_arguments('groups')):
@@ -139,12 +146,12 @@ class ShareHandler(BaseHandler):
                 # if group not exist, skip it.
                 if group is None:
                     continue
-                r = user.add_share(url, title, group, comment_content)
+                r = user.add_share(url, title, group, comment_content, p)
                 if r["duplicated"]:
                     duplicated.append(name)
                 # user.share_to_group(share, group, comment_content)
         else:
-            share = InboxShare(title=title, url=url)
+            share = InboxShare(title=title, url=url, passage=p)
             try:
                 user.add_inbox_share(share)
             except ValidationError:

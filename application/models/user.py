@@ -140,7 +140,7 @@ class User(Document):
     def is_share(self, share, group):  #是否分享到某个组
         return share in self.self_shares and share.own_group == group
 
-    def add_share(self, url, title, group, comment_content=None):
+    def add_share(self, url, title, group, comment_content=None, passage=None):
         from application.models import ShareGroup, Share
         assert isinstance(group, ShareGroup)
         if not self.is_in_the_group(group):
@@ -148,9 +148,10 @@ class User(Document):
         if Share.is_exist(url, group):
             share = Share.objects(url=url, own_group=group).first()
             share.share_time = datetime.datetime.now()
+            share.passage = passage
             duplicated = True
         else:
-            share = Share(title=title, url=url, own_group=group)
+            share = Share(title=title, url=url, own_group=group, passage=passage)
             share.save()
             group.shares.append(share)
             group.save()
@@ -210,6 +211,7 @@ class User(Document):
                     gratitude_user.save()
                 self.self_shares.remove(share)
                 group._remove_share(share)
+                share.passage.decrease_ref()
                 share.delete()
                 self.save()
             else:

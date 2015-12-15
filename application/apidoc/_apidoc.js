@@ -572,3 +572,56 @@
  @apiUse NotLoginError
  @apiUse OtherError
  */
+
+/**
+ @api {get} /share?share_id=:share_id 获取组内某条share
+ @apiVersion 0.1.0
+ @apiName GetShare
+ @apiGroup Share
+ @apiPermission login
+
+ @apiDescription 根据share_id获取组内某条share.
+
+ @apiParam {String} share_id Id of share in group.
+
+ @apiSuccess {String} id Id of share.
+ @apiSuccess {String} title Title of share.
+ @apiSuccess {String} url Url of share.
+ @apiSuccess {String} share_time Time of share created.
+ @apiSuccess {Number} comment_sum Sum of comments.
+ @apiSuccess {Number} gratitude_sum Sum of users gratitude.
+ @apiSuccess {Object} origin First user who made this share.
+ @apiSuccess {Object} origin.nickname Name of user.
+ @apiSuccess {String} origin.id Id of user.
+ @apiSuccess {String} origin.avatar Avatar of user.
+ @apiSuccess {String} origin.nickname Name of user.
+ @apiSuccess {Object[]} others The rest users.
+ @apiSuccess {String} others.nickname Name of user.
+ @apiSuccess {String} others.id Id of user.
+
+ @apiUse NotLoginError
+ @apiUse OtherError
+ */
+
+/**
+ @api {get} /inbox_share?inbox_share_id=:inbox_share_id 获取InboxShare
+ @apiVersion 0.1.0
+ @apiName GetInboxShare
+ @apiGroup InboxShare
+ @apiPermission login
+
+ @apiDescription 根据inbox_share_id从inbox中获取share，即从`@me`中获取share.
+
+ @apiParam {String} in_share_id Id of share.
+
+ @apiSuccess {String} id Id of share.
+ @apiSuccess {String} title Title of share.
+ @apiSuccess {String} url Url of share.
+ @apiSuccess {String} send_time Time of share created.
+ @apiSuccess {String} nickname Name of user.
+ @apiSuccess {String} uid Id of user.
+ @apiSuccess {String} avatar Avatar of user.
+
+ @apiUse NotLoginError
+ @apiUse OtherError
+ */

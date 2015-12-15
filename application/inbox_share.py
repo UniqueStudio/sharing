@@ -33,7 +33,7 @@ class InboxShareHandler(BaseHandler):
     def get(self):
         """
         @api {get} /inbox_share?inbox_share_id=:inbox_share_id 获取InboxShare
-        @apiVersion 0.1.0
+        @apiVersion 0.1.9
         @apiName GetInboxShare
         @apiGroup InboxShare
         @apiPermission login
@@ -45,6 +45,7 @@ class InboxShareHandler(BaseHandler):
         @apiSuccess {String} id Id of share.
         @apiSuccess {String} title Title of share.
         @apiSuccess {String} url Url of share.
+        @apiSuccess {String} content 排版后的文章内容
         @apiSuccess {String} send_time Time of share created.
         @apiSuccess {String} nickname Name of user.
         @apiSuccess {String} uid Id of user.
@@ -89,6 +90,7 @@ class InboxShareHandler(BaseHandler):
                 'id': str(inbox_share.id),
                 'title': inbox_share.title,
                 'url': inbox_share.url,
+                'content': inbox_share.passage.html,
                 'send_time': str(inbox_share.send_time),
                 'nickname': inbox_share.own_user.nickname,
                 'uid': str(inbox_share.own_user.id),
