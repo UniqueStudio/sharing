@@ -170,7 +170,7 @@ class NotifyInfo(BaseHandler):
                     to_be_deleted.append(notify)
         map(lambda n: Notify.delete_notify(user, n), to_be_deleted)
         user.save()
-        print result
+        # print result
         self.write(json.dumps(result))
 
     @tornado.web.authenticated

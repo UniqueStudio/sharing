@@ -127,6 +127,7 @@ class ShareHandler(BaseHandler):
                 raise BaseException(str(response.error))
             soup = BeautifulSoup(response.body, "html.parser")
             title = soup.title.string
+        title = title.lstrip()
         url = self.get_body_argument('url')
         user = self.current_user
         duplicated = list()
