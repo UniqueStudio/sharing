@@ -18,3 +18,7 @@ class Passage(Document):
             self.save()
         else:
             self.delete()
+
+    def increase_ref(self):
+        self.ref += 1
+        self.save()

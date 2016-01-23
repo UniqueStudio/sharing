@@ -62,6 +62,7 @@ class ShareHandler(BaseHandler):
         user = User.objects(id=self.session['_id']).first()
         if not user or share.own_group not in user.groups:
             raise BaseException(u'没有权限')
+        # print type(share.passage.html), isinstance(share.passage.html, unicode)
         self.write(json.dumps({
             'id': str(share.id),
             'title': share.title,
@@ -130,8 +131,8 @@ class ShareHandler(BaseHandler):
         p_exist = Passage.objects(url=url).first()
         if p_exist:
             p_exist.last_updated = datetime.now()
-            p_exist.ref += 1
             p_exist.html = Document(response.body).summary()
+            p_exist.increase_ref()
             p = p_exist
         else:
             p = Passage(url=url, html=Document(response.body).summary())
@@ -314,11 +315,14 @@ class ShareForwardGroup(BaseHandler):
                 r = user.add_share(share.url, share.title, group, comment_content)
                 if r["duplicated"]:
                     duplicated.append(name)
+                else:
+                    share.passage.increase_ref()
                 # user.share_to_group(share, group, comment_content)
         else:
-            share = InboxShare(title=share.title, url=share.url)
+            share = InboxShare(title=share.title, url=share.url, passage=share.passage)
             try:
                 user.add_inbox_share(share)
+                share.passage.increase_ref()
             except ValidationError:
                 raise BaseException(u'非法url')
         self.write(json.dumps({"message": "success", "duplicated": duplicated}))

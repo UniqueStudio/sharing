@@ -249,7 +249,7 @@ class User(Document):
             # share = Share(title=inbox_share.title, url=inbox_share.url)
             # share.save()
             # self.share_to_group(share=share, group=group)
-            r = self.add_share(inbox_share.url, inbox_share.title, group, comment)
+            r = self.add_share(inbox_share.url, inbox_share.title, group, comment, inbox_share.passage)
             self.remove_inbox_share(inbox_share=inbox_share)
             return r
         else:
