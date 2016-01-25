@@ -12,3 +12,4 @@ from application.models.share_group import ShareGroup
 from application.models.user import User
 from application.models.invite import Invite
 from application.models.notify import Notify
+from application.models.dairy import Dairy

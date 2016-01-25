@@ -1,10 +1,10 @@
-#encoding:utf-8
+# encoding:utf-8
 
 import tornado.web
 import tornado.httpclient
 from mongoengine import Q
 from application.base import BaseHandler
-from application.models import User, Share, ShareGroup, Comment, Invite, Notify
+from application.models import User, ShareGroup, Invite, Notify
 from application.exception import BaseException
 
 import json
@@ -23,7 +23,7 @@ class Login(BaseHandler):
     def post(self):
         """
         @api {post} /login 登录
-        @apiVersion 0.1.6
+        @apiVersion 0.2.0
         @apiName Login
         @apiGroup User
 
@@ -31,9 +31,16 @@ class Login(BaseHandler):
 
         @apiParam {String} email Email as account.
         @apiParam {String} password Password.
-        @apiParam {Boolean} is_activated 登录后修改一次密码就算是激活
 
-        @apiUse MessageSuccess
+        @apiSuccess {String} message     message = success.
+        @apiSuccess {Boolean} is_activated 登录后修改一次密码就算是激活, 如果是团队邮箱就需要激活
+
+        @apiSuccessExample Success-Response:
+           HTTP/1.1 200 OK
+           {
+             "message": "success"
+             "is_activated": "false"
+           }
 
         @apiUse OtherError
         """
@@ -82,8 +89,8 @@ class Register(BaseHandler):
     @tornado.web.asynchronous
     def post(self, invite_id=None):
         """
-        @api {post} /register 注册(测试用)
-        @apiVersion 0.1.0
+        @api {post} /register 注册
+        @apiVersion 0.2.0
         @apiName RegisterTest
         @apiGroup User
 
@@ -257,7 +264,7 @@ class Homepage(BaseHandler):
                     'group': share.own_group.name,
                     'share_time': str(share.share_time),
                     'url': share.url
-                } for share in user.self_shares]
+                } for share in filter(lambda x: x, user.self_shares)]
             result['manager_groups'] = [
                 {
                     'id': str(group.id),
@@ -272,8 +279,7 @@ class Homepage(BaseHandler):
                     'group': share.own_group.name,
                     'share_time': str(share.share_time),
                     'url': share.url
-                }
-                for share in user.self_shares if share.own_group in mine.groups]
+                } for share in filter(lambda x: x, user.self_shares) if share.own_group in mine.groups]
         self.write(json.dumps(result))
 
 

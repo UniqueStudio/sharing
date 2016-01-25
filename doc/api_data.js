@@ -4552,28 +4552,17 @@ define({ "api": [
         ]
       }
     },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>&quot;success&quot;</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String[]",
-            "optional": false,
-            "field": "duplicated",
-            "description": "<p>返回一个数组，数组的元素是有相同url的shr的组的名字（即重复分享）， 如果没有重复则返回空数组</p>"
-          }
-        ]
-      }
-    },
-    "filename": "./application/share.py",
+    "filename": "./application/apidoc/_apidoc.js",
     "groupTitle": "Share",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "error": {
       "fields": {
         "Error 4xx": [
@@ -4654,17 +4643,28 @@ define({ "api": [
         ]
       }
     },
-    "filename": "./application/apidoc/_apidoc.js",
-    "groupTitle": "Share",
     "success": {
-      "examples": [
-        {
-          "title": "Success-Response",
-          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
-          "type": "json"
-        }
-      ]
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>&quot;success&quot;</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String[]",
+            "optional": false,
+            "field": "duplicated",
+            "description": "<p>返回一个数组，数组的元素是有相同url的shr的组的名字（即重复分享）， 如果没有重复则返回空数组</p>"
+          }
+        ]
+      }
     },
+    "filename": "./application/share.py",
+    "groupTitle": "Share",
     "error": {
       "fields": {
         "Error 4xx": [
@@ -5199,6 +5199,50 @@ define({ "api": [
         }
       ]
     }
+  },
+  {
+    "type": "post",
+    "url": "/dairy",
+    "title": "获取日报",
+    "version": "0.2.0",
+    "name": "GetDairy",
+    "group": "User",
+    "description": "<p>用UTC时间戳获取日报，该时间戳是某天的0点0分0妙，如2016年1月25日就是“1453680000”，目前最多3篇</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "timestamp",
+            "description": "<p>10位整数，</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String[]",
+            "optional": false,
+            "field": "share_id_list",
+            "description": "<p>最多有3篇</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n  \"share_id_list\": [\"56a48d0f97fbdf11c5f0b686\"]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./application/dairy.py",
+    "groupTitle": "User"
   },
   {
     "type": "get",
@@ -6086,6 +6130,83 @@ define({ "api": [
     "type": "post",
     "url": "/login",
     "title": "登录",
+    "version": "0.2.0",
+    "name": "Login",
+    "group": "User",
+    "description": "<p>使用邮箱密码登录.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email as account.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>message = success.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "is_activated",
+            "description": "<p>登录后修改一次密码就算是激活, 如果是团队邮箱就需要激活</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n  \"is_activated\": \"false\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./application/user.py",
+    "groupTitle": "User",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/login",
+    "title": "登录",
     "version": "0.1.6",
     "name": "Login",
     "group": "User",
@@ -6117,7 +6238,7 @@ define({ "api": [
         ]
       }
     },
-    "filename": "./application/user.py",
+    "filename": "./application/apidoc/_apidoc.js",
     "groupTitle": "User",
     "success": {
       "fields": {
@@ -6528,6 +6649,83 @@ define({ "api": [
   {
     "type": "post",
     "url": "/register",
+    "title": "注册",
+    "version": "0.2.0",
+    "name": "RegisterTest",
+    "group": "User",
+    "description": "<p>直接使用邮箱密码注册share账户.</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email as account.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "nickname",
+            "description": "<p>Nickname as account.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password.</p>"
+          }
+        ]
+      }
+    },
+    "filename": "./application/user.py",
+    "groupTitle": "User",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>message = success.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"success\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "SomeErrorInDetail",
+            "description": "<p>Errors in detail.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Error-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"failure\",\n  \"reason\": String\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/register",
     "title": "注册(测试用)",
     "version": "0.1.0",
     "name": "RegisterTest",
@@ -6560,7 +6758,7 @@ define({ "api": [
         ]
       }
     },
-    "filename": "./application/user.py",
+    "filename": "./application/apidoc/_apidoc.js",
     "groupTitle": "User",
     "success": {
       "fields": {
@@ -6792,34 +6990,6 @@ define({ "api": [
         }
       ]
     }
-  },
-  {
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "optional": false,
-            "field": "varname1",
-            "description": "<p>No type.</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "varname2",
-            "description": "<p>With type.</p>"
-          }
-        ]
-      }
-    },
-    "type": "",
-    "url": "",
-    "version": "0.0.0",
-    "filename": "./application/apidoc/main.js",
-    "group": "_home_lance_Documents_web_sharing_application_apidoc_main_js",
-    "groupTitle": "_home_lance_Documents_web_sharing_application_apidoc_main_js",
-    "name": ""
   },
   {
     "success": {

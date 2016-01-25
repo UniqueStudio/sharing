@@ -625,3 +625,38 @@
  @apiUse NotLoginError
  @apiUse OtherError
  */
+
+/**
+ 
+ @api {post} /login 登录
+ @apiVersion 0.1.6
+ @apiName Login
+ @apiGroup User
+
+ @apiDescription 使用邮箱密码登录.
+
+ @apiParam {String} email Email as account.
+ @apiParam {String} password Password.
+ @apiParam {Boolean} is_activated 登录后修改一次密码就算是激活
+
+ @apiUse MessageSuccess
+
+ @apiUse OtherError
+ */
+
+/**
+ @api {post} /register 注册(测试用)
+ @apiVersion 0.1.0
+ @apiName RegisterTest
+ @apiGroup User
+
+ @apiDescription 直接使用邮箱密码注册share账户.
+
+ @apiParam {String} email Email as account.
+ @apiParam {String} nickname Nickname as account.
+ @apiParam {String} password Password.
+
+ @apiUse MessageSuccess
+
+ @apiUse OtherError
+ */

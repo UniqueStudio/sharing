@@ -35,8 +35,8 @@ from application.share import (ShareHandler,
                                ShareForwardGroup)
 from application.notify import NotifyInfo
 from application.comment import CommentHandler
-from application.base import BaseHandler
 from application.inbox_share import InboxShareHandler
+from application.dairy import DairyHandler
 
 
 class Application(tornado.web.Application):
@@ -82,6 +82,8 @@ class Application(tornado.web.Application):
             url(r'/group/expel', Expel),
             url(r'/group/exit', ExitGroup),
             url(r'/group/invite', GroupInvite),
+
+            url(r'/dairy', DairyHandler),
         ]
 
         settings = {
