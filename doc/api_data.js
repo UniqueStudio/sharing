@@ -5207,16 +5207,23 @@ define({ "api": [
     "version": "0.2.0",
     "name": "GetDairy",
     "group": "User",
-    "description": "<p>用UTC时间戳获取日报，该时间戳是某天的0点0分0妙，如2016年1月25日就是“1453680000”，目前最多3篇</p>",
+    "description": "<p>1.用UTC时间戳获取日报，该时间戳是某天的0点0分0妙，如2016年1月25日就是“1453680000”，目前最多3篇; 2. 如果“action”为“all”则查询所有日报，时间增序排列</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "timestamp",
             "description": "<p>10位整数，</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "action",
+            "description": "<p>目前只有“all”是合法参数</p>"
           }
         ]
       }
